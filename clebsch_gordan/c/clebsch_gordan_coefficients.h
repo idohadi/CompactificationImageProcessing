@@ -5,7 +5,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-typedef double***** cg_table;
+typedef double***** clebsch_gordan_table;
+typedef clebsch_gordan_table cg_table;
 
 long int clebsch_gordan_lower_bound(const long int l1, const long int l2, const long int m);
 
