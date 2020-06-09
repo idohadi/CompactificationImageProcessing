@@ -144,3 +144,13 @@ void c_multiply_shc_in_place()
     // TODO: calculate alpha*shc2
 }
 
+void c_rotate_spherical_harmonics()
+{
+    // TODO
+}
+
+void r_rotate_spherical_harmonics()
+{
+    // TODO
+}
+
