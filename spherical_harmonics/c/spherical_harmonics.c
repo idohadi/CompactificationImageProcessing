@@ -1,5 +1,7 @@
 // TODO
 
+#include "spherical_harmonics.h"
+
 void r_init_shc()
 {
     // TODO: initialize struct containing the bandlimit and coefficients
