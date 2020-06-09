@@ -12,7 +12,7 @@ int main()
     size_t bandlimit = 3;
     
     printf("Allocating memory for bandlimit = %d\n", bandlimit);
-    cb_table table = allocate_memeory_for_clebsch_gordan_coefficients(bandlimit);
+    cg_table table = allocate_memeory_for_clebsch_gordan_coefficients(bandlimit);
 
     printf("Disallocating memory for bandlimit = %d\n\n", bandlimit);
     free_memory_for_clebsch_gordan_coefficients(bandlimit, table);
@@ -20,7 +20,7 @@ int main()
 
     bandlimit = 2;
     printf("Allocating memeory for bandlimit = %d\n", bandlimit);
-    cb_table table2 = allocate_memeory_for_clebsch_gordan_coefficients(bandlimit);
+    cg_table table2 = allocate_memeory_for_clebsch_gordan_coefficients(bandlimit);
 
     printf("Calculating coefficients for bandlimit = %d\n", bandlimit);
     calculate_clebsch_gordan_coefficients(bandlimit, table2);

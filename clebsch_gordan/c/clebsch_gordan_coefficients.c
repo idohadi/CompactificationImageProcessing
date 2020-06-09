@@ -94,7 +94,7 @@ void calculate_clebsch_gordan(  const long int      l1,
     }
 }
 
-void calculate_clebsch_gordan_coefficients(const size_t bandlimit, cb_table clebsch_gordan_table)
+void calculate_clebsch_gordan_coefficients(const size_t bandlimit, cg_table clebsch_gordan_table)
 {
     /* Documentation of memory structure is in allocate_memeory_for_clebsch_gordan_coefficients */
 
@@ -114,7 +114,7 @@ void calculate_clebsch_gordan_coefficients(const size_t bandlimit, cb_table cleb
     }
 }
 
-cb_table allocate_memeory_for_clebsch_gordan_coefficients(const size_t bandlimit)
+cg_table allocate_memeory_for_clebsch_gordan_coefficients(const size_t bandlimit)
 {
     /* 
         Returns an array CGs with dimensions such that it is possible to assign:
@@ -128,7 +128,7 @@ cb_table allocate_memeory_for_clebsch_gordan_coefficients(const size_t bandlimit
                 min_m1:=max(-l1, m-l2)
                 max_m1:=min(l1,  m+l2)  */
 
-    cb_table clebsch_gordan_table = malloc((bandlimit+1)*sizeof(double ****));
+    cg_table clebsch_gordan_table = malloc((bandlimit+1)*sizeof(double ****));
 
     for (long int l1 = 0; l1<=bandlimit; ++l1)
     {
@@ -154,7 +154,7 @@ cb_table allocate_memeory_for_clebsch_gordan_coefficients(const size_t bandlimit
     return clebsch_gordan_table;
 }
 
-void free_memory_for_clebsch_gordan_coefficients(const size_t bandlimit, cb_table clebsch_gordan_table)
+void free_memory_for_clebsch_gordan_coefficients(const size_t bandlimit, cg_table clebsch_gordan_table)
 {
     /* Documentation of memory structure is in allocate_memeory_for_clebsch_gordan_coefficients */
 
@@ -218,7 +218,7 @@ bool validate_clebsch_gordan_table_order(   const size_t    bandlimit,
     return true;
 }
 
-double get_clebsch_gordan_coefficient(  const cb_table  clebsch_gordan_table, 
+double get_clebsch_gordan_coefficient(  const cg_table  clebsch_gordan_table, 
                                         const long int  l1, 
                                         const long int  l2, 
                                         const long int  l, 
@@ -230,7 +230,7 @@ double get_clebsch_gordan_coefficient(  const cb_table  clebsch_gordan_table,
     return clebsch_gordan_table[l1][l2][l-absolute_value(l1-l2)][m+l][m1-clebsch_gordan_lower_bound(l1, l2, m)];
 }
 
-void set_clebsch_gordan_coefficient(    cb_table        clebsch_gordan_table, 
+void set_clebsch_gordan_coefficient(    cg_table        clebsch_gordan_table, 
                                         const long int  l1, 
                                         const long int  l2, 
                                         const long int  l, 

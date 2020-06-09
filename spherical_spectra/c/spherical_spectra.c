@@ -6,74 +6,21 @@
 
 
 #include <stdint.h>
-#include "clebsch_gordan_coefficients.h"
 #include <stdio.h>
+#include "clebsch_gordan_coefficients.h"
+#include "spherical_spectra.h"
 
-/* Simple utility functions */
-// long int maximum(long int a, long int b)
-// {
-//     if (a<=b)
-//     {
-//         return b;
-//     }
-//     else
-//     {
-//         return a;
-//     }
-
-// }
-
-// long int minimum(long int a, long int b)
-// {
-//     if (a<=b)
-//     {
-//         return a;
-//     }
-//     else
-//     {
-//         return b;
-//     }
-// }
-
-// long int absolute_value(long int a)
-// {
-//     if (a>=0)
-//     {
-//         return a;
-//     }
-//     else
-//     {
-//         return -a;
-//     }
-// }
-
-double minus_one_power(long int m)
-{
-    m %= 2;
-    if (m==0)
-    {
-        return 1.0;
-    }
-    else
-    {
-        return -1.0;
-    }
-    
-}
-
-/* Spherical spectra functions */
-
-size_t **c_build_bispectrum_table(size_t bandlimit)
+c_bispectrum_lookout_table c_build_bispectrum_lookup_table(size_t bandlimit)
 {
     // TODO
 }
 
-void c_destroy_bispectrum_table(size_t **table, size_t L)
+void c_destroy_bispectrum_lookup_table(c_bispectrum_lookout_table table, size_t L)
 {
     // TODO
 }
 
-size_t ***r_build_bispectrum_lookup_table(size_t bandlimit)
+r_bispectrum_lookout_table r_build_bispectrum_lookup_table(size_t bandlimit)
 {
     size_t index = 0; 
 
@@ -94,17 +41,17 @@ size_t ***r_build_bispectrum_lookup_table(size_t bandlimit)
     return lookup_table;
 }
 
-void r_destroy_bispectrum_lookup_table(size_t ***lookup_table, size_t bandlimit)
+void r_destroy_bispectrum_lookup_table(r_bispectrum_lookout_table table, size_t bandlimit)
 {
     for (long int l1 = 0; l1<=bandlimit; ++l1)
     {
         for (long int l2=0; l2<=l1; ++l2)
         {
-            free(lookup_table[l1][l2]);
+            free(table[l1][l2]);
         }
-        free(lookup_table[l1]);
+        free(table[l1]);
     }
-    free(lookup_table);
+    free(table);
 }
 
 double r_get_spherical_harmonics(const double *spherical_harmonics_coeffs, char real_part_or_imaginary_part, long int l, long int m)
@@ -165,48 +112,12 @@ void c_calculate_bispectrum(const size_t bandlimit, const double *c_spherical_ha
     // TODO
 }
 
-double unmixed_sum_utility_function(const double *r_spherical_harmonics_coeffs, 
-                                    long int l1, 
-                                    long int l2, 
-                                    long int l, 
-                                    long int m, 
-                                    const cb_table clebsch_gordan_coeffs)
-{
-    /* That's U in my notes */
-    double U = 0;
-    for (long int m1 = clebsch_gordan_lower_bound(l1, l2, m); m1<=clebsch_gordan_upper_bound(l1, l2, m); ++m1)
-    {
-        U += get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, m, m1)
-                            *(r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l1, m1)*r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l2, m-m1) 
-                                - r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l1, m1)*r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l2, m-m1));
-    }
-    return U;
-}
-
-double mixed_sum_utility_function(  const double *r_spherical_harmonics_coeffs, 
-                                    long int l1, 
-                                    long int l2, 
-                                    long int l, 
-                                    long int m, 
-                                    const cb_table clebsch_gordan_coeffs)
-{
-    /* Thats M in my notes */
-    double M = 0;
-    for (long int m1 = clebsch_gordan_lower_bound(l1, l2, m); m1<=clebsch_gordan_upper_bound(l1, l2, m); ++m1)
-    {
-        M += get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, m, m1)
-                            *(r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l1, m1)*r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l2, m-m1) 
-                                + r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l1, m1)*r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l2, m-m1));
-    }
-    return M;
-}
-
 double r_calculate_bispectral_invariant_real_part(  double * const r_spherical_harmonics_coeffs, 
                                                     const size_t bandlimit, 
                                                     const long int l1, 
                                                     const long int l2, 
                                                     const long int l, 
-                                                    const cb_table clebsch_gordan_coeffs)
+                                                    const cg_table clebsch_gordan_coeffs)
 {
     double invariant = 0;
 
@@ -253,7 +164,7 @@ double r_calculate_bispectral_invariant_imaginary_part( double * const r_spheric
                                                         const long int l1, 
                                                         const long int l2, 
                                                         const long int l, 
-                                                        const cb_table clebsch_gordan_coeffs)
+                                                        const cg_table clebsch_gordan_coeffs)
 {
     double invariant = 0;
 
@@ -298,7 +209,7 @@ double r_calculate_bispectral_invariant_imaginary_part( double * const r_spheric
 void r_calculate_bispectrum(double * const r_spherical_harmonics_coeffs, 
                             const size_t bandlimit, 
                             size_t *** const bispectrum_lookup_table, 
-                            const cb_table clebsch_gordan_coeffs, 
+                            const cg_table clebsch_gordan_coeffs, 
                             double *r_bispectrum)
 {
     // #pragma omp parallel for collapse(3)
@@ -321,7 +232,7 @@ void r_calculate_bispectrum(double * const r_spherical_harmonics_coeffs,
 void c_calculate_bispectrum_gradient(   const double *c_spherical_harmonics_coeffs, 
                                         const size_t bandlimit, 
                                         const size_t ***bispectrum_lookup_table, 
-                                        const cb_table clebsch_gordan_coeffs, 
+                                        const cg_table clebsch_gordan_coeffs, 
                                         double *c_bipsectrum_gradient)
 {
     // TODO
@@ -330,7 +241,7 @@ void c_calculate_bispectrum_gradient(   const double *c_spherical_harmonics_coef
 void r_calculate_bispectrum_gradient(   double * const r_spherical_harmonics_coeffs, 
                                         const size_t bandlimit, 
                                         size_t *** const bispectrum_lookup_table, 
-                                        const cb_table clebsch_gordan_coeffs, 
+                                        const cg_table clebsch_gordan_coeffs, 
                                         double *r_bipsectrum_gradient)
 {
     /* I assume the array r_bipsectrum_gradient is initialized with zeros.
