@@ -176,25 +176,21 @@ double r_bispectral_invariant_imaginary_part(r_shc * const shc, const long l1, c
         upper_bound = l1>=(m+l2) ? (m+l2) : (l1);
         for (long m1 = lower_bound; m1<=upper_bound; ++m1)
         {
-            U +=    get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, m, m1)
+            U   += get_cg(table, l1, l2, l, m, m1)
                     *( 
-                        r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l1, m1)
-                        *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l2, m-m1)
-                        -   r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l1, m1)
-                            *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l2, m-m1)
+                        r_get_shc(shc, REAL_PART, l1, m1)*r_get_shc(shc, REAL_PART, l2, m-m1)
+                            - (shc, IMAG_PART, l1, m1)*r_get_shc(shc, IMAG_PART, l2, m-m1)
                     );
-            M +=    get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, m, m1)
+
+            M +=    get_clebsch_gordan_coefficient(table, l1, l2, l, m, m1)
                     *(
-                        r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l1, m1)
-                        *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l2, m-m1)
-                        +   r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l1, m1)
-                            *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l2, m-m1)
+                        r_get_shc(shc, IMAG_PART, l1, m1)*r_get_shc(shc, REAL_PART, l2, m-m1)
+                        +   r_get_shc(shc, REAL_PART, l1, m1)*r_get_shc(shc, IMAG_PART, l2, m-m1)
                     );
         }
 
-        invariant 
-            +=  r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l, m)*U 
-                -r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l, m)*M;
+        invariant   += r_get_shc(shc, IMAG_PART, l, m)*U 
+                        - r_get_shc(shc, REAL_PART, l, m)*M;
     }
 
     return invariant;
@@ -499,13 +495,13 @@ void c_print_power_spectrum()
 }
 
 
-void r_print_bispectrum()
+void r_print_all_bispectral_invariants()
 {
     // TODO
 }
 
 
-void c_print_bispectrum()
+void c_print_all_bispectral_invariants()
 {
     // TODO
 }
