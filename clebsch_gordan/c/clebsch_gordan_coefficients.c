@@ -1,4 +1,4 @@
-// TODO: write docs
+// TODO: write docs in doxygen
 
 
 /* Function declarations. Defined below */

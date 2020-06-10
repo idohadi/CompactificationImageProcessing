@@ -1,4 +1,4 @@
-// TODO: docs in doxygen
+// TODO: write docs in doxygen
 
 #include <stdbool.h>
 #include <math.h>

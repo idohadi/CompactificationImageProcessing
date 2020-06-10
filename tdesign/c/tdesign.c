@@ -1,4 +1,4 @@
-// TODO
+// TODO: write docs in doxygen
 
 #include <stdint.h>
 #include "tdesign.h"
