@@ -33,9 +33,9 @@ double backward_substitution_secondary_diagonal(const long l1, const long l2, co
 }
 
 
-void calculate_clebsch_gordan(const long l1, const long l2, const long l, const long m, double *restrict cg)
+void calculate_clebsch_gordan(const long l1, const long l2, const long l, const long m, double * restrict cg)
 {
-    /*  I assume cb is an array of size (upper_bound - lower_bound + 1). */
+    /*  I assume cg is an array of size (upper_bound - lower_bound + 1). */
     long lower_bound = clebsch_gordan_lower_bound(l1, l2, m);
     long upper_bound = clebsch_gordan_upper_bound(l1, l2, m);
 
@@ -55,7 +55,7 @@ void calculate_clebsch_gordan(const long l1, const long l2, const long l, const 
             cg[i] = - (cg[i+1]*backward_substitution_central_diagonal(l1, l2, l, lower_bound+i+1, m)
                      + cg[i+2]*backward_substitution_secondary_diagonal(l1, l2, lower_bound+i+1, m))
                               /backward_substitution_secondary_diagonal(l1, l2, lower_bound+i, m);
-            norm += cg[i]*cb[i];
+            norm += cg[i]*cg[i];
         }
         
         // Normalize the solution so that the norm of the Clebsch-Gordan coefficients is 1
