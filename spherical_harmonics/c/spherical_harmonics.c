@@ -368,7 +368,11 @@ void c_normalize_shc(c_shc * const shc)
 
 double sample_normal(sfmt_t * const sfmt)
 {
-    /* Generate a double, distributed in the standard normal distribution. */
+    /* 
+    Generate a double, distributed in the standard normal distribution. 
+    REFERENCE:
+        https://en.wikipedia.org/wiki/Box%E2%80%93Muller_transform
+    */
     
     double u1 = sfmt_genrand_real3(sfmt);
     double u2 = sfmt_genrand_real3(sfmt);
@@ -379,6 +383,11 @@ double sample_normal(sfmt_t * const sfmt)
 
 void r_random_normalized_shc(sfmt_t *sfmt, r_shc *output_shc)
 {
+    /* 
+    REFRENCE:
+        http://extremelearning.com.au/how-to-generate-uniformly-random-points-on-n-spheres-and-n-balls/
+    */
+   
     for (long l = 0; l<=output_shc->bandlimit; ++l)
     {
         r_set_shc(output_shc, REAL_PART, l, 0, sample_normal(sfmt));
@@ -394,6 +403,11 @@ void r_random_normalized_shc(sfmt_t *sfmt, r_shc *output_shc)
 
 void c_random_normalized_shc(sfmt_t * const sfmt, r_shc * const output_shc)
 {
+    /* 
+    REFRENCE:
+        http://extremelearning.com.au/how-to-generate-uniformly-random-points-on-n-spheres-and-n-balls/
+    */
+   
     for (long l = 0; l<=output_shc->bandlimit; ++l)
     {
         r_set_shc(output_shc, REAL_PART, l, 0, sample_normal(sfmt));
