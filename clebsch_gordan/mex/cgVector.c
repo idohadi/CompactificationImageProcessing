@@ -4,7 +4,7 @@
  * Calculate the Clebsch-Gordan coefficients of order (l1, l2, l, m)
  * 
  * MATLAB call form:
- *      output = calculateClebschGordanCoefficients(l1, l2, l, m)
+ *      output = cgVector(l1, l2, l, m)
  *  where
  *      rotation is a quaternion representaiton of a rotation R and vectors is an 3 x N MATLAB array.
  *      output is a 3 x N MATLAB array such that
