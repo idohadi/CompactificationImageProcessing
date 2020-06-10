@@ -50,7 +50,7 @@ void c_destroy_shc2()
     // deallocates coefficients memory
 }
 
-double r_get_shc(r_shc *shc, PART part, long int l, long int m)
+double r_get_shc(r_shc *shc, PART part, long l, long m)
 {
    if (l > shc->bandlimit)
    {
@@ -96,9 +96,9 @@ double r_get_shc(r_shc *shc, PART part, long int l, long int m)
     }
 }
 
-double c_get_shc()
+double c_get_shc(c_shc const *shc, const PART part, const long l, const long m)
 {
-    // TODO
+    if ()
 }
 
 void r_set_shc()
