@@ -119,12 +119,7 @@ void c_bispectrum(const size_t bandlimit, const double *c_spherical_harmonics_co
 }
 
 
-double r_bispectral_invariant_real_part(  double * const r_spherical_harmonics_coeffs, 
-                                                    const size_t bandlimit, 
-                                                    const long int l1, 
-                                                    const long int l2, 
-                                                    const long int l, 
-                                                    const cg_table clebsch_gordan_coeffs)
+double r_bispectral_invariant_real_part(r_shc * const shc, const long int l1, const long int l2, const long int l, const cg_table *table)
 {
     double invariant = 0;
 
@@ -142,25 +137,21 @@ double r_bispectral_invariant_real_part(  double * const r_spherical_harmonics_c
         upper_bound = l1>=(m+l2) ? (m+l2) : (l1);
         for (long int m1 = lower_bound; m1<=upper_bound; ++m1)
         {
-            U +=    get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, m, m1)
-                    *( 
-                        r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l1, m1)
-                        *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l2, m-m1)
-                        -   r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l1, m1)
-                            *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l2, m-m1)
-                    );
-            M +=    get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, m, m1)
+            U   +=  get_cg(table, l1, l2, l, m, m1)
                     *(
-                        r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l1, m1)
-                        *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l2, m-m1)
-                        +   r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l1, m1)
-                            *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l2, m-m1)
+                        r_get_shc(shc, REAL_PART, l1, m1)*r_get_shc(shc, REAL_PART, l2, m-m1)
+                            - r_get_shc(shc, IMAG_PART, l1, m1)*r_get_shc(shc, IMAG_PART, l2, m-m1)
+                    );
+                    
+            M   +=  get_cg(table, l1, l2, l, m, m1)
+                    *(
+                        r_get_shc(shc, IMAG_PART, l1, m1)*r_get_shc(shc, REAL_PART, l2, m-m1)
+                            + r_get_shc(shc, REAL_PART, l1, m1)*r_get_shc(shc, IMAG_PART, l2, m-m1)
                     );
         }
 
-        invariant 
-            +=  r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l, m)*U 
-                +r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l, m)*M;
+        invariant   +=  r_get_shc(shc, REAL_PART, l, m)*U 
+                        + r_get_shc(shc, IMAG_PART, l, m)*M;
     }
 
     return invariant;
