@@ -8,9 +8,11 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "clebsch_gordan_coefficients.h"
+#include "spherical_harmonics.h"
 #include "spherical_spectra.h"
 
 
+/* Lookup table functions */
 c_bispectrum_lookout_table c_build_bispectrum_lookup_table(size_t bandlimit)
 {
     // TODO
@@ -57,6 +59,33 @@ void r_destroy_bispectrum_lookup_table(r_bispectrum_lookout_table table, size_t 
     free(table);
 }
 
+
+/* Power spectrum fucntions */
+double *c_allocate_power_spectrum(const size_t bandlimit)
+{
+    return malloc((bandlimit+1)*sizeof(double));
+}
+
+
+double *r_allocate_power_spectrum(const size_t bandlimit)
+{
+    return malloc((bandlimit+1)*sizeof(double));
+}
+
+
+void c_power_spectrum(c_shc * const shc, double *r_power_spectrum)
+{
+    // TODO
+}
+
+
+void r_power_spectrum(const size_t bandlimit, const double *r_spherical_harmonics_coeffs, double *c_power_spectrum)
+{
+    // TODO
+}
+
+
+/* Bispectrum functions */
 
 void c_bispectrum(const size_t bandlimit, const double *c_spherical_harmonics_coeffs, double *c_bipsectrum)
 {
@@ -442,18 +471,6 @@ void r_bispectrum_gradient(   double * const r_spherical_harmonics_coeffs,
             }
         }
     }
-}
-
-
-void c_power_spectrum(const size_t bandlimit, const double *c_spherical_harmonics_coeffs, double *r_power_spectrum)
-{
-    // TODO
-}
-
-
-void r_power_spectrum(const size_t bandlimit, const double *r_spherical_harmonics_coeffs, double *c_power_spectrum)
-{
-    // TODO
 }
 
 
