@@ -413,5 +413,5 @@ void read_tdesign(const size_t bandlimit, const COORD_SYSTEM sys)
 void print_tdesign(double * const tdesign, const COORD_SYSTEM sys)
 {
     // TODO
-    // Print t-design from file, based on bandlimit, not file name
+    // Print  t-design from file, based on bandlimit, not file name
 }
