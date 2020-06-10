@@ -13,14 +13,43 @@
 
 
 /* Lookup table functions */
-c_bispectrum_lookout_table c_build_bispectrum_lookup_table(size_t bandlimit)
+c_blt c_build_bispectrum_lookup_table(size_t bandlimit)
 {
-    // TODO
+    size_t index = 0; 
+
+    size_t ****lookup_table = malloc((bandlimit+1)*sizeof(size_t ***));
+    for (long l1 = 0; l1<=bandlimit; ++l1)
+    {
+        lookup_table[l1] = malloc((l1+1)*sizeof(size_t **));
+        for (long l2=0; l2<=l1; ++l2)
+        {
+            lookup_table[l1][l2] = malloc((((l1+l2)>=bandlimit ? bandlimit : l1+l2)  - (l1>=l2 ? l1-l2 : l2-l1) + 1)*sizeof(size_t *));
+            for (long l = (l1>=l2 ? l1-l2 : l2-l1); l<=l1+l2 && l<=bandlimit; ++l)
+            {
+                lookup_table[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)] = malloc(2*sizeof(size_t));
+                lookup_table[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)][0] = index++;
+                lookup_table[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)][1] = index++;
+            }
+        }
+    }
+    return lookup_table;
 }
 
-void c_destroy_bispectrum_lookup_table(c_bispectrum_lookout_table table, size_t L)
+void c_destroy_bispectrum_lookup_table(c_blt table, size_t bandlimit)
 {
-    // TODO
+    for (long l1 = 0; l1<=bandlimit; ++l1)
+    {
+        for (long l2=0; l2<=l1; ++l2)
+        {
+            for (long l = (l1>=l2 ? l1-l2 : l2-l1); l<=l1+l2 && l<=bandlimit; ++l)
+            {
+                free(table[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)]);
+            }
+            free(table[l1][l2]);
+        }
+        free(table[l1]);
+    }
+    free(table);
 }
 
 
@@ -34,10 +63,10 @@ r_bispectrum_lookout_table r_build_bispectrum_lookup_table(size_t bandlimit)
         lookup_table[l1] = malloc((l1+1)*sizeof(size_t *));
         for (long l2=0; l2<=l1; ++l2)
         {
-            lookup_table[l1][l2] = malloc((minimum(l1+l2, bandlimit) - absolute_value(l1-l2) + 1)*sizeof(size_t));
-            for (long l = absolute_value(l1-l2); l<=minimum(l1+l2, bandlimit); ++l)
+            lookup_table[l1][l2] = malloc((((l1+l2)>=bandlimit ? bandlimit : l1+l2)  - (l1>=l2 ? l1-l2 : l2-l1) + 1)*sizeof(size_t));
+            for (long l = (l1>=l2 ? l1-l2 : l2-l1); l<=l1+l2 && l<=bandlimit; ++l)
             {
-                lookup_table[l1][l2][l - absolute_value(l1-l2)] = index;
+                lookup_table[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)] = index;
                 ++index;
             }
         }
@@ -91,7 +120,7 @@ void c_power_spectrum(c_shc * const shc, double *c_power_spectrum)
 }
 
 
-void r_power_spectrum(r_shc * const shc, double *r_powspec)
+void r_power_spectrum(r_shc * const shc, double *r_pow_spec)
 {
     double real_part;
     double imag_part;
@@ -99,13 +128,13 @@ void r_power_spectrum(r_shc * const shc, double *r_powspec)
     for (long l = 0; l<=shc->bandlimit; ++l)
     {
         real_part = r_get_shc(shc, REAL_PART, l, 0);
-        r_powspec[l] = real_part*real_part;
+        r_pow_spec[l] = real_part*real_part;
 
         for (long m = -l; m<=l; ++m)
         {
             real_part = r_get_shc(shc, REAL_PART, l, m);
             imag_part = r_get_shc(shc, IMAG_PART, l, m);
-            r_powspec[l] += 2.0*(real_part*real_part + imag_part*imag_part);
+            r_pow_spec[l] += 2.0*(real_part*real_part + imag_part*imag_part);
         }
     }
 }
@@ -113,9 +142,24 @@ void r_power_spectrum(r_shc * const shc, double *r_powspec)
 
 /* Bispectrum functions */
 
-void c_bispectrum(const size_t bandlimit, const double *c_spherical_harmonics_coeffs, double *c_bipsectrum)
+void c_bispectrum(c_shc * const shc, const c_blt lookup, const cg_table *table, double *c_bisp)
 {
-    // TODO
+    // #pragma omp parallel for collapse(3)
+    
+    for (long l1 = 0; l1<=shc->bandlimit; ++l1)
+    {
+        for (long l2 = 0; l2<=l1; ++l2)
+        {
+            for (long l = l1-l2; l<=l1+l2 && l<=shc->bandlimit; ++l)
+            {
+                c_bisp[lookup[l1][l2][l-(l1-l2)][REAL_PART]]
+                    = c_bispectral_invariant_real_part(shc, l1, l2, l, table);
+                
+                c_bisp[lookup[l1][l2][l-(l1-l2)][IMAG_PART]] 
+                    = c_bispectral_invariant_imaginary_part(shc, l1, l2, l, table);
+            }
+        }
+    }
 }
 
 
@@ -527,21 +571,44 @@ void r_bispectrum_gradient(r_shc * const shc, const r_blt lookup, cg_table * con
 
 
 /* Printing functions */
-void r_print_power_spectrum()
+void r_print_power_spectrum(double *r_pow_spec, size_t bandlimit)
 {
-    // TODO
+    printf("Bandlimit = %d.", bandlimit);
+    printf("===========================================================================================================\n");
+    printf("\tOrder\t\tValue\n");
+    printf("===========================================================================================================\n");
+    for (long l = 0; l<=bandlimit; ++l)
+    {
+        printf("\t%3d\t\t%14.14f\n", l, r_pow_spec[l]);
+    }
 }
 
 
-void c_print_power_spectrum()
+void c_print_power_spectrum(double *c_pow_spec, size_t bandlimit)
 {
-    // TODO
+    r_print_power_spectrum(c_pow_spec, bandlimit);
 }
 
 
-void r_print_all_bispectral_invariants()
+void r_print_all_bispectral_invariants(r_shc * const shc, cg_table * const table)
 {
-    // TODO
+    printf("Bandlimit = %d.", shc->bandlimit);
+    printf("===========================================================================================================\n");
+    printf("\t(-,l1,l2,l)\t\tValue\n");
+    printf("===========================================================================================================\n");
+    for (long l1 = 0; l1<=shc->bandlimit; ++l1)
+    {
+        for (long l2 = 0; l2<=l1; ++l2)
+        {
+            for (long l = l1-l2; l<=shc->bandlimit && l<=l1+l2; ++l)
+            {
+                printf("\t(r,%3d,%3d,%3d)\t\t%14.14f\n", 
+                        l1, l2, l, r_bispectral_invariant_real_part(shc, l1, l2, l, table));
+                printf("\t(i,%3d,%3d,%3d)\t\t%14.14f\n", 
+                        l1, l2, l, r_bispectral_invariant_imaginary_part(shc, l1, l2, l, table));
+            }
+        }
+    }
 }
 
 
