@@ -1,7 +1,7 @@
 // TODO: write docs in doxygen
 
 
-/* Function declarations. Defined below */
+#include <stdio.h>
 #include "clebsch_gordan_coefficients.h"
 
 
@@ -33,9 +33,14 @@ double backward_substitution_secondary_diagonal(const long l1, const long l2, co
 }
 
 
-void calculate_clebsch_gordan(const long l1, const long l2, const long l, const long m, double * restrict cg)
+void cg_vector(const long l1, const long l2, const long l, const long m, double * restrict cg)
 {
-    /*  I assume cg is an array of size (upper_bound - lower_bound + 1). */
+    /*  
+    Calculate a vector containing <l1 m1 l2 (m-m1) | l m> for m1 satisfying
+            max{-l1,m-l2}<=m1<=min{l1,m+l2}. 
+    They are place in cg in ascending order of m1. In particular, I assume cg is an array of size (upper_bound - lower_bound + 1). 
+    */
+
     long lower_bound = cg_lower_bound(l1, l2, m);
     long upper_bound = cg_upper_bound(l1, l2, m);
 
@@ -69,7 +74,7 @@ void calculate_clebsch_gordan(const long l1, const long l2, const long l, const 
 }
 
 
-void calculate_clebsch_gordan_coefficients(const size_t bandlimit, cg_table clebsch_gordan_table)
+void calculate_cg_table(const size_t bandlimit, cg_table *table)
 {
     /* Documentation of memory structure is in allocate_cg_table */
 
@@ -82,7 +87,7 @@ void calculate_clebsch_gordan_coefficients(const size_t bandlimit, cg_table cleb
             {
                 for (long m = -l; m<=l; ++m)
                 {
-                    calculate_clebsch_gordan(l1, l2, l, m, clebsch_gordan_table[l1][l2][l-(l1>=l2 ? l1-l2 : l2-l1)][m+l]);
+                    cg_vector(l1, l2, l, m, table->table[l1][l2][l-(l1>=l2 ? l1-l2 : l2-l1)][m+l]);
                 }
             }
         }
@@ -104,29 +109,31 @@ cg_table allocate_cg_table(const size_t bandlimit)
                 min_m1:=max(-l1, m-l2)
                 max_m1:=min(l1,  m+l2)  */
 
-    cg_table table = malloc((bandlimit+1)*sizeof(double ****));
+    cg_table table;
+    table.bandlimit = bandlimit;
+    table.table = malloc((bandlimit+1)*sizeof(double ****));
 
     long min_val; 
     long abs_val;
 
     for (long l1 = 0; l1<=bandlimit; ++l1)
     {
-        table[l1] = malloc((bandlimit+1)*sizeof(double ***));
+        table.table[l1] = malloc((bandlimit+1)*sizeof(double ***));
         
         for (long l2 = 0; l2<=bandlimit; ++l2)
         {
             min_val = l1+l2>=bandlimit ? bandlimit : l1+l2;
             abs_val = l1>=l2 ? l1-l2 : l2-l1;
 
-            table[l1][l2] = malloc((min_val - abs_val + 1)*sizeof(double **));
+            table.table[l1][l2] = malloc((min_val - abs_val + 1)*sizeof(double **));
 
             for (long l = abs_val; l<=min_val; ++l)
             {
-                table[l1][l2][l - abs_val] = malloc((2*l+1)*sizeof(double *));
+                table.table[l1][l2][l - abs_val] = malloc((2*l+1)*sizeof(double *));
 
                 for (long m = -l; m<=l; ++m)
                 {
-                    table[l1][l2][l - abs_val][m+l] 
+                    table.table[l1][l2][l - abs_val][m+l] 
                         = malloc((cg_upper_bound(l1, l2, m) - cg_lower_bound(l1, l2, m) + 1)*sizeof(double));
                 }
             }
@@ -136,52 +143,84 @@ cg_table allocate_cg_table(const size_t bandlimit)
     return table;
 }
 
-void destroy_cg_table(const size_t bandlimit, cg_table table)
+void destroy_cg_table(cg_table *table)
 {
     /* Documentation of memory structure is in allocate_cg_table */
 
     long min_val; 
     long abs_val;
 
-    for (long l1 = 0; l1<=bandlimit; ++l1)
+    for (long l1 = 0; l1<=table->bandlimit; ++l1)
     {
-        for (long l2 = 0; l2<=bandlimit; ++l2)
+        for (long l2 = 0; l2<=table->bandlimit; ++l2)
         {
-            min_val = l1+l2>=bandlimit ? bandlimit : l1+l2;
+            min_val = l1+l2>=table->bandlimit ? table->bandlimit : l1+l2;
             abs_val = l1>=l2 ? l1-l2 : l2-l1;
 
             for (long l = abs_val; l<=min_val; ++l)
             {
                 for (long m = -l; m<=l; ++m)
                 {
-                    free(table[l1][l2][l - abs_val][m+l]);
+                    free(table->table[l1][l2][l - abs_val][m+l]);
                 }
 
-                free(table[l1][l2][l- abs_val]);
+                free(table->table[l1][l2][l- abs_val]);
             }
 
-            free(table[l1][l2]);
+            free(table->table[l1][l2]);
         }
 
-        free(table[l1]);
+        free(table->table[l1]);
     }
 
-    free(table);
+    free(table->table);
 }
 
 
-double get_cg(const cg_table table, const long l1, const long l2, const long l, const long m, const long m1)
+double get_cg(const cg_table *table, const long l1, const long l2, const long l, const long m, const long m1)
 {
     /* Documentation of memory structure is in allocate_cg_table */
     
-    return table[l1][l2][l-(l1>=l2 ? l1-l2 : l2-l1)][m+l][m1-cg_lower_bound(l1, l2, m)];
+    return table->table[l1][l2][l-(l1>=l2 ? l1-l2 : l2-l1)][m+l][m1-cg_lower_bound(l1, l2, m)];
 }
 
 
-void set_cg(cg_table clebsch_gordan_table, const long l1, const long l2, const long l, const long m, const long m1, const double coefficient)
+void set_cg(cg_table *table, const long l1, const long l2, const long l, const long m, const long m1, const double coefficient)
 {
     /* Documentation of memory structure is in allocate_cg_table */
     
-    clebsch_gordan_table[l1][l2][l-(l1>=l2 ? l1-l2 : l2-l1)][m+l][m1-cg_lower_bound(l1, l2, m)] 
+    table->table[l1][l2][l-(l1>=l2 ? l1-l2 : l2-l1)][m+l][m1-cg_lower_bound(l1, l2, m)] 
         = coefficient;
+}
+
+
+void print_cg(cg_table *table)
+{
+
+    // Print the table header
+
+    printf("Bandlimit = %d.", table->bandlimit);
+    printf("===========================================================================================================\n");
+    printf("\t<l1 m1 l2 m2 | l m>\t\tValue\n");
+    printf("===========================================================================================================\n");
+
+    for (long l1 = 0; l1<=table->bandlimit; ++l1)
+    {
+        for (long l2 = 0; l2<=table->bandlimit; ++l2)
+        {
+            for (long l = (l1>=l2 ? l1-l2 : l2-l1); l<=l1+l2 && l<=table->bandlimit; ++l)
+            {
+                for (long m = -l; m<=l; ++m)
+                {
+                    for (long m1 = cg_lower_bound(l1, l2, m); m1<=cg_upper_bound(l1, l2, m); ++m1)
+                    {
+                        printf("\t<%-3d %-3d %-3d %-3d | %-3d %-3d>\t\t%14.14f\n", 
+                            l1, m1, l2, m-m1, l, m);
+                    }
+                    printf("\t\t---------\n");
+                }
+                
+            }
+        }
+    }
 }
