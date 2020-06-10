@@ -448,17 +448,40 @@ void c_print_shc(c_shc *shc)
 }
 
 
-void r_add_shc()
+void r_add_shc(r_shc * restrict shc1, r_shc * restrict shc2, double alpha)
 {
-    // TODO: calcualte shc1+alpha*shc2
-    // Should use restricted pointers
+    /* 
+    Calculate shc1+alpha*shc2. 
+    The code assumes shc1->bandlimit == shc2->bandlimit.
+    */
+
+   for (long l = 0; l<shc1->bandlimit; ++l)
+   {
+       shc1->coefficients[r_lm_to_index(REAL_PART, l, 0)] += alpha*(shc2->coefficients[r_lm_to_index(REAL_PART, l, 0)]);
+       for (long m = 1; m<=l; ++m)
+       {
+           shc1->coefficients[r_lm_to_index(REAL_PART, l, m)] += alpha*(shc2->coefficients[r_lm_to_index(REAL_PART, l, m)]);
+           shc1->coefficients[r_lm_to_index(IMAG_PART, l, m)] += alpha*(shc2->coefficients[r_lm_to_index(IMAG_PART, l, m)]);
+       }
+   }
 }
 
 
-void c_add_shc()
+void c_add_shc(r_shc * restrict shc1, r_shc * restrict shc2, double alpha)
 {
-    // TODO: calcualte shc1+alpha*shc2
-    // Should use restricted pointers
+    /* 
+    Calculate shc1+alpha*shc2. 
+    The code assumes shc1->bandlimit == shc2->bandlimit.
+    */
+
+   for (long l = 0; l<shc1->bandlimit; ++l)
+   {
+       for (long m = -l; m<=l; ++m)
+       {
+           shc1->coefficients[r_lm_to_index(REAL_PART, l, m)] += alpha*(shc2->coefficients[r_lm_to_index(REAL_PART, l, m)]);
+           shc1->coefficients[r_lm_to_index(IMAG_PART, l, m)] += alpha*(shc2->coefficients[r_lm_to_index(IMAG_PART, l, m)]);
+       }
+   }
 }
 
 
