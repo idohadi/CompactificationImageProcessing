@@ -171,9 +171,25 @@ bool r_set_shc(r_shc const *shc, const PART part, const long l, const long m, co
 }
 
 
-void c_set_shc()
+bool c_set_shc(c_shc const *shc, const PART part, const long l, const long m, const double value)
 {
-    // TODO
+    if (l > shc->bandlimit)
+    {
+        return false;
+    }
+    else
+    {
+        if (part == REAL_PART)
+        {
+            shc->coefficients[2*l*l + 2*(m + l) ] = value;
+            return true;
+        }
+        else if (part == IMAG_PART)
+        {
+            shc->coefficients[2*l*l + 2*(m + l) + 1] = value;
+            return true;
+        }
+    }
 }
 
 void r_normalize_shc()
