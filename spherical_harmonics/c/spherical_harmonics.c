@@ -3,6 +3,10 @@
 #include <stdbool.h>
 #include <math.h>
 #include "spherical_harmonics.h"
+#include "SFMT.h"
+
+#define PI 3.14159265358979323846
+
 
 double *r_allocate_coefficients()
 {
@@ -10,21 +14,25 @@ double *r_allocate_coefficients()
     // Allocate memory for SHC
 }
 
+
 double *c_allocate_coefficients()
 {
     // TODO
     // Allocate memory for SHC
 }
 
+
 double *r_deallocate_coefficients()
 {
     // TODO
 }
 
+
 double *c_deallocate_coefficients()
 {
     // TODO
 }
+
 
 void r_init_shc()
 {
@@ -32,11 +40,13 @@ void r_init_shc()
     // coefficients are given as pointer to array of appropriate sizeZ
 }
 
+
 void c_init_shc()
 {
     // TODO: initialize struct containing the bandlimit and coefficients
     // coefficients are given as pointer to array of appropriate sizeZ
 }
+
 
 void r_init_shc2()
 {
@@ -44,11 +54,13 @@ void r_init_shc2()
     // space for coefficients is allocated and they are initialized to all zeros
 }
 
+
 void c_init_shc2()
 {
     // TODO: initialize struct containing the bandlimit and coefficients
     // space for coefficients is allocated and they are initialized to all zeros
 }
+
 
 void r_destroy_shc()
 {
@@ -56,17 +68,20 @@ void r_destroy_shc()
     // doesn't deallocate coefficients memory
 }
 
+
 void c_destroy_shc()
 {
     // TODO: initialize struct containing the bandlimit and coefficients
     // doesn't deallocate coefficients memory
 }
 
+
 void r_destroy_shc2()
 {
     // TODO: initialize struct containing the bandlimit and coefficients
     // deallocates coefficients memory
 }
+
 
 void c_destroy_shc2()
 {
@@ -261,7 +276,11 @@ bool c_set_shc(c_shc const *shc, const PART part, const long l, const long m, co
 
 void r_normalize_shc(const r_shc *shc)
 {
-    // It normalizes in place
+    /* 
+    Normalizes the shc so that its power spectrum is all ones. 
+    It normalizes in place.
+    */
+
     double norm;
     double coeff;
 
@@ -293,7 +312,11 @@ void r_normalize_shc(const r_shc *shc)
 
 void c_normalize_shc(const c_shc *shc)
 {
-    // It normalizes in place
+    /* 
+    Normalizes the shc so that its power spectrum is all ones. 
+    It normalizes in place.
+    */
+
     double norm;
     double coeff;
 
@@ -321,15 +344,44 @@ void c_normalize_shc(const c_shc *shc)
 }
 
 
-void r_random_normalized_shc()
+double sample_normal(sfmt_t *sfmt)
 {
-    // TODO
+    /* Generate a double, distributed in the standard normal distribution. */
+    
+    double u1 = sfmt_genrand_real3(sfmt);
+    double u2 = sfmt_genrand_real3(sfmt);
+
+    return sqrt(-2*log(u1))*cos(2*PI*u2);
 }
 
 
-void c_random_normalized_shc()
+void r_random_normalized_shc(sfmt_t *sfmt, r_shc *output_shc)
 {
-    // TODO
+    for (long l = 0; l<=output_shc->bandlimit; ++l)
+    {
+        r_set_shc(output_shc, REAL_PART, l, 0, sample_normal(sfmt));
+        for (long m = 1; m<=l; ++m)
+        {
+            r_set_shc(output_shc, REAL_PART, l, m, sample_normal(sfmt)/sqrt(2));
+            r_set_shc(output_shc, IMAG_PART, l, m, sample_normal(sfmt)/sqrt(2));
+        }
+    }
+    r_normalize_shc(output_shc);
+}
+
+
+void c_random_normalized_shc(sfmt_t *sfmt, r_shc *output_shc)
+{
+    for (long l = 0; l<=output_shc->bandlimit; ++l)
+    {
+        r_set_shc(output_shc, REAL_PART, l, 0, sample_normal(sfmt));
+        for (long m = -l; m<=l; ++m)
+        {
+            r_set_shc(output_shc, REAL_PART, l, m, sample_normal(sfmt));
+            r_set_shc(output_shc, IMAG_PART, l, m, sample_normal(sfmt));
+        }
+    }
+    c_normalize_shc(output_shc);
 }
 
 
