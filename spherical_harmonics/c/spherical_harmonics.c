@@ -467,7 +467,7 @@ void r_add_shc(r_shc * restrict shc1, r_shc * restrict shc2, double alpha)
 }
 
 
-void c_add_shc(r_shc * restrict shc1, r_shc * restrict shc2, double alpha)
+void c_add_shc(c_shc * restrict shc1, c_shc * restrict shc2, double alpha)
 {
     /* 
     Calculate shc1+alpha*shc2. 
@@ -478,22 +478,44 @@ void c_add_shc(r_shc * restrict shc1, r_shc * restrict shc2, double alpha)
    {
        for (long m = -l; m<=l; ++m)
        {
-           shc1->coefficients[r_lm_to_index(REAL_PART, l, m)] += alpha*(shc2->coefficients[r_lm_to_index(REAL_PART, l, m)]);
-           shc1->coefficients[r_lm_to_index(IMAG_PART, l, m)] += alpha*(shc2->coefficients[r_lm_to_index(IMAG_PART, l, m)]);
+           shc1->coefficients[c_lm_to_index(REAL_PART, l, m)] += alpha*(shc2->coefficients[c_lm_to_index(REAL_PART, l, m)]);
+           shc1->coefficients[c_lm_to_index(IMAG_PART, l, m)] += alpha*(shc2->coefficients[c_lm_to_index(IMAG_PART, l, m)]);
        }
    }
 }
 
 
-void r_multiply_shc_in_place()
+void r_multiply_shc_in_place(r_shc * restrict shc, double alpha)
 {
-    // TODO: calculate alpha*shc2
+    /* 
+    Calculate alpha*shc. 
+    */
+
+   for (long l = 0; l<shc->bandlimit; ++l)
+   {
+       shc->coefficients[r_lm_to_index(REAL_PART, l, 0)] *= alpha;
+       for (long m = 1; m<=l; ++m)
+       {
+           shc->coefficients[r_lm_to_index(REAL_PART, l, m)] *= alpha;
+       }
+   }
 }
 
 
-void c_multiply_shc_in_place()
+void c_multiply_shc_in_place(c_shc * restrict shc, double alpha)
 {
-    // TODO: calculate alpha*shc2
+    /* 
+    Calculate shc1+alpha*shc. 
+    */
+
+   for (long l = 0; l<shc->bandlimit; ++l)
+   {
+       for (long m = -l; m<=l; ++m)
+       {
+           shc->coefficients[c_lm_to_index(REAL_PART, l, m)] *= alpha;
+           shc->coefficients[c_lm_to_index(IMAG_PART, l, m)] *= alpha;
+       }
+   }
 }
 
 
