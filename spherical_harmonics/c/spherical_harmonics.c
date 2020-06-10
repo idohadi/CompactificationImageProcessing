@@ -1,4 +1,4 @@
-// TODO
+// TODO: docs in doxygen
 
 #include <stdbool.h>
 #include <math.h>
@@ -9,57 +9,106 @@
 #define PI 3.14159265358979323846
 
 
-double *r_allocate_coefficients()
+double *r_allocate_coefficients(size_t bandlimit)
 {
-    // TODO
-    // Allocate memory for SHC
+    /*
+    Allocate memory for coefficients.
+     */
+    
+    return malloc((bandlimit+1)*(bandlimit+1)*sizeof(double));
 }
 
 
-double *c_allocate_coefficients()
+double *c_allocate_coefficients(size_t bandlimit)
 {
-    // TODO
-    // Allocate memory for SHC
+    /*
+    Allocate memory for coefficients.
+     */
+    
+    return malloc(2*(bandlimit+1)*(bandlimit+1)*sizeof(double));
 }
 
 
-double *r_deallocate_coefficients()
+void r_deallocate_coefficients(double *coefficients)
 {
-    // TODO
+    free(coefficients);
 }
 
 
-double *c_deallocate_coefficients()
+void c_deallocate_coefficients(double *coefficients)
 {
-    // TODO
+    free(coefficients);
 }
 
 
-void r_init_shc()
+r_shc r_init_shc(size_t bandlimit, double *coefficients)
 {
-    // TODO: initialize struct containing the bandlimit and coefficients
-    // coefficients are given as pointer to array of appropriate sizeZ
+    /*
+    Create and initialize an r_shc.
+    Coefficients are given as pointer to array of appropriate size.
+     */
+    
+    r_shc shc;
+    shc.bandlimit = bandlimit;
+    shc.coefficients = coefficients;
+    return shc;
 }
 
 
-void c_init_shc()
+c_shc c_init_shc(size_t bandlimit, double *coefficients)
 {
-    // TODO: initialize struct containing the bandlimit and coefficients
-    // coefficients are given as pointer to array of appropriate sizeZ
+    /*
+    Create and initialize an c_shc.
+    Coefficients are given as pointer to array of appropriate size.
+     */
+    
+    c_shc shc;
+    shc.bandlimit = bandlimit;
+    shc.coefficients = coefficients;
+    return shc;
 }
 
 
-void r_init_shc2()
+r_shc r_init_shc2(size_t bandlimit)
 {
-    // TODO: initialize struct containing the bandlimit and coefficients
-    // space for coefficients is allocated and they are initialized to all zeros
+    /* 
+    Initialize an r_shc with the bandlimit and an all-zero array of coefficients. 
+    */
+    
+    r_shc shc;
+    shc.bandlimit = bandlimit;
+    shc.coefficients = r_allocate_coefficients(bandlimit);
+    for (long l = 0; l<=bandlimit; ++l)
+    {
+        r_set_shc(&shc, REAL_PART, l, 0, 0.0);
+        for (long m = 1; m<=l; ++m)
+        {
+            r_set_shc(&shc, REAL_PART, l, m, 0.0);
+            r_set_shc(&shc, IMAG_PART, l, m, 0.0);
+        }
+    }
+    return shc;
 }
 
 
-void c_init_shc2()
+c_shc c_init_shc2(size_t bandlimit)
 {
-    // TODO: initialize struct containing the bandlimit and coefficients
-    // space for coefficients is allocated and they are initialized to all zeros
+    /* 
+    Initialize an r_shc with the bandlimit and an all-zero array of coefficients. 
+    */
+    
+    c_shc shc;
+    shc.bandlimit = bandlimit;
+    shc.coefficients = c_allocate_coefficients(bandlimit);
+    for (long l = 0; l<=bandlimit; ++l)
+    {
+        for (long m = -l; m<=l; ++m)
+        {
+            r_set_shc(&shc, REAL_PART, l, m, 0.0);
+            r_set_shc(&shc, IMAG_PART, l, m, 0.0);
+        }
+    }
+    return shc;
 }
 
 
