@@ -112,34 +112,6 @@ c_shc c_init_shc2(size_t bandlimit)
 }
 
 
-void r_destroy_shc()
-{
-    // TODO: destroys struct containing the bandlimit and coefficients
-    // doesn't deallocate coefficients memory
-}
-
-
-void c_destroy_shc()
-{
-    // TODO: initialize struct containing the bandlimit and coefficients
-    // doesn't deallocate coefficients memory
-}
-
-
-void r_destroy_shc2()
-{
-    // TODO: initialize struct containing the bandlimit and coefficients
-    // deallocates coefficients memory
-}
-
-
-void c_destroy_shc2()
-{
-    // TODO: initialize struct containing the bandlimit and coefficients
-    // deallocates coefficients memory
-}
-
-
 double r_get_shc(r_shc const *shc, const PART part, const long l, const long m)
 {
    if (l > shc->bandlimit)
