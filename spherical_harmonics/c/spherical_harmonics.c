@@ -9,7 +9,7 @@
 #define PI 3.14159265358979323846
 
 
-double *r_allocate_coefficients(size_t bandlimit)
+double *r_allocate_coefficients(const size_t bandlimit)
 {
     /*
     Allocate memory for coefficients.
@@ -19,7 +19,7 @@ double *r_allocate_coefficients(size_t bandlimit)
 }
 
 
-double *c_allocate_coefficients(size_t bandlimit)
+double *c_allocate_coefficients(const size_t bandlimit)
 {
     /*
     Allocate memory for coefficients.
@@ -29,19 +29,19 @@ double *c_allocate_coefficients(size_t bandlimit)
 }
 
 
-void r_deallocate_coefficients(double *coefficients)
+void r_deallocate_coefficients(double * const coefficients)
 {
     free(coefficients);
 }
 
 
-void c_deallocate_coefficients(double *coefficients)
+void c_deallocate_coefficients(double * const coefficients)
 {
     free(coefficients);
 }
 
 
-r_shc r_init_shc(size_t bandlimit, double *coefficients)
+r_shc r_init_shc(const size_t bandlimit, double * const coefficients)
 {
     /*
     Create and initialize an r_shc.
@@ -55,7 +55,7 @@ r_shc r_init_shc(size_t bandlimit, double *coefficients)
 }
 
 
-c_shc c_init_shc(size_t bandlimit, double *coefficients)
+c_shc c_init_shc(const size_t bandlimit, double * const coefficients)
 {
     /*
     Create and initialize an c_shc.
@@ -69,7 +69,7 @@ c_shc c_init_shc(size_t bandlimit, double *coefficients)
 }
 
 
-r_shc r_init_shc2(size_t bandlimit)
+r_shc r_init_shc2(const size_t bandlimit)
 {
     /* 
     Initialize an r_shc with the bandlimit and an all-zero array of coefficients. 
@@ -91,7 +91,7 @@ r_shc r_init_shc2(size_t bandlimit)
 }
 
 
-c_shc c_init_shc2(size_t bandlimit)
+c_shc c_init_shc2(const size_t bandlimit)
 {
     /* 
     Initialize an r_shc with the bandlimit and an all-zero array of coefficients. 
@@ -296,7 +296,7 @@ bool c_set_shc(c_shc const *shc, const PART part, const long l, const long m, co
 }
 
 
-void r_normalize_shc(const r_shc *shc)
+void r_normalize_shc(r_shc * const shc)
 {
     /* 
     Normalizes the shc so that its power spectrum is all ones. 
@@ -332,7 +332,7 @@ void r_normalize_shc(const r_shc *shc)
 }
 
 
-void c_normalize_shc(const c_shc *shc)
+void c_normalize_shc(c_shc * const shc)
 {
     /* 
     Normalizes the shc so that its power spectrum is all ones. 
@@ -366,7 +366,7 @@ void c_normalize_shc(const c_shc *shc)
 }
 
 
-double sample_normal(sfmt_t *sfmt)
+double sample_normal(sfmt_t * const sfmt)
 {
     /* Generate a double, distributed in the standard normal distribution. */
     
@@ -392,7 +392,7 @@ void r_random_normalized_shc(sfmt_t *sfmt, r_shc *output_shc)
 }
 
 
-void c_random_normalized_shc(sfmt_t *sfmt, r_shc *output_shc)
+void c_random_normalized_shc(sfmt_t * const sfmt, r_shc * const output_shc)
 {
     for (long l = 0; l<=output_shc->bandlimit; ++l)
     {
@@ -407,7 +407,7 @@ void c_random_normalized_shc(sfmt_t *sfmt, r_shc *output_shc)
 }
 
 
-void r_print_shc(r_shc *shc)
+void r_print_shc(r_shc * const shc)
 {
     // Print the table header
     printf("Bandlimit = %d.", shc->bandlimit);
@@ -428,7 +428,7 @@ void r_print_shc(r_shc *shc)
 }
 
 
-void c_print_shc(c_shc *shc)
+void c_print_shc(c_shc * const shc)
 {
     // Print the table header
     printf("Bandlimit = %d.", shc->bandlimit);
@@ -448,7 +448,7 @@ void c_print_shc(c_shc *shc)
 }
 
 
-void r_add_shc(r_shc * restrict shc1, r_shc * restrict shc2, double alpha)
+void r_add_shc(r_shc * restrict shc1, r_shc * restrict shc2, const double alpha)
 {
     /* 
     Calculate shc1+alpha*shc2. 
@@ -467,7 +467,7 @@ void r_add_shc(r_shc * restrict shc1, r_shc * restrict shc2, double alpha)
 }
 
 
-void c_add_shc(c_shc * restrict shc1, c_shc * restrict shc2, double alpha)
+void c_add_shc(c_shc * restrict shc1, c_shc * restrict shc2, const double alpha)
 {
     /* 
     Calculate shc1+alpha*shc2. 
@@ -485,7 +485,7 @@ void c_add_shc(c_shc * restrict shc1, c_shc * restrict shc2, double alpha)
 }
 
 
-void r_multiply_shc_in_place(r_shc * restrict shc, double alpha)
+void r_multiply_shc_in_place(r_shc * restrict shc, const double alpha)
 {
     /* 
     Calculate alpha*shc. 
@@ -502,7 +502,7 @@ void r_multiply_shc_in_place(r_shc * restrict shc, double alpha)
 }
 
 
-void c_multiply_shc_in_place(c_shc * restrict shc, double alpha)
+void c_multiply_shc_in_place(c_shc * restrict shc, const double alpha)
 {
     /* 
     Calculate shc1+alpha*shc. 
