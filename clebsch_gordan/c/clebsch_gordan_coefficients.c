@@ -182,6 +182,6 @@ void set_cg(cg_table clebsch_gordan_table, const long l1, const long l2, const l
 {
     /* Documentation of memory structure is in allocate_cg_table */
     
-    clebsch_gordan_table[l1][l2][l-absolute_value(l1-l2)][m+l][m1-cg_lower_bound(l1, l2, m)] 
+    clebsch_gordan_table[l1][l2][l-(l1>=l2 ? l1-l2 : l2-l1)][m+l][m1-cg_lower_bound(l1, l2, m)] 
         = coefficient;
 }
