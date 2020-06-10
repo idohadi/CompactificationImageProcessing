@@ -602,9 +602,9 @@ void r_print_all_bispectral_invariants(r_shc * const shc, cg_table * const table
         {
             for (long l = l1-l2; l<=shc->bandlimit && l<=l1+l2; ++l)
             {
-                printf("\t(r,%3d,%3d,%3d)\t\t%14.14f\n", 
+                printf("\t(r,%-3d,%-3d,%-3d)\t\t%14.14f\n", 
                         l1, l2, l, r_bispectral_invariant_real_part(shc, l1, l2, l, table));
-                printf("\t(i,%3d,%3d,%3d)\t\t%14.14f\n", 
+                printf("\t(i,%-3d,%-3d,%-3d)\t\t%14.14f\n", 
                         l1, l2, l, r_bispectral_invariant_imaginary_part(shc, l1, l2, l, table));
             }
         }
