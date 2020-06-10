@@ -1,2 +1,0 @@
-mex -R2018a COMPFLAGS='$COMPFLAGS -fopenmp' calculateBispectrumOfRealValuedFunction.c ../c/clebsch_gordan_coefficients.c ../c/spherical_spectra.c
-mex -R2018a COMPFLAGS='$COMPFLAGS -fopenmp' calculateGradientOfBispectrumOfRealValuedFunction.c ../c/clebsch_gordan_coefficients.c ../c/spherical_spectra.c
