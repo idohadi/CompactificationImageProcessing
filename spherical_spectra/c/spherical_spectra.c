@@ -73,15 +73,41 @@ double *r_allocate_power_spectrum(const size_t bandlimit)
 }
 
 
-void c_power_spectrum(c_shc * const shc, double *r_power_spectrum)
+void c_power_spectrum(c_shc * const shc, double *c_power_spectrum)
 {
-    // TODO
+    double real_part; 
+    double imag_part;
+
+    for (long l = 0; l<=shc->bandlimit; ++l)
+    {
+        c_power_spectrum[l] = 0;
+        for (long m = -l; m<=l; ++m)
+        {
+            real_part = c_get_shc(shc, REAL_PART, l, m);
+            imag_part = c_get_shc(shc, IMAG_PART, l, m);
+            c_power_spectrum[l] += real_part*real_part + imag_part*imag_part;
+        }
+    }
 }
 
 
-void r_power_spectrum(const size_t bandlimit, const double *r_spherical_harmonics_coeffs, double *c_power_spectrum)
+void r_power_spectrum(r_shc * const shc, double *r_power_spectrum)
 {
-    // TODO
+    double real_part;
+    double imag_part;
+
+    for (long l = 0; l<=shc->bandlimit; ++l)
+    {
+        real_part = r_get_shc(shc, REAL_PART, l, 0);
+        r_power_spectrum[l] = real_part*real_part;
+
+        for (long m = -l; m<=l; ++m)
+        {
+            real_part = r_get_shc(shc, REAL_PART, l, m);
+            imag_part = r_get_shc(shc, IMAG_PART, l, m);
+            r_power_spectrum[l] += 2.0*(real_part*real_part + imag_part*imag_part);
+        }
+    }
 }
 
 

@@ -1,6 +1,8 @@
 // TODO
 
 #include <stdint.h>
+#include <stdbool.h>
+#include "SFMT.h"
 
 /* Typedefs and enum's */
 
