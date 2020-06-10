@@ -2,6 +2,7 @@
 
 
 #include <stdio.h>
+#include <math.h>
 #include "clebsch_gordan_coefficients.h"
 
 
