@@ -1,4 +1,4 @@
-// TODO: write docs
+// TODO: write docs in doxygen
 /**
  * prefix c_ means this is a function for spherical harmonics expansion of a complex-valued spherical function
  * prefix r_ means this is a function for spherical harmonics expansion of a real-valued spherical function
@@ -10,6 +10,7 @@
 #include "clebsch_gordan_coefficients.h"
 #include "spherical_spectra.h"
 
+
 c_bispectrum_lookout_table c_build_bispectrum_lookup_table(size_t bandlimit)
 {
     // TODO
@@ -19,6 +20,7 @@ void c_destroy_bispectrum_lookup_table(c_bispectrum_lookout_table table, size_t 
 {
     // TODO
 }
+
 
 r_bispectrum_lookout_table r_build_bispectrum_lookup_table(size_t bandlimit)
 {
@@ -41,6 +43,7 @@ r_bispectrum_lookout_table r_build_bispectrum_lookup_table(size_t bandlimit)
     return lookup_table;
 }
 
+
 void r_destroy_bispectrum_lookup_table(r_bispectrum_lookout_table table, size_t bandlimit)
 {
     for (long int l1 = 0; l1<=bandlimit; ++l1)
@@ -54,65 +57,14 @@ void r_destroy_bispectrum_lookup_table(r_bispectrum_lookout_table table, size_t 
     free(table);
 }
 
-double r_get_spherical_harmonics(const double *spherical_harmonics_coeffs, char real_part_or_imaginary_part, long int l, long int m)
-{
-    /*  
-    real_part_or_imaginary_part = 'r' or 'i'
-    spherical_harmonics_coeffs format is
-        f_{r, 0, 0}, 
-            f_{r, 1, 0}, f_{r, 1, 1}, f_{i, 1, 1}, 
-                f_{r, 2, 0}, f_{r, 2, 1}, f_{i, 2, 1}, f_{r, 2, 2}, f_{i, 2, 2}, ...
-                    f_{r, bandlimit, 0}, f_{r, bandlimit, 1}, f_{i, bandlimit, 1}, ..., f_{r, bandlimit, bandlimit}, f_{i, bandlimit, bandlimit}
-    */
 
-   if (m==0)
-   {
-       if (real_part_or_imaginary_part=='i')
-       {
-           return 0.0;
-       }
-       else if (real_part_or_imaginary_part=='r')
-       {
-           return spherical_harmonics_coeffs[l*l];
-       }
-   }
-
-   if (m>0)
-   {
-       if (real_part_or_imaginary_part=='r')
-       {
-           return spherical_harmonics_coeffs[l*l + 2*m - 1];
-       }
-       else if (real_part_or_imaginary_part=='i')
-       {
-           return spherical_harmonics_coeffs[l*l + 2*m];
-       }
-   }
-
-   if (m<0)
-   {
-       if (real_part_or_imaginary_part=='r')
-       {
-           return minus_one_power(m)*spherical_harmonics_coeffs[l*l - 2*m - 1];
-       }
-       else if (real_part_or_imaginary_part=='i')
-       {
-           return minus_one_power(m+1)*spherical_harmonics_coeffs[l*l - 2*m];
-       }
-   }
-}
-
-void r_set_spherical_harmonics(double *spherical_harmonics_coeffs, long int l, long int m, double value)
+void c_bispectrum(const size_t bandlimit, const double *c_spherical_harmonics_coeffs, double *c_bipsectrum)
 {
     // TODO
 }
 
-void c_calculate_bispectrum(const size_t bandlimit, const double *c_spherical_harmonics_coeffs, double *c_bipsectrum)
-{
-    // TODO
-}
 
-double r_calculate_bispectral_invariant_real_part(  double * const r_spherical_harmonics_coeffs, 
+double r_bispectral_invariant_real_part(  double * const r_spherical_harmonics_coeffs, 
                                                     const size_t bandlimit, 
                                                     const long int l1, 
                                                     const long int l2, 
@@ -159,7 +111,8 @@ double r_calculate_bispectral_invariant_real_part(  double * const r_spherical_h
     return invariant;
 }
 
-double r_calculate_bispectral_invariant_imaginary_part( double * const r_spherical_harmonics_coeffs, 
+
+double r_bispectral_invariant_imaginary_part( double * const r_spherical_harmonics_coeffs, 
                                                         const size_t bandlimit, 
                                                         const long int l1, 
                                                         const long int l2, 
@@ -206,6 +159,7 @@ double r_calculate_bispectral_invariant_imaginary_part( double * const r_spheric
     return invariant;
 }
 
+
 void r_calculate_bispectrum(double * const r_spherical_harmonics_coeffs, 
                             const size_t bandlimit, 
                             size_t *** const bispectrum_lookup_table, 
@@ -229,7 +183,8 @@ void r_calculate_bispectrum(double * const r_spherical_harmonics_coeffs,
     }
 }
 
-void c_calculate_bispectrum_gradient(   const double *c_spherical_harmonics_coeffs, 
+
+void c_bispectrum_gradient(   const double *c_spherical_harmonics_coeffs, 
                                         const size_t bandlimit, 
                                         const size_t ***bispectrum_lookup_table, 
                                         const cg_table clebsch_gordan_coeffs, 
@@ -238,7 +193,7 @@ void c_calculate_bispectrum_gradient(   const double *c_spherical_harmonics_coef
     // TODO
 }
 
-void r_calculate_bispectrum_gradient(   double * const r_spherical_harmonics_coeffs, 
+void r_bispectrum_gradient(   double * const r_spherical_harmonics_coeffs, 
                                         const size_t bandlimit, 
                                         size_t *** const bispectrum_lookup_table, 
                                         const cg_table clebsch_gordan_coeffs, 
@@ -489,12 +444,39 @@ void r_calculate_bispectrum_gradient(   double * const r_spherical_harmonics_coe
     }
 }
 
-void c_calculate_power_spectrum(const size_t bandlimit, const double *c_spherical_harmonics_coeffs, double *r_power_spectrum)
+
+void c_power_spectrum(const size_t bandlimit, const double *c_spherical_harmonics_coeffs, double *r_power_spectrum)
 {
     // TODO
 }
 
-void r_calculate_power_spectrum(const size_t bandlimit, const double *r_spherical_harmonics_coeffs, double *c_power_spectrum)
+
+void r_power_spectrum(const size_t bandlimit, const double *r_spherical_harmonics_coeffs, double *c_power_spectrum)
+{
+    // TODO
+}
+
+
+/* Printing functions */
+void r_print_power_spectrum()
+{
+    // TODO
+}
+
+
+void c_print_power_spectrum()
+{
+    // TODO
+}
+
+
+void r_print_bispectrum()
+{
+    // TODO
+}
+
+
+void c_print_bispectrum()
 {
     // TODO
 }
