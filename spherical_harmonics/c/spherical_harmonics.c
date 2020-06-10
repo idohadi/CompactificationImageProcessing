@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 #include <math.h>
+#include <stdio.h>
 #include "spherical_harmonics.h"
 #include "SFMT.h"
 
@@ -385,15 +386,44 @@ void c_random_normalized_shc(sfmt_t *sfmt, r_shc *output_shc)
 }
 
 
-void r_print_shc()
+void r_print_shc(r_shc *shc)
 {
-    // TODO
+    // Print the table header
+    printf("Bandlimit = %d.", shc->bandlimit);
+    printf("===========================================================================================================\n");
+    printf("\t(part,order,degree)\t\tValue\n");
+    printf("===========================================================================================================\n");
+
+    // Print the coefficients themselves
+    for (long l = 0; l<shc->bandlimit; ++l)
+    {
+        printf("\t(r,%2-d,%-2d)\t\t%-15.15f\n", l, 0, r_get_shc(shc, REAL_PART, l, 0));
+        for (long m = 1; m<=l; ++m)
+        {
+            printf("\t(r,%2-d,%-2d)\t\t%-15.15f\n", l, m, r_get_shc(shc, REAL_PART, l, m));
+            printf("\t(i,%2-d,%-2d)\t\t%-15.15f\n", l, m, r_get_shc(shc, IMAG_PART, l, m));
+        }
+    }
 }
 
 
-void c_print_shc()
+void c_print_shc(c_shc *shc)
 {
-    // TODO
+    // Print the table header
+    printf("Bandlimit = %d.", shc->bandlimit);
+    printf("===========================================================================================================\n");
+    printf("\t(part,order,degree)\t\tValue\n");
+    printf("===========================================================================================================\n");
+
+    // Print the coefficients themselves
+    for (long l = 0; l<shc->bandlimit; ++l)
+    {
+        for (long m = -l; m<=l; ++m)
+        {
+            printf("\t(r,%2-d,%-2d)\t\t%-15.15f\n", l, m, r_get_shc(shc, REAL_PART, l, m));
+            printf("\t(i,%2-d,%-2d)\t\t%-15.15f\n", l, m, r_get_shc(shc, IMAG_PART, l, m));
+        }
+    }
 }
 
 
