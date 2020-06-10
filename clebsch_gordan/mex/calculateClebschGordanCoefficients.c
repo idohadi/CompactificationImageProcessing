@@ -15,11 +15,11 @@
   */
 
 #include <stdint.h>
-#include "../c/clebsch_gordan_coefficients.h"
 #include "mex.h"
+#include "clebsch_gordan_coefficients.h"
 
-long int l1, l2, l, m;
-double *output;
+
+long l1, l2, l, m;
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
@@ -31,6 +31,5 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
     // Generate output
     plhs[0] = mxCreateDoubleMatrix(clebsch_gordan_upper_bound(l1, l2, m) - clebsch_gordan_lower_bound(l1, l2, m) + 1, 1, mxREAL);
-    output = mxGetDoubles(plhs[0]);
-    calculate_clebsch_gordan(l1, l2, l, m, output);
+    cg_vector(l1, l2, l, m, mxGetDoubles(plhs[0]));
 }
