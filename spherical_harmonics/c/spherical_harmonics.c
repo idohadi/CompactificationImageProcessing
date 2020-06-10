@@ -50,9 +50,59 @@ void c_destroy_shc2()
     // deallocates coefficients memory
 }
 
-double r_get_shc()
+double r_get_shc(r_shc *shc, PART part, long int l, long int m)
 {
-    // TODO
+    /*  
+    real_part_or_imaginary_part = 'r' or 'i'
+    spherical_harmonics_coeffs format is
+        f_{r, 0, 0}, 
+            f_{r, 1, 0}, f_{r, 1, 1}, f_{i, 1, 1}, 
+                f_{r, 2, 0}, f_{r, 2, 1}, f_{i, 2, 1}, f_{r, 2, 2}, f_{i, 2, 2}, ...
+                    f_{r, bandlimit, 0}, f_{r, bandlimit, 1}, f_{i, bandlimit, 1}, ..., f_{r, bandlimit, bandlimit}, f_{i, bandlimit, bandlimit}
+    */
+
+   if (l > shc->bandlimit)
+   {
+       return 0.0;
+   }
+   else
+   {
+        if (m==0)
+        {
+            if (part==IMAG_PART)
+            {
+                return 0.0;
+            }
+            else if (part==REAL_PART)
+            {
+                return shc->coefficients[l*l];
+            }
+        }
+
+        if (m>0)
+        {
+            if (part==REAL_PART)
+            {
+                return shc->coefficients[l*l + 2*m - 1];
+            }
+            else if (part==IMAG_PART)
+            {
+                return shc->coefficients[l*l + 2*m];
+            }
+        }
+
+        if (m<0)
+        {
+            if (part==REAL_PART)
+            {
+                return ((m % 2 == 0) ? 1 : -1)*shc->coefficients[l*l - 2*m - 1];
+            }
+            else if (part==IMAG_PART)
+            {
+                return ((m % 2 == 0) ? -1 : 1)*shc->coefficients[l*l - 2*m];
+            }
+        }
+    }
 }
 
 double c_get_shc()
