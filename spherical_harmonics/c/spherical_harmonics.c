@@ -50,7 +50,7 @@ void c_destroy_shc2()
     // deallocates coefficients memory
 }
 
-double r_get_shc(r_shc *shc, PART part, long l, long m)
+double r_get_shc(r_shc const *shc, const PART part, const long l, const long m)
 {
    if (l > shc->bandlimit)
    {
@@ -96,10 +96,26 @@ double r_get_shc(r_shc *shc, PART part, long l, long m)
     }
 }
 
+
 double c_get_shc(c_shc const *shc, const PART part, const long l, const long m)
 {
-    if ()
+    if (l > shc->bandlimit)
+    {
+        return 0.0;
+    }
+    else
+    {
+        if (part == REAL_PART)
+        {
+            return shc->coefficients[2*l*l + 2*(m + l) ];
+        }
+        else if (part == IMAG_PART)
+        {
+            return shc->coefficients[2*l*l + 2*(m + l) + 1];
+        }
+    }
 }
+
 
 void r_set_shc()
 {
