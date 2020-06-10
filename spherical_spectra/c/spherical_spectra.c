@@ -91,7 +91,7 @@ void c_power_spectrum(c_shc * const shc, double *c_power_spectrum)
 }
 
 
-void r_power_spectrum(r_shc * const shc, double *r_power_spectrum)
+void r_power_spectrum(r_shc * const shc, double *r_powspec)
 {
     double real_part;
     double imag_part;
@@ -99,13 +99,13 @@ void r_power_spectrum(r_shc * const shc, double *r_power_spectrum)
     for (long l = 0; l<=shc->bandlimit; ++l)
     {
         real_part = r_get_shc(shc, REAL_PART, l, 0);
-        r_power_spectrum[l] = real_part*real_part;
+        r_powspec[l] = real_part*real_part;
 
         for (long m = -l; m<=l; ++m)
         {
             real_part = r_get_shc(shc, REAL_PART, l, m);
             imag_part = r_get_shc(shc, IMAG_PART, l, m);
-            r_power_spectrum[l] += 2.0*(real_part*real_part + imag_part*imag_part);
+            r_powspec[l] += 2.0*(real_part*real_part + imag_part*imag_part);
         }
     }
 }
@@ -119,7 +119,7 @@ void c_bispectrum(const size_t bandlimit, const double *c_spherical_harmonics_co
 }
 
 
-double r_bispectral_invariant_real_part(r_shc * const shc, const long l1, const long l2, const long l, const cg_table *table)
+double r_bispectral_invariant_real_part(r_shc * const shc, const long l1, const long l2, const long l, cg_table * const table)
 {
     double invariant = 0;
 
@@ -158,7 +158,7 @@ double r_bispectral_invariant_real_part(r_shc * const shc, const long l1, const 
 }
 
 
-double r_bispectral_invariant_imaginary_part(r_shc * const shc, const long l1, const long l2, const long l, const cg_table *table)
+double r_bispectral_invariant_imaginary_part(r_shc * const shc, const long l1, const long l2, const long l, cg_table * const table)
 {
     double invariant = 0;
 
@@ -179,10 +179,10 @@ double r_bispectral_invariant_imaginary_part(r_shc * const shc, const long l1, c
             U   += get_cg(table, l1, l2, l, m, m1)
                     *( 
                         r_get_shc(shc, REAL_PART, l1, m1)*r_get_shc(shc, REAL_PART, l2, m-m1)
-                            - (shc, IMAG_PART, l1, m1)*r_get_shc(shc, IMAG_PART, l2, m-m1)
+                            - r_get_shc(shc, IMAG_PART, l1, m1)*r_get_shc(shc, IMAG_PART, l2, m-m1)
                     );
 
-            M +=    get_clebsch_gordan_coefficient(table, l1, l2, l, m, m1)
+            M +=    get_cg(table, l1, l2, l, m, m1)
                     *(
                         r_get_shc(shc, IMAG_PART, l1, m1)*r_get_shc(shc, REAL_PART, l2, m-m1)
                         +   r_get_shc(shc, REAL_PART, l1, m1)*r_get_shc(shc, IMAG_PART, l2, m-m1)
@@ -197,24 +197,98 @@ double r_bispectral_invariant_imaginary_part(r_shc * const shc, const long l1, c
 }
 
 
-void r_calculate_bispectrum(double * const r_spherical_harmonics_coeffs, 
-                            const size_t bandlimit, 
-                            size_t *** const bispectrum_lookup_table, 
-                            const cg_table clebsch_gordan_coeffs, 
-                            double *r_bispectrum)
+
+double c_bispectral_invariant_real_part(c_shc * const shc, const long l1, const long l2, const long l, const cg_table *table)
+{
+    double invariant = 0;
+
+    double U = 0;
+    double M = 0;
+
+    long lower_bound = 0;
+    long upper_bound = 0;
+    for (long m = -l; m<=l; ++m)
+    {
+        U = 0;
+        M = 0;
+
+        lower_bound = (-l1)>=(m-l2) ? (-l1) : (m-l2);
+        upper_bound = l1>=(m+l2) ? (m+l2) : (l1);
+        for (long m1 = lower_bound; m1<=upper_bound; ++m1)
+        {
+            U   +=  get_cg(table, l1, l2, l, m, m1)
+                    *(
+                        c_get_shc(shc, REAL_PART, l1, m1)*c_get_shc(shc, REAL_PART, l2, m-m1)
+                            - c_get_shc(shc, IMAG_PART, l1, m1)*c_get_shc(shc, IMAG_PART, l2, m-m1)
+                    );
+                    
+            M   +=  get_cg(table, l1, l2, l, m, m1)
+                    *(
+                        c_get_shc(shc, IMAG_PART, l1, m1)*c_get_shc(shc, REAL_PART, l2, m-m1)
+                            + c_get_shc(shc, REAL_PART, l1, m1)*c_get_shc(shc, IMAG_PART, l2, m-m1)
+                    );
+        }
+
+        invariant   +=  c_get_shc(shc, REAL_PART, l, m)*U 
+                        + c_get_shc(shc, IMAG_PART, l, m)*M;
+    }
+
+    return invariant;
+}
+
+
+double c_bispectral_invariant_imaginary_part(c_shc * const shc, const long l1, const long l2, const long l, const cg_table *table)
+{
+    double invariant = 0;
+
+    double U = 0;
+    double M = 0;
+
+    long lower_bound = 0;
+    long upper_bound = 0;
+    for (long m = -l; m<=l; ++m)
+    {
+        U = 0;
+        M = 0;
+
+        lower_bound = (-l1)>=(m-l2) ? (-l1) : (m-l2);
+        upper_bound = l1>=(m+l2) ? (m+l2) : (l1);
+        for (long m1 = lower_bound; m1<=upper_bound; ++m1)
+        {
+            U   += get_cg(table, l1, l2, l, m, m1)
+                    *( 
+                        c_get_shc(shc, REAL_PART, l1, m1)*c_get_shc(shc, REAL_PART, l2, m-m1)
+                            - c_get_shc(shc, IMAG_PART, l1, m1)*c_get_shc(shc, IMAG_PART, l2, m-m1)
+                    );
+
+            M +=    get_cg(table, l1, l2, l, m, m1)
+                    *(
+                        c_get_shc(shc, IMAG_PART, l1, m1)*c_get_shc(shc, REAL_PART, l2, m-m1)
+                        +   c_get_shc(shc, REAL_PART, l1, m1)*c_get_shc(shc, IMAG_PART, l2, m-m1)
+                    );
+        }
+
+        invariant   += c_get_shc(shc, IMAG_PART, l, m)*U 
+                        - c_get_shc(shc, REAL_PART, l, m)*M;
+    }
+
+    return invariant;
+}
+
+
+void r_bispectrum(r_shc * const shc, const r_blt lookup, const cg_table *table, double *r_bisp)
 {
     // #pragma omp parallel for collapse(3)
     
-    for (long l1 = 0; l1<=bandlimit; ++l1)
+    for (long l1 = 0; l1<=shc->bandlimit; ++l1)
     {
         for (long l2 = 0; l2<=l1; ++l2)
         {
-            for (long l = l1-l2; l<=l1+l2 && l<=bandlimit; ++l)
+            for (long l = l1-l2; l<=l1+l2 && l<=shc->bandlimit; ++l)
             {
-                size_t row_index = bispectrum_lookup_table[l1][l2][l-(l1-l2)];
+                size_t row_index = lookup[l1][l2][l-(l1-l2)];
 
-                r_bispectrum[row_index]
-                    = r_calculate_bispectral_invariant_real_part(r_spherical_harmonics_coeffs, bandlimit, l1, l2, l, clebsch_gordan_coeffs);
+                r_bisp[row_index] = r_bispectral_invariant_real_part(shc, l1, l2, l, table);
             }
         }
     }
@@ -230,19 +304,15 @@ void c_bispectrum_gradient(   const double *c_spherical_harmonics_coeffs,
     // TODO
 }
 
-void r_bispectrum_gradient(   double * const r_spherical_harmonics_coeffs, 
-                                        const size_t bandlimit, 
-                                        size_t *** const bispectrum_lookup_table, 
-                                        const cg_table clebsch_gordan_coeffs, 
-                                        double *r_bipsectrum_gradient)
+void r_bispectrum_gradient(r_shc * const shc, const r_blt lookup, cg_table * const table, double *r_bisp_grad)
 {
     /* I assume the array r_bipsectrum_gradient is initialized with zeros.
     TODO: document the hell out of this, including an external file explaining the derivation. */
-    for (long l1 = 0; l1<=bandlimit; ++l1)
+    for (long l1 = 0; l1<=shc->bandlimit; ++l1)
     {
         for (long l2 = 0; l2<=l1; ++l2)
         {
-            for (long l = l1-l2; l<=l1+l2 && l<=bandlimit; ++l)
+            for (long l = l1-l2; l<=l1+l2 && l<=shc->bandlimit; ++l)
             {
                 double Uplus = 0;
                 double Uminus = 0;
@@ -250,7 +320,7 @@ void r_bispectrum_gradient(   double * const r_spherical_harmonics_coeffs,
                 double Mminus = 0;
 
                 // Working on the derivative of b_{l1,l2,l}
-                size_t row_index = bispectrum_lookup_table[l1][l2][l-(l1-l2)]*(bandlimit+1)*(bandlimit+1);
+                size_t row_index = lookup[l1][l2][l-(l1-l2)]*(shc->bandlimit+1)*(shc->bandlimit+1);
 
                 // *********************************
                 // Derivative w.r.t f_{sigma,l,m}
@@ -269,19 +339,15 @@ void r_bispectrum_gradient(   double * const r_spherical_harmonics_coeffs,
                     upper_bound = l1>=(m+l2) ? (m+l2) : (l1);
                     for (long m1 = lower_bound; m1<=upper_bound; ++m1)
                     {
-                        Uplus +=    get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, m, m1)
+                        Uplus   += get_cg(table, l1, l2, l, m, m1)
                                 *( 
-                                    r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l1, m1)
-                                    *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l2, m-m1)
-                                    -   r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l1, m1)
-                                        *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l2, m-m1)
+                                    r_get_shc(shc, REAL_PART, l1, m1)*r_get_shc(shc, REAL_PART, l2, m-m1)
+                                    - r_get_shc(shc, IMAG_PART, l1, m1)*r_get_shc(shc, IMAG_PART, l2, m-m1)
                                 );
-                        Mplus +=    get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, m, m1)
+                        Mplus   += get_cg(table, l1, l2, l, m, m1)
                                 *(
-                                    r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l1, m1)
-                                    *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l2, m-m1)
-                                    +   r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l1, m1)
-                                        *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l2, m-m1)
+                                    r_get_shc(shc, IMAG_PART, l1, m1)*r_get_shc(shc, REAL_PART, l2, m-m1)
+                                    + r_get_shc(shc, REAL_PART, l1, m1)*r_get_shc(shc, IMAG_PART, l2, m-m1)
                                 );
                     }
 
@@ -289,27 +355,23 @@ void r_bispectrum_gradient(   double * const r_spherical_harmonics_coeffs,
                     upper_bound = l1>=(-m+l2) ? (-m+l2) : (l1);
                     for (long m1 = lower_bound; m1<=upper_bound; ++m1)
                     {
-                        Uminus +=    get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, -m, m1)
+                        Uminus  += get_cg(table, l1, l2, l, -m, m1)
                                 *( 
-                                    r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l1, m1)
-                                    *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l2, -m-m1)
-                                    -   r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l1, m1)
-                                        *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l2, -m-m1)
+                                    r_get_shc(shc, REAL_PART, l1, m1)*r_get_shc(shc, REAL_PART, l2, -m-m1)
+                                    - r_get_shc(shc, IMAG_PART, l1, m1)*r_get_shc(shc, IMAG_PART, l2, -m-m1)
                                 );
-                        Mminus +=    get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, -m, m1)
+                        Mminus  += get_cg(table, l1, l2, l, -m, m1)
                                 *(
-                                    r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l1, m1)
-                                    *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l2, -m-m1)
-                                    +   r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l1, m1)
-                                        *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l2, -m-m1)
+                                    r_get_shc(shc, IMAG_PART, l1, m1)*r_get_shc(shc, REAL_PART, l2, -m-m1)
+                                    + r_get_shc(shc, REAL_PART, l1, m1)*r_get_shc(shc, IMAG_PART, l2, -m-m1)
                                 );
                     }
 
                     // The derivative w.r.t f_{r,l,m} (m>=1)
-                    r_bipsectrum_gradient[row_index+l*l+2*m-1] += Uplus + ((m % 2)==0 ? 1 : -1)*Uminus;
+                    r_bisp_grad[row_index+l*l+2*m-1] += Uplus + ((m % 2)==0 ? 1 : -1)*Uminus;
 
                     // The derivative w.r.t f_{i,l,m} (m>=1)
-                    r_bipsectrum_gradient[row_index+l*l+2*m] += Mplus - ((m % 2)==0 ? 1 : -1)*Mminus;
+                    r_bisp_grad[row_index+l*l+2*m] += Mplus - ((m % 2)==0 ? 1 : -1)*Mminus;
                 }
 
                 // The derivative w.r.t f_{r,l,0}
@@ -317,13 +379,11 @@ void r_bispectrum_gradient(   double * const r_spherical_harmonics_coeffs,
                 upper_bound = l1>=l2 ? (l2) : (l1);
                 for (long m1 = lower_bound; m1<=upper_bound; ++m1)
                 {
-                    r_bipsectrum_gradient[row_index+l*l] +=    get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, 0, m1)
-                                            *( 
-                                                r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l1, m1)
-                                                *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l2, -m1)
-                                                -   r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l1, m1)
-                                                    *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l2, -m1)
-                                            );
+                    r_bisp_grad[row_index+l*l]  += get_cg(table, l1, l2, l, 0, m1)
+                                                    *( 
+                                                        r_get_shc(shc, REAL_PART, l1, m1)*r_get_shc(shc, REAL_PART, l2, -m1)
+                                                        - r_get_shc(shc, IMAG_PART, l1, m1)*r_get_shc(shc, IMAG_PART, l2, -m1)
+                                                    );
                 }
                 
 
@@ -344,19 +404,16 @@ void r_bispectrum_gradient(   double * const r_spherical_harmonics_coeffs,
                     upper_bound = l>=(m1+l2) ? (m1+l2) : l;
                     for (long m = lower_bound; m<=upper_bound; ++m)
                     {
-                        Uplus +=    get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, m, m1)
+                        Uplus   += get_cg(table, l1, l2, l, m, m1)
                                 *( 
-                                    r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l, m)
-                                    *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l2, m-m1)
-                                    +   r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l, m)
-                                        *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l2, m-m1)
+                                    r_get_shc(shc, REAL_PART, l, m)*r_get_shc(shc, REAL_PART, l2, m-m1)
+                                    + r_get_shc(shc, IMAG_PART, l, m)*r_get_shc(shc, IMAG_PART, l2, m-m1)
                                 );
-                        Mplus +=    get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, m, m1)
+
+                        Mplus   += get_cg(table, l1, l2, l, m, m1)
                                 *(
-                                    r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l, m)
-                                    *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l2, m-m1)
-                                    -   r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l, m)
-                                        *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l2, m-m1)
+                                    r_get_shc(shc, IMAG_PART, l, m)*r_get_shc(shc, REAL_PART, l2, m-m1)
+                                    - r_get_shc(shc, REAL_PART, l, m)*r_get_shc(shc, IMAG_PART, l2, m-m1)
                                 );
                     }
 
@@ -364,27 +421,24 @@ void r_bispectrum_gradient(   double * const r_spherical_harmonics_coeffs,
                     upper_bound = l>=(-m1+l2) ? (-m1+l2) : l;
                     for (long m = lower_bound; m<=upper_bound; ++m)
                     {
-                        Uminus +=    get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, m, -m1)
+                        Uminus  += get_cg(table, l1, l2, l, m, -m1)
                                 *( 
-                                    r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l, m)
-                                    *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l2, m+m1)
-                                    +   r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l, m)
-                                        *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l2, m+m1)
+                                    r_get_shc(shc, REAL_PART, l, m)*r_get_shc(shc, REAL_PART, l2, m+m1)
+                                    + r_get_shc(shc, IMAG_PART, l, m)*r_get_shc(shc, IMAG_PART, l2, m+m1)
                                 );
-                        Mminus +=    get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, m, -m1)
+
+                        Mminus  += get_cg(table, l1, l2, l, m, -m1)
                                 *(
-                                    r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l, m)
-                                    *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l2, m+m1)
-                                    -   r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l, m)
-                                        *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l2, m+m1)
+                                    r_get_shc(shc, IMAG_PART, l, m)*r_get_shc(shc, REAL_PART, l2, m+m1)
+                                    - r_get_shc(shc, REAL_PART, l, m)*r_get_shc(shc, IMAG_PART, l2, m+m1)
                                 );
                     }
 
                     // The derivative w.r.t f_{r,l1,m1} (m1>=1)
-                    r_bipsectrum_gradient[row_index+l1*l1+2*m1-1] += Uplus + ((m1 % 2)==0 ? 1 : -1)*Uminus;
+                    r_bisp_grad[row_index+l1*l1+2*m1-1] += Uplus + ((m1 % 2)==0 ? 1 : -1)*Uminus;
                 
                     // The derivative w.r.t f_{i,l1,m1} (m1>=1)
-                    r_bipsectrum_gradient[row_index+l1*l1+2*m1] += Mplus - ((m1 % 2)==0 ? 1 : -1)*Mminus;
+                    r_bisp_grad[row_index+l1*l1+2*m1] += Mplus - ((m1 % 2)==0 ? 1 : -1)*Mminus;
                 }
 
                 // The derivative w.r.t f_{r,l1,0}
@@ -392,13 +446,11 @@ void r_bispectrum_gradient(   double * const r_spherical_harmonics_coeffs,
                 upper_bound = l>=l2 ? l2 : l;
                 for (long m = lower_bound; m<=upper_bound; ++m)
                 {
-                    r_bipsectrum_gradient[row_index+l1*l1] +=    get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, m, 0)
-                            *( 
-                                r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l, m)
-                                *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l2, m)
-                                +   r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l, m)
-                                    *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l2, m)
-                            );
+                    r_bisp_grad[row_index+l1*l1]    += get_cg(table, l1, l2, l, m, 0)
+                                                    *( 
+                                                        r_get_shc(shc, REAL_PART, l, m)*r_get_shc(shc, REAL_PART, l2, m)
+                                                        + r_get_shc(shc, IMAG_PART, l, m)*r_get_shc(shc, IMAG_PART, l2, m)
+                                                    );
                 }
                 
 
@@ -420,19 +472,16 @@ void r_bispectrum_gradient(   double * const r_spherical_harmonics_coeffs,
                     upper_bound = l>=(m2+l1) ? (m2+l1) : l;
                     for (long m = lower_bound; m<=upper_bound; ++m)
                     {
-                        Uplus +=    get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, m, m-m2)
+                        Uplus   += get_cg(table, l1, l2, l, m, m-m2)
                                 *( 
-                                    r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l, m)
-                                    *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l1, m-m2)
-                                    +   r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l, m)
-                                        *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l1, m-m2)
+                                    r_get_shc(shc, REAL_PART, l, m)*r_get_shc(shc, REAL_PART, l1, m-m2)
+                                    + (shc, IMAG_PART, l, m)*r_get_shc(shc, IMAG_PART, l1, m-m2)
                                 );
-                        Mplus +=    get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, m, m-m2)
+
+                        Mplus   += get_cg(table, l1, l2, l, m, m-m2)
                                 *(
-                                    r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l, m)
-                                    *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l1, m-m2)
-                                    -   r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l, m)
-                                        *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l1, m-m2)
+                                    r_get_shc(shc, IMAG_PART, l, m)*r_get_shc(shc, REAL_PART, l1, m-m2)
+                                    - r_get_shc(shc, REAL_PART, l, m)*r_get_shc(shc, IMAG_PART, l1, m-m2)
                                 );
                     }
 
@@ -440,27 +489,24 @@ void r_bispectrum_gradient(   double * const r_spherical_harmonics_coeffs,
                     upper_bound = l>=(-m2+l1) ? (-m2+l1) : l;
                     for (long m = lower_bound; m<=upper_bound; ++m)
                     {
-                        Uminus +=    get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, m, m+m2)
+                        Uminus  += get_cg(table, l1, l2, l, m, m+m2)
                                 *( 
-                                    r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l, m)
-                                    *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l1, m+m2)
-                                    +   r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l, m)
-                                        *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l1, m+m2)
+                                    r_get_shc(shc, REAL_PART, l, m)*r_get_shc(shc, REAL_PART, l1, m+m2)
+                                    + r_get_shc(shc, IMAG_PART, l, m)*r_get_shc(shc, IMAG_PART, l1, m+m2)
                                 );
-                        Mminus +=    get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, m, m+m2)
+
+                        Mminus  += get_cg(table, l1, l2, l, m, m+m2)
                                 *(
-                                    r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l, m)
-                                    *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l1, m+m2)
-                                    -   r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l, m)
-                                        *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l1, m+m2)
+                                    r_get_shc(shc, IMAG_PART, l, m)*r_get_shc(shc, REAL_PART, l1, m+m2)
+                                    - r_get_shc(shc, REAL_PART, l, m)*r_get_shc(shc, IMAG_PART, l1, m+m2)
                                 );
                     }
 
                     // The derivative w.r.t f_{r,l2,m2} (m2>=1)
-                    r_bipsectrum_gradient[row_index+l2*l2+2*m2-1] += Uplus + ((m2 % 2)==0 ? 1 : -1)*Uminus;
+                    r_bisp_grad[row_index+l2*l2+2*m2-1] += Uplus + ((m2 % 2)==0 ? 1 : -1)*Uminus;
                 
                     // The derivative w.r.t f_{i,l2,m2} (m2>=1)
-                    r_bipsectrum_gradient[row_index+l2*l2+2*m2] += Mplus - ((m2 % 2)==0 ? 1 : -1)*Mminus;
+                    r_bisp_grad[row_index+l2*l2+2*m2] += Mplus - ((m2 % 2)==0 ? 1 : -1)*Mminus;
                 }
 
                 // The derivative w.r.t f_{r,l2,0}
@@ -468,13 +514,11 @@ void r_bispectrum_gradient(   double * const r_spherical_harmonics_coeffs,
                 upper_bound = l>=l1 ? l1 : l;
                 for (long m = lower_bound; m<=upper_bound; ++m)
                 {
-                    r_bipsectrum_gradient[row_index+l2*l2] +=    get_clebsch_gordan_coefficient(clebsch_gordan_coeffs, l1, l2, l, m, m)
-                            *( 
-                                r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l, m)
-                                *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'r', l1, m)
-                                +   r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l, m)
-                                    *r_get_spherical_harmonics(r_spherical_harmonics_coeffs, 'i', l1, m)
-                            );
+                    r_bisp_grad[row_index+l2*l2]    += get_cg(table, l1, l2, l, m, m)
+                                                    *( 
+                                                        r_get_shc(shc, REAL_PART, l, m)*r_get_shc(shc, REAL_PART, l1, m)
+                                                        + r_get_shc(shc, IMAG_PART, l, m)*r_get_shc(shc, IMAG_PART, l1, m)
+                                                    );
                 }
             }
         }
