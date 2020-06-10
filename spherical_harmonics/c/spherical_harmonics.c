@@ -52,15 +52,6 @@ void c_destroy_shc2()
 
 double r_get_shc(r_shc *shc, PART part, long int l, long int m)
 {
-    /*  
-    real_part_or_imaginary_part = 'r' or 'i'
-    spherical_harmonics_coeffs format is
-        f_{r, 0, 0}, 
-            f_{r, 1, 0}, f_{r, 1, 1}, f_{i, 1, 1}, 
-                f_{r, 2, 0}, f_{r, 2, 1}, f_{i, 2, 1}, f_{r, 2, 2}, f_{i, 2, 2}, ...
-                    f_{r, bandlimit, 0}, f_{r, bandlimit, 1}, f_{i, bandlimit, 1}, ..., f_{r, bandlimit, bandlimit}, f_{i, bandlimit, bandlimit}
-    */
-
    if (l > shc->bandlimit)
    {
        return 0.0;
