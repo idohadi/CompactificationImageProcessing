@@ -1,5 +1,6 @@
 // TODO
 
+#include <stdbool.h>
 #include "spherical_harmonics.h"
 
 void r_init_shc()
@@ -49,6 +50,7 @@ void c_destroy_shc2()
     // TODO: initialize struct containing the bandlimit and coefficients
     // deallocates coefficients memory
 }
+
 
 double r_get_shc(r_shc const *shc, const PART part, const long l, const long m)
 {
@@ -117,10 +119,57 @@ double c_get_shc(c_shc const *shc, const PART part, const long l, const long m)
 }
 
 
-void r_set_shc()
+bool r_set_shc(r_shc const *shc, const PART part, const long l, const long m, const double value)
 {
-    // TODO
+    if (l > shc->bandlimit)
+   {
+       return false;
+   }
+   else
+   {
+        if (m==0)
+        {
+            if (part==IMAG_PART)
+            {
+                return false;
+            }
+            else if (part==REAL_PART)
+            {
+                shc->coefficients[l*l] = value;
+                return true;
+            }
+        }
+
+        if (m>0)
+        {
+            if (part==REAL_PART)
+            {
+                shc->coefficients[l*l + 2*m - 1] = value;
+                return true;
+            }
+            else if (part==IMAG_PART)
+            {
+                shc->coefficients[l*l + 2*m] = value;
+                return true;
+            }
+        }
+
+        if (m<0)
+        {
+            if (part==REAL_PART)
+            {
+                shc->coefficients[l*l - 2*m - 1] = ((m % 2 == 0) ? 1 : -1)*value;
+                return true;
+            }
+            else if (part==IMAG_PART)
+            {
+                shc->coefficients[l*l - 2*m] = ((m % 2 == 0) ? -1 : 1)*value;
+                return true;
+            }
+        }
+    }
 }
+
 
 void c_set_shc()
 {
