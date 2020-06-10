@@ -17,3 +17,5 @@ typedef
         size_t bandlimit;
     }
     c_shc;
+
+typedef enum PART {REAL_PART, IMAG_PART} PART;
