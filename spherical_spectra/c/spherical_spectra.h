@@ -1,5 +1,7 @@
 #include <stdint.h>
 #include "clebsch_gordan_coefficients.h"
+#include "spherical_harmonics.h"
+
 
 typedef size_t *** r_bispectrum_lookout_table;
 typedef r_bispectrum_lookout_table r_blt;
@@ -35,7 +37,7 @@ void r_power_spectrum(r_shc * const shc, double *r_pow_spec);
 
 /* Bispectrum functions */
 
-void c_bispectrum(c_shc * const shc, const c_blt lookup, const cg_table *table, double *c_bisp);
+void c_bispectrum(c_shc * const shc, const c_blt lookup, cg_table * const table, double *c_bisp);
 
 
 double r_bispectral_invariant_real_part(r_shc * const shc, const long l1, const long l2, const long l, cg_table * const table);
@@ -50,10 +52,13 @@ double c_bispectral_invariant_real_part(c_shc * const shc, const long l1, const 
 double c_bispectral_invariant_imaginary_part(c_shc * const shc, const long l1, const long l2, const long l, const cg_table *table);
 
 
-void r_bispectrum(r_shc * const shc, const r_blt lookup, const cg_table *table, double *r_bisp);
+void r_bispectrum(r_shc * const shc, const r_blt lookup, cg_table * const table, double *r_bisp);
 
 
 void r_bispectrum_gradient(r_shc * const shc, const r_blt lookup, cg_table * const table, double *r_bisp_grad);
+
+
+void c_bispectrum_gradient(c_shc * const shc, const c_blt lookup, cg_table * const table, double *c_bisp_grad);
 
 
 /* Printing functions */

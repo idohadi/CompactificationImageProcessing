@@ -15,7 +15,6 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "mex.h"
-#include "spherical_harmonics.h"
 #include "spherical_spectra.h"
 
 size_t bandlimit;

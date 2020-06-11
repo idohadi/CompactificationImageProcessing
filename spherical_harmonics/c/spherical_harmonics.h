@@ -100,7 +100,7 @@ double sample_normal(sfmt_t * const sfmt);
 void r_random_normalized_shc(sfmt_t *sfmt, r_shc *output_shc);
 
 
-void c_random_normalized_shc(sfmt_t * const sfmt, r_shc * const output_shc);
+void c_random_normalized_shc(sfmt_t * const sfmt, c_shc *output_shc);
 
 
 void r_print_shc(r_shc * const shc);

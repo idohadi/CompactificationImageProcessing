@@ -30,6 +30,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     m = mxGetScalar(prhs[3]);
 
     // Generate output
-    plhs[0] = mxCreateDoubleMatrix(clebsch_gordan_upper_bound(l1, l2, m) - clebsch_gordan_lower_bound(l1, l2, m) + 1, 1, mxREAL);
+    plhs[0] = mxCreateDoubleMatrix(cg_upper_bound(l1, l2, m) - cg_lower_bound(l1, l2, m) + 1, 1, mxREAL);
     cg_vector(l1, l2, l, m, mxGetDoubles(plhs[0]));
 }

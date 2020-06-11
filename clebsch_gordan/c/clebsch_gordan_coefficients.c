@@ -1,6 +1,6 @@
 // TODO: write docs in doxygen
 
-
+#include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include "clebsch_gordan_coefficients.h"

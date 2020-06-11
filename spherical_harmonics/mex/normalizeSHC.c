@@ -45,6 +45,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         plhs[0] = mxCreateDoubleMatrix(2*(bandlimit+1)*(bandlimit+1), 1, mxREAL);
         shc2 = c_init_shc(bandlimit, mxGetDoubles(prhs[0]));
         output_shc2 = c_init_shc(bandlimit, mxGetDoubles(plhs[0]));
-        r_normalize_shc(&shc2, &output_shc2);
+        c_normalize_shc(&shc2, &output_shc2);
     }
 }

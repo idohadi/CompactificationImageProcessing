@@ -1,6 +1,7 @@
 // TODO: write docs in doxygen
 
 #include <stdbool.h>
+#include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
 #include "spherical_harmonics.h"
@@ -104,8 +105,8 @@ c_shc c_init_shc2(const size_t bandlimit)
     {
         for (long m = -l; m<=l; ++m)
         {
-            r_set_shc(&shc, REAL_PART, l, m, 0.0);
-            r_set_shc(&shc, IMAG_PART, l, m, 0.0);
+            c_set_shc(&shc, REAL_PART, l, m, 0.0);
+            c_set_shc(&shc, IMAG_PART, l, m, 0.0);
         }
     }
     return shc;
@@ -468,11 +469,11 @@ void r_random_normalized_shc(sfmt_t *sfmt, r_shc *output_shc)
             r_set_shc(output_shc, IMAG_PART, l, m, sample_normal(sfmt)/sqrt(2));
         }
     }
-    r_normalize_shc(output_shc);
+    r_normalize_shc_in_place(output_shc);
 }
 
 
-void c_random_normalized_shc(sfmt_t * const sfmt, r_shc * const output_shc)
+void c_random_normalized_shc(sfmt_t * const sfmt, c_shc *output_shc)
 {
     /* 
     REFRENCE:
@@ -481,14 +482,14 @@ void c_random_normalized_shc(sfmt_t * const sfmt, r_shc * const output_shc)
    
     for (long l = 0; l<=output_shc->bandlimit; ++l)
     {
-        r_set_shc(output_shc, REAL_PART, l, 0, sample_normal(sfmt));
+        c_set_shc(output_shc, REAL_PART, l, 0, sample_normal(sfmt));
         for (long m = -l; m<=l; ++m)
         {
-            r_set_shc(output_shc, REAL_PART, l, m, sample_normal(sfmt));
-            r_set_shc(output_shc, IMAG_PART, l, m, sample_normal(sfmt));
+            c_set_shc(output_shc, REAL_PART, l, m, sample_normal(sfmt));
+            c_set_shc(output_shc, IMAG_PART, l, m, sample_normal(sfmt));
         }
     }
-    c_normalize_shc(output_shc);
+    c_normalize_shc_in_place(output_shc);
 }
 
 
@@ -526,8 +527,8 @@ void c_print_shc(c_shc * const shc)
     {
         for (long m = -l; m<=l; ++m)
         {
-            printf("\t(r,%2-d,%-2d)\t\t%-15.15f\n", l, m, r_get_shc(shc, REAL_PART, l, m));
-            printf("\t(i,%2-d,%-2d)\t\t%-15.15f\n", l, m, r_get_shc(shc, IMAG_PART, l, m));
+            printf("\t(r,%2-d,%-2d)\t\t%-15.15f\n", l, m, c_get_shc(shc, REAL_PART, l, m));
+            printf("\t(i,%2-d,%-2d)\t\t%-15.15f\n", l, m, c_get_shc(shc, IMAG_PART, l, m));
         }
     }
 }

@@ -16,8 +16,6 @@
 
 #include <stdint.h>
 #include "mex.h"
-#include "clebsch_gordan_coefficients.h"
-#include "spherical_harmonics.h"
 #include "spherical_spectra.h"
 
 bool first_run = true;
@@ -54,7 +52,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
         mexPrintf("Bandlimit chagned. Reinitializing Clebsch-Gordan coefficients and bispectrum lookup table.\n");
         // Destroying the lookup tables and Clebsch-Gordan table
-        free_memory_for_clebsch_gordan_coefficients(previous_bandlimit, cgs);
+        destroy_cg_table(&cgs);
         r_destroy_bispectrum_lookup_table(r_lookup, previous_bandlimit);
         c_destroy_bispectrum_lookup_table(c_lookup, previous_bandlimit);
 
@@ -81,27 +79,27 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         }
         
         // Calculate the bispectrm / its gradient
-        r_bispectrum(&shc1, bandlimit, r_lookup, &cgs, mxGetDoubles(plhs[0]));
+        r_bispectrum(&shc1, r_lookup, &cgs, mxGetDoubles(plhs[0]));
         if (nlhs>1)
         {
-            r_bispectrum_gradient(&shc1, bandlimit, r_lookup, &cgs, mxGetDoubles(plhs[1]));
+            r_bispectrum_gradient(&shc1, r_lookup, &cgs, mxGetDoubles(plhs[1]));
         }
     }
     else
     {
-        plhs[0] = mxCreateDoubleMatrix(c_lookup[bandlimit][bandlimit][bandlimit]+1, 1, mxREAL);
+        plhs[0] = mxCreateDoubleMatrix(c_lookup[bandlimit][bandlimit][bandlimit][1]+1, 1, mxREAL);
         shc2 = c_init_shc(bandlimit, mxGetDoubles(prhs[0]));
 
         if (nlhs>1)
         {
-            plhs[1] = mxCreateDoubleMatrix(2*(bandlimit+1)*(bandlimit+1), c_lookup[bandlimit][bandlimit][bandlimit]+1, mxREAL);
+            plhs[1] = mxCreateDoubleMatrix(2*(bandlimit+1)*(bandlimit+1), c_lookup[bandlimit][bandlimit][bandlimit][1]+1, mxREAL);
         }
         
         // Calculate the bispectrm / its gradient
-        c_bispectrum(&shc2, bandlimit, c_lookup, &cgs, mxGetDoubles(plhs[0]));
+        c_bispectrum(&shc2, c_lookup, &cgs, mxGetDoubles(plhs[0]));
         if (nlhs>1)
         {
-            c_bispectrum_gradient(&shc2, bandlimit, c_lookup, cgs, mxGetDoubles(plhs[1]));
+            c_bispectrum_gradient(&shc2, c_lookup, &cgs, mxGetDoubles(plhs[1]));
         }
     }
 }
