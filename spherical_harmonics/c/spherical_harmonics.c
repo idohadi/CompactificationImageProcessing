@@ -296,7 +296,7 @@ bool c_set_shc(c_shc const *shc, const PART part, const long l, const long m, co
 }
 
 
-void r_normalize_shc(r_shc * const shc)
+void r_normalize_shc_in_place(r_shc * const shc)
 {
     /* 
     Normalizes the shc so that its power spectrum is all ones. 
@@ -332,11 +332,82 @@ void r_normalize_shc(r_shc * const shc)
 }
 
 
-void c_normalize_shc(c_shc * const shc)
+void c_normalize_shc_in_place(c_shc * const shc)
 {
     /* 
     Normalizes the shc so that its power spectrum is all ones. 
     It normalizes in place.
+    */
+
+    double norm;
+    double coeff;
+
+    for (long l = 0; l<=shc->bandlimit; ++l)
+    {
+        // Calculate the norm of the coefficients of order l
+        norm = 0;
+        for (long m = -l; m<=l; ++m)
+        {
+            coeff = c_get_shc(shc, REAL_PART, l, m);
+            norm += coeff*coeff;
+
+            coeff = c_get_shc(shc, IMAG_PART, l, m);
+            norm += coeff*coeff;
+        }
+        norm = sqrt(norm);
+
+        // Normalize the coefficients
+        for (long m = -l; m<=l; ++m)
+        {
+            shc->coefficients[c_lm_to_index(REAL_PART, l, m)] /= norm;
+            shc->coefficients[c_lm_to_index(IMAG_PART, l, m)] /= norm;
+        }
+    }
+}
+
+
+void r_normalize_shc(r_shc * const shc, r_shc *output_shc)
+{
+    /* 
+    Normalizes the shc so that its power spectrum is all ones. 
+    */
+
+    double norm;
+    double coeff;
+
+    for (long l = 0; l<=shc->bandlimit; ++l)
+    {
+        // Calcualte the norm of the coeffiicents of order l
+        coeff = r_get_shc(shc, REAL_PART, l, 0);
+        norm = coeff*coeff;
+        for (long m = 1; m<=l; ++m)
+        {
+            coeff = r_get_shc(shc, REAL_PART, l, m);
+            norm += 2*coeff*coeff;
+            
+            coeff = r_get_shc(shc, IMAG_PART, l, m);
+            norm += 2*coeff*coeff;
+        }
+        norm = sqrt(norm);
+
+        // Normalize the coefficients
+        output_shc->coefficients[r_lm_to_index(REAL_PART, l, 0)] 
+            = shc->coefficients[r_lm_to_index(REAL_PART, l, 0)]/norm;
+        for (long m = 1; m<=l; ++m)
+        {
+            output_shc->coefficients[r_lm_to_index(REAL_PART, l, m)] 
+                = shc->coefficients[r_lm_to_index(REAL_PART, l, m)]/norm;
+            output_shc->coefficients[r_lm_to_index(IMAG_PART, l, m)] 
+                = shc->coefficients[r_lm_to_index(IMAG_PART, l, m)]/norm;
+        }
+    }
+}
+
+
+void c_normalize_shc(c_shc * const shc, c_shc *output_shc)
+{
+    /* 
+    Normalizes the shc so that its power spectrum is all ones. 
     */
 
     double norm;

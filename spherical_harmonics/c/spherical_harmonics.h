@@ -82,10 +82,16 @@ long c_lm_to_index(const PART part, const long l, const long m);
 bool c_set_shc(c_shc const *shc, const PART part, const long l, const long m, const double value);
 
 
-void r_normalize_shc(r_shc * const shc);
+void r_normalize_shc_in_place(r_shc * const shc);
 
 
-void c_normalize_shc(c_shc * const shc);
+void c_normalize_shc_in_place(c_shc * const shc);
+
+
+void r_normalize_shc(r_shc * const shc, r_shc *output_shc);
+
+
+void c_normalize_shc(c_shc * const shc, c_shc *output_shc);
 
 
 double sample_normal(sfmt_t * const sfmt);
