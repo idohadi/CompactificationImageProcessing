@@ -1,5 +1,11 @@
 // TODO: write docs in doxygen
-
+/* 
+USE:
+        spherical_harmonics_tester flag bandlimit
+    where 
+        flag = c for complex-valued spherical function, r for real-valued spherical function
+        bandlimit = non-negative integer
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>

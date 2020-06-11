@@ -1,4 +1,13 @@
 // TODO: write docs in doxygen
+/* 
+USE:
+        clebsch_gordan_tester l1 l2 l m
+    OR
+        clebsch_gordan_tester bandlimit
+    where 
+        l1, l2, l and m are parameters defining Clebsch-Gordan coefficients
+        bandlimit is non-negative integer
+*/
 
 #include <stdio.h>
 #include <stdlib.h>

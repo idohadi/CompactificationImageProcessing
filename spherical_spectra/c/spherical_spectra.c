@@ -129,7 +129,7 @@ void r_power_spectrum(r_shc * const shc, double *r_pow_spec)
         real_part = r_get_shc(shc, REAL_PART, l, 0);
         r_pow_spec[l] = real_part*real_part;
 
-        for (long m = -l; m<=l; ++m)
+        for (long m = 1; m<=l; ++m)
         {
             real_part = r_get_shc(shc, REAL_PART, l, m);
             imag_part = r_get_shc(shc, IMAG_PART, l, m);
@@ -568,13 +568,13 @@ void r_bispectrum_gradient(r_shc * const shc, const r_blt lookup, cg_table * con
 /* Printing functions */
 void r_print_power_spectrum(double *r_pow_spec, size_t bandlimit)
 {
-    printf("Bandlimit = %d.", bandlimit);
-    printf("===========================================================================================================\n");
+    printf("Bandlimit = %d.\n", bandlimit);
+    printf("=========================================================================\n");
     printf("\tOrder\t\tValue\n");
-    printf("===========================================================================================================\n");
+    printf("=========================================================================\n");
     for (long l = 0; l<=bandlimit; ++l)
     {
-        printf("\t%3d\t\t%14.14f\n", l, r_pow_spec[l]);
+        printf("\t%3d\t\t% 14.14f\n", l, r_pow_spec[l]);
     }
 }
 
@@ -587,20 +587,22 @@ void c_print_power_spectrum(double *c_pow_spec, size_t bandlimit)
 
 void r_print_all_bispectral_invariants(r_shc * const shc, cg_table * const table)
 {
-    printf("Bandlimit = %d.", shc->bandlimit);
-    printf("===========================================================================================================\n");
-    printf("\t(-,l1,l2,l)\t\tValue\n");
-    printf("===========================================================================================================\n");
+    printf("Bandlimit = %d.\n", shc->bandlimit);
+    printf("=========================================================================\n");
+    printf("\t( l1, l2, l)\t\tReal part\t\tImag part\n");
+    printf("=========================================================================\n");
     for (long l1 = 0; l1<=shc->bandlimit; ++l1)
     {
         for (long l2 = 0; l2<=l1; ++l2)
         {
             for (long l = l1-l2; l<=shc->bandlimit && l<=l1+l2; ++l)
             {
-                printf("\t(r,%-3d,%-3d,%-3d)\t\t%14.14f\n", 
-                        l1, l2, l, r_bispectral_invariant_real_part(shc, l1, l2, l, table));
-                printf("\t(i,%-3d,%-3d,%-3d)\t\t%14.14f\n", 
-                        l1, l2, l, r_bispectral_invariant_imaginary_part(shc, l1, l2, l, table));
+                printf("\t(% 3d,% 3d,% 3d)\t\t% 14.14f\t% 14.14f\n", 
+                        l1, l2, l, 
+                        r_bispectral_invariant_real_part(shc, l1, l2, l, table), 
+                        r_bispectral_invariant_imaginary_part(shc, l1, l2, l, table));
+                // printf("\t(% 3d,% 3d,% 3d)\t\t%14.14f\n", 
+                        // l1, l2, l, r_bispectral_invariant_imaginary_part(shc, l1, l2, l, table));
             }
         }
     }
