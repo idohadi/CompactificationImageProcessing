@@ -1,4 +1,4 @@
-// TODO
+// TODO: docs in doxygen
 /** 
  * Return an array of random normalized spherical harmonics coefficients of a given bandlimit. 
  * 
