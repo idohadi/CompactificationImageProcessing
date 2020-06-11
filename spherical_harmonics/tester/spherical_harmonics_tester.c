@@ -43,8 +43,4 @@ int main(int argc, char *argv[])
     {
         printf("Wrong number of arguments.");
     }
-    
-    // TODO
-    // Random SHC, complex and real
-    // Get functions and set functions
 }
