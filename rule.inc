@@ -1,6 +1,7 @@
 #Useful variable definitions
 CDir=c
 MEXDir=mex
+TESTDir=tester
 COMONCOMPFLAGS=-Ofast
 SIMDCOMPFLAGS=-msse2 -DHAVE_SSE2
 DSFMTVAR=-DSFMT_MEXP=2281
@@ -30,12 +31,16 @@ SHRULES=normalizeSHC \
 SPECTRARULES=calculateBispectrum \
 			calculateBispetrumGradient \
 			powerSpectrum
+TESTERSRULES=clebsch_gordan_tester \
+			spherical_harmonics_tester \
+			spherical_spectra_tester
 
 #Rules
 compile : 	$(ROTATIONSAMPLINGRULES) \
 				$(CLEBSCHGORDANRULES) \
 				$(SHRULES) \
-				$(SPECTRARULES)
+				$(SPECTRARULES) \
+				$(TESTERSRULES)
 
 
 applyRotation : 
@@ -68,6 +73,21 @@ calculateBispetrumGradient :
 
 powerSpectrum :
 	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SPECTRADir)/$(MEXDir)/powerSpectrum.c $(CGFILE) $(SHFILE) $(SPECTRAFILE) $(SFMTFILE)
+
+
+
+
+.PHONY2 : testers
+testers : $(TESTERSRULES)
+	
+clebsch_gordan_tester :
+	$(CC) $(INCLUDEPATH) $(CGDir)/$(TESTDir)/clebsch_gordan_tester.c $(CGFILE) -o $(TESTEROUTDIR)/clebsch_gordan_tester.exe
+
+spherical_harmonics_tester :
+	$(CC) $(INCLUDEPATH) $(SHDir)/$(TESTDir)/spherical_harmonics_tester.c $(CGFILE) $(SHFILE) -o $(TESTEROUTDIR)/spherical_harmonics_tester.exe
+
+spherical_spectra_tester :
+	$(CC) $(INCLUDEPATH) $(SPECTRADir)/$(TESTDir)/spherical_spectra_tester.c $(CGFILE) $(SHFILE) $(SPECTRAFILE) -o $(TESTEROUTDIR)/spherical_spectra_tester.exe
 
 
 .PHONY : clean

@@ -16,3 +16,4 @@ TDESIGNDir=tdesign
 
 #Output directory variables
 MEXOUTDIR=bin/mex
+TESTEROUTDIR=bin/testers
