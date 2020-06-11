@@ -216,7 +216,7 @@ void print_cg(cg_table *table)
                     for (long m1 = cg_lower_bound(l1, l2, m); m1<=cg_upper_bound(l1, l2, m); ++m1)
                     {
                         printf("\t<%-3d %-3d %-3d %-3d | %-3d %-3d>\t\t%14.14f\n", 
-                            l1, m1, l2, m-m1, l, m);
+                            l1, m1, l2, m-m1, l, m, get_cg(table, l1, l2, l, m, m1));
                     }
                     printf("\t\t---------\n");
                 }
@@ -224,4 +224,24 @@ void print_cg(cg_table *table)
             }
         }
     }
+}
+
+void print_cg_vector(long l1, long l2, long l, long m)
+{
+    // Calcualte the vector
+    double *cg_vec = malloc((cg_upper_bound(l1, l2, m) - cg_lower_bound(l1, l2, m) + 1)*sizeof(double));
+    cg_vector(l1, l2, l, m, cg_vec);
+
+    // Print the table header
+    printf("(l1, l2, l, m) = (%-3d,%-3d,%-3d,%-3d).", l1, l2, l, m);
+    printf("===========================================================================================================\n");
+    printf("\t<l1 m1 l2 m2 | l m>\t\tValue\n");
+    printf("===========================================================================================================\n");
+
+    for (long m1 = cg_lower_bound(l1, l2, m); m1<=cg_upper_bound(l1, l2, m); ++m1)
+    {
+        printf("\t<%-3d %-3d %-3d %-3d | %-3d %-3d>\t\t%14.14f\n", 
+            l1, m1, l2, m-m1, l, m, cg_vec[m1-cg_lower_bound(l1, l2, m)]);
+    }
+    printf("\t\t---------\n");
 }
