@@ -200,10 +200,10 @@ void print_cg(cg_table *table)
 
     // Print the table header
 
-    printf("Bandlimit = %d.", table->bandlimit);
-    printf("===========================================================================================================\n");
-    printf("\t<l1 m1 l2 m2 | l m>\t\tValue\n");
-    printf("===========================================================================================================\n");
+    printf("Bandlimit = %d.\n", table->bandlimit);
+    printf("=========================================================================\n");
+    printf("\tm1\t<l1  m1  l2  m2  | l   m  >\t\tValue\n");
+    printf("=========================================================================\n");
 
     for (long l1 = 0; l1<=table->bandlimit; ++l1)
     {
@@ -215,15 +215,41 @@ void print_cg(cg_table *table)
                 {
                     for (long m1 = cg_lower_bound(l1, l2, m); m1<=cg_upper_bound(l1, l2, m); ++m1)
                     {
-                        printf("\t<%-3d %-3d %-3d %-3d | %-3d %-3d>\t\t%14.14f\n", 
-                            l1, m1, l2, m-m1, l, m, get_cg(table, l1, l2, l, m, m1));
+                        if (m1>0)
+                        {
+                            printf("\t %-3d", m1);
+                        }
+                        else if (m1==0)
+                        {
+                            printf("\t %-3d", 0);
+                        }
+                        else
+                        {
+                            printf("\t%-3d", m1);
+                        }
+
+                        printf("\t<%-3d %-3d %-3d %-3d | %-3d %-3d>\t\t", 
+                            m1, l1, m1, l2, m-m1, l, m);
+
+                        if (get_cg(table, l1, l2, l, m, m1)>0)
+                        {
+                            printf(" %14.14f\n", get_cg(table, l1, l2, l, m, m1));
+                        }
+                        else if (get_cg(table, l1, l2, l, m, m1)==0)
+                        {
+                            printf(" %14.14f\n", 0.0);
+                        }
+                        else
+                        {
+                            printf("%14.14f\n", get_cg(table, l1, l2, l, m, m1));
+                        }
                     }
-                    printf("\t\t---------\n");
+                    printf("\t----------\n");
                 }
-                
             }
         }
     }
+    printf("=========================================================================\n");
 }
 
 void print_cg_vector(long l1, long l2, long l, long m)
@@ -233,15 +259,27 @@ void print_cg_vector(long l1, long l2, long l, long m)
     cg_vector(l1, l2, l, m, cg_vec);
 
     // Print the table header
-    printf("(l1, l2, l, m) = (%-3d,%-3d,%-3d,%-3d).", l1, l2, l, m);
-    printf("===========================================================================================================\n");
-    printf("\t<l1 m1 l2 m2 | l m>\t\tValue\n");
-    printf("===========================================================================================================\n");
+    printf("(l1, l2, l, m) = (%-3d,%-3d,%-3d,%-3d).\n", l1, l2, l, m);
+    printf("=========================================================================\n");
+    printf("\t<l1  m1  l2  m2  | l   m  >\t\tValue\n");
+    printf("=========================================================================\n");
 
     for (long m1 = cg_lower_bound(l1, l2, m); m1<=cg_upper_bound(l1, l2, m); ++m1)
     {
-        printf("\t<%-3d %-3d %-3d %-3d | %-3d %-3d>\t\t%14.14f\n", 
-            l1, m1, l2, m-m1, l, m, cg_vec[m1-cg_lower_bound(l1, l2, m)]);
+        printf("\t<%-3d %-3d %-3d %-3d | %-3d %-3d>\t\t", 
+            l1, m1, l2, m-m1, l, m);
+        if (cg_vec[m1-cg_lower_bound(l1, l2, m)]>0)
+        {
+            printf(" %14.14f\n", cg_vec[m1-cg_lower_bound(l1, l2, m)]);
+        }
+        else if (cg_vec[m1-cg_lower_bound(l1, l2, m)]==0)
+        {
+            printf(" %14.14f\n", 0.0);
+        }
+        else
+        {
+            printf("%14.14f\n", cg_vec[m1-cg_lower_bound(l1, l2, m)]);
+        }
     }
-    printf("\t\t---------\n");
+    printf("=========================================================================\n");
 }

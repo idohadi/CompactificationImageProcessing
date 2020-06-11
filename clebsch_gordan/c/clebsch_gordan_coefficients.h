@@ -45,3 +45,5 @@ void set_cg(cg_table *table, const long l1, const long l2, const long l, const l
 
 
 void print_cg(cg_table *table);
+
+void print_cg_vector(long l1, long l2, long l, long m);
