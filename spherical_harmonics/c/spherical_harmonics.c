@@ -496,20 +496,24 @@ void c_random_normalized_shc(sfmt_t * const sfmt, c_shc *output_shc)
 void r_print_shc(r_shc * const shc)
 {
     // Print the table header
-    printf("Bandlimit = %d.", shc->bandlimit);
-    printf("===========================================================================================================\n");
-    printf("\t(part,order,degree)\t\tValue\n");
-    printf("===========================================================================================================\n");
+    printf("Bandlimit = %d.\n", shc->bandlimit);
+    printf("=========================================================================\n");
+    printf("\t(  l,  m)\t\tReal part\t\tImag part\n");
+    printf("=========================================================================\n");
 
     // Print the coefficients themselves
-    for (long l = 0; l<shc->bandlimit; ++l)
+    for (long l = 0; l<=shc->bandlimit; ++l)
     {
-        printf("\t(r,%2-d,%-2d)\t\t%-15.15f\n", l, 0, r_get_shc(shc, REAL_PART, l, 0));
+        printf("\t(%3d,%3d)\t\t% 15.15f\n", l, 0, r_get_shc(shc, REAL_PART, l, 0));
+        
         for (long m = 1; m<=l; ++m)
         {
-            printf("\t(r,%2-d,%-2d)\t\t%-15.15f\n", l, m, r_get_shc(shc, REAL_PART, l, m));
-            printf("\t(i,%2-d,%-2d)\t\t%-15.15f\n", l, m, r_get_shc(shc, IMAG_PART, l, m));
+            printf("\t(%3d,%3d)\t\t% 15.15f\t% 15.15f\n", 
+                    l, m, 
+                    r_get_shc(shc, REAL_PART, l, m), 
+                    r_get_shc(shc, IMAG_PART, l, m));
         }
+        printf("\t----------\n");
     }
 }
 
@@ -517,19 +521,22 @@ void r_print_shc(r_shc * const shc)
 void c_print_shc(c_shc * const shc)
 {
     // Print the table header
-    printf("Bandlimit = %d.", shc->bandlimit);
-    printf("===========================================================================================================\n");
-    printf("\t(part,order,degree)\t\tValue\n");
-    printf("===========================================================================================================\n");
+    printf("Bandlimit = %d.\n", shc->bandlimit);
+    printf("=========================================================================\n");
+    printf("\t(  l,  m)\t\tReal part\t\tImag part\n");
+    printf("=========================================================================\n");
 
     // Print the coefficients themselves
-    for (long l = 0; l<shc->bandlimit; ++l)
+    for (long l = 0; l<=shc->bandlimit; ++l)
     {
         for (long m = -l; m<=l; ++m)
         {
-            printf("\t(r,%2-d,%-2d)\t\t%-15.15f\n", l, m, c_get_shc(shc, REAL_PART, l, m));
-            printf("\t(i,%2-d,%-2d)\t\t%-15.15f\n", l, m, c_get_shc(shc, IMAG_PART, l, m));
+            printf("\t(%3d,%3d)\t\t% 15.15f\t% 15.15f\n", 
+                    l, m, 
+                    c_get_shc(shc, REAL_PART, l, m), 
+                    c_get_shc(shc, IMAG_PART, l, m));
         }
+        printf("\t----------\n");
     }
 }
 
