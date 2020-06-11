@@ -431,8 +431,10 @@ void c_normalize_shc(c_shc * const shc, c_shc *output_shc)
         // Normalize the coefficients
         for (long m = -l; m<=l; ++m)
         {
-            shc->coefficients[c_lm_to_index(REAL_PART, l, m)] /= norm;
-            shc->coefficients[c_lm_to_index(IMAG_PART, l, m)] /= norm;
+            output_shc->coefficients[c_lm_to_index(REAL_PART, l, m)] 
+                = shc->coefficients[c_lm_to_index(REAL_PART, l, m)]/norm;
+            output_shc->coefficients[c_lm_to_index(IMAG_PART, l, m)] 
+                = shc->coefficients[c_lm_to_index(IMAG_PART, l, m)]/norm;
         }
     }
 }
