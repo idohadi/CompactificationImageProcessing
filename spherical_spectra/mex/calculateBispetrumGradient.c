@@ -1,18 +1,16 @@
 // TODO: docs in doxygen
 /** 
- * Return a bispectrum vector based on spherical harmonics vector. 
+ * Return the gradient of the bispectrum based on spherical harmonics vector. 
  * 
  * MATLAB call form:
- *      [bispectrum, bispectrum_gradient] = calculateBispectrum(shc, bandlimit, real_vs_imag)
+ *      bispectrum_gradient = calculateBispetrumGradient(shc, bandlimit, real_vs_imag)
  *  where
- *      bispectrum is the bispectrum vector. 
- *      bispectrum_gradient (optional argument) is its gradient (its transpose, actually).
+ *      bispectrum_gradient is the gradient (its transpose, actually).
  *      shc is assumed to represent real-valued spherical function if real_vs_imag=0 and complex-valued otherwise.
  * 
  * NOTE:
  *  Code performs no input checks.
   */
-
 
 #include <stdint.h>
 #include "mex.h"
@@ -72,36 +70,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     // Create output
     if (real_vs_imag==0)
     {
-        plhs[0] = mxCreateDoubleMatrix(r_lookup[bandlimit][bandlimit][bandlimit]+1, 1, mxREAL);
+        plhs[0] = mxCreateDoubleMatrix((bandlimit+1)*(bandlimit+1), r_lookup[bandlimit][bandlimit][bandlimit]+1, mxREAL);
         shc1 = r_init_shc(bandlimit, mxGetDoubles(prhs[0]));
-
-        if (nlhs>1)
-        {
-            plhs[1] = mxCreateDoubleMatrix((bandlimit+1)*(bandlimit+1), r_lookup[bandlimit][bandlimit][bandlimit]+1, mxREAL);
-        }
-        
-        // Calculate the bispectrm / its gradient
-        r_bispectrum(&shc1, bandlimit, r_lookup, &cgs, mxGetDoubles(plhs[0]));
-        if (nlhs>1)
-        {
-            r_bispectrum_gradient(&shc1, bandlimit, r_lookup, &cgs, mxGetDoubles(plhs[1]));
-        }
+        r_bispectrum_gradient(&shc1, bandlimit, r_lookup, &cgs, mxGetDoubles(plhs[0]));
     }
     else
     {
-        plhs[0] = mxCreateDoubleMatrix(c_lookup[bandlimit][bandlimit][bandlimit]+1, 1, mxREAL);
+        plhs[0] = mxCreateDoubleMatrix(2*(bandlimit+1)*(bandlimit+1), c_lookup[bandlimit][bandlimit][bandlimit]+1, mxREAL);
         shc2 = c_init_shc(bandlimit, mxGetDoubles(prhs[0]));
-
-        if (nlhs>1)
-        {
-            plhs[1] = mxCreateDoubleMatrix(2*(bandlimit+1)*(bandlimit+1), c_lookup[bandlimit][bandlimit][bandlimit]+1, mxREAL);
-        }
-        
-        // Calculate the bispectrm / its gradient
-        c_bispectrum(&shc2, bandlimit, c_lookup, &cgs, mxGetDoubles(plhs[0]));
-        if (nlhs>1)
-        {
-            c_bispectrum_gradient(&shc2, bandlimit, c_lookup, cgs, mxGetDoubles(plhs[1]));
-        }
+        c_bispectrum_gradient(&shc2, bandlimit, c_lookup, &cgs, mxGetDoubles(plhs[0]));
     }
 }
