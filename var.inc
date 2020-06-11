@@ -2,6 +2,7 @@
 CC=gcc
 MATLABFAGS=-R2018a
 MEX=mex.bat
+OUTDIRCMD=-o
 
 #Include directory variables
 SMFTDir=extern/SFMT
