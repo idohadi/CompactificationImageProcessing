@@ -2,8 +2,6 @@
 
 #include <stdio.h>
 
-void alegendre_eval_init_wrapper(double *dsize);
-
 int main()
 {
     double out;
