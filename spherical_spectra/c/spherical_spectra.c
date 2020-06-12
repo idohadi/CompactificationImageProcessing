@@ -221,8 +221,8 @@ double r_bispectral_invariant_imaginary_part(r_shc * const shc, const long l1, c
         {
             U   += get_cg(table, l1, l2, l, m, m1)
                     *( 
-                        r_get_shc(shc, REAL_PART, l1, m1)*r_get_shc(shc, REAL_PART, l2, m-m1)
-                            - r_get_shc(shc, IMAG_PART, l1, m1)*r_get_shc(shc, IMAG_PART, l2, m-m1)
+                        r_get_shc(shc, IMAG_PART, l1, m1)*r_get_shc(shc, IMAG_PART, l2, m-m1)
+                            - r_get_shc(shc, REAL_PART, l1, m1)*r_get_shc(shc, REAL_PART, l2, m-m1)
                     );
 
             M +=    get_cg(table, l1, l2, l, m, m1)
@@ -232,8 +232,8 @@ double r_bispectral_invariant_imaginary_part(r_shc * const shc, const long l1, c
                     );
         }
 
-        invariant   += r_get_shc(shc, IMAG_PART, l, m)*U 
-                        - r_get_shc(shc, REAL_PART, l, m)*M;
+        invariant   -= r_get_shc(shc, IMAG_PART, l, m)*U 
+                        + r_get_shc(shc, REAL_PART, l, m)*M;
     }
 
     return invariant;
