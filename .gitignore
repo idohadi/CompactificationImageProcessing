@@ -3,3 +3,5 @@
 *.o
 *.exe
 bin/
+*.mod
+*.a
