@@ -66,3 +66,17 @@ SUBROUTINE alegendre_proot_wrapper (dnu, dmu, j, t) BIND(C)
 	CALL alegendre_proot (dnu, dmu, j, t)
 RETURN
 END SUBROUTINE
+
+
+SUBROUTINE alegendre_gamma_ratio2_wrapper (dnu, dmu, val) BIND(C)
+	USE ISO_C_BINDING
+	USE alegendreeval
+	
+	REAL (C_DOUBLE), VALUE 			:: dnu
+	REAL (C_DOUBLE), VALUE 			:: dmu
+	
+	REAL (C_DOUBLE), INTENT(OUT)	:: val
+	
+	CALL alegendre_gamma_ratio2 (dnu, dmu, val)
+RETURN
+END SUBROUTINE
