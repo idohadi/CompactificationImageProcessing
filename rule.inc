@@ -1,8 +1,10 @@
 #Useful variable definitions
 CDir=c
+FDir=f
 MEXDir=mex
 TESTDir=tester
 COMONCOMPFLAGS=-Ofast
+FCOMONCOMPFLAGS=-Ofast
 SIMDCOMPFLAGS=-msse2 -DHAVE_SSE2
 DSFMTVAR=-DSFMT_MEXP=2281
 
@@ -18,7 +20,15 @@ CGFILE=$(CGDir)/$(CDir)/clebsch_gordan_coefficients.c
 SHFILE=$(SHDir)/$(CDir)/spherical_harmonics.c
 SPECTRAFILE=$(SPECTRADir)/$(CDir)/spherical_spectra.c
 
-INCLUDEPATH=-I$(SMFTDir) -I$(ROTATIONSAMPLINGDir)/$(CDir) -I$(ALIGNMENTDir)/$(CDir) -I$(CGDir)/$(CDir) -I$(ESTIMATIONDir)/$(CDir) -I$(INVERSIONDir)/$(CDir) -I$(SHDir)/$(CDir) -I$(SPECTRADir)/$(CDir) -I$(TDESIGNDir)/$(CDir)
+INCLUDEPATH=-I$(SMFTDir) \
+	-I$(ROTATIONSAMPLINGDir)/$(CDir) \
+	-I$(ALIGNMENTDir)/$(CDir) \
+	-I$(CGDir)/$(CDir) \
+	-I$(ESTIMATIONDir)/$(CDir) \
+	-I$(SHDir)/$(CDir) \
+	-I$(SPECTRADir)/$(CDir) \
+	-I$(TDESIGNDir)/$(CDir) \
+	-I$(ALEGDir)/$(FDir) -I$(ALEGDir)/$(CDir)
 OUTPATH=-outdir $(MEXOUTDIR)
 
 #Rule names
@@ -33,7 +43,8 @@ SPECTRARULES=calculateBispectrum \
 			powerSpectrum
 TESTERSRULES=clebsch_gordan_tester \
 			spherical_harmonics_tester \
-			spherical_spectra_tester
+			spherical_spectra_tester \
+			alegendre_tester
 
 #Rules
 compile : 	$(ROTATIONSAMPLINGRULES) \
@@ -75,6 +86,27 @@ powerSpectrum :
 	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SPECTRADir)/$(MEXDir)/powerSpectrum.c $(CGFILE) $(SHFILE) $(SPECTRAFILE) $(SFMTFILE)
 
 
+alegendre_mex :
+	mkdir -p $(MEXOUTDIR)
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGEVALDir)/bessel_eval.f90 -o $(MEXOUTDIR)/bessel_eval.o -J$(MEXOUTDIR)
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGEVALDir)/alegendre_eval.f90 -o $(MEXOUTDIR)/alegendre_eval.o -J$(MEXOUTDIR)
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGDir)/$(FDir)/alegendre_wrapper.f90 -o $(MEXOUTDIR)/alegendre_wrapper.o -J$(MEXOUTDIR)
+	$(CC) -c $(INCLUDEPATH) $(COMONCOMPFLAGS) $(ALEGDir)/$(CDir)/alegendre.c -o $(MEXOUTDIR)/alegendre.o -J$(MEXOUTDIR)
+	
+	$(MEX) $(MATLABFAGS) $(NONSFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(ALEGDir)/$(MEXDir)/evalAlegendre.c \
+		$(MEXOUTDIR)/alegendre_wrapper.o \
+		$(MEXOUTDIR)/alegendre.o \
+		$(MEXOUTDIR)/alegendre_eval.o \
+		$(MEXOUTDIR)/bessel_eval.o \
+		-L$(GFORTLIBPATH) -lgfortran -lquadmath
+	
+	rm $(MEXOUTDIR)/*.mod
+	rm $(MEXOUTDIR)/*.o
+	cp $(ALEGEVALDir)/*.bin $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin1 $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin2 $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin3 $(MEXOUTDIR)
+
 
 .PHONY3 : create_testers_folder
 create_testers_folder : 
@@ -92,8 +124,27 @@ spherical_harmonics_tester : create_testers_folder
 spherical_spectra_tester : create_testers_folder
 	$(CC) $(INCLUDEPATH) $(SPECTRADir)/$(TESTDir)/spherical_spectra_tester.c $(CGFILE) $(SHFILE) $(SPECTRAFILE) $(SFMTFILE) $(OUTDIRCMD) $(TESTEROUTDIR)/spherical_spectra_tester.exe $(DSFMTVAR) $(SIMDCOMPFLAGS)
 
-
+alegendre_tester : create_testers_folder
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGEVALDir)/bessel_eval.f90 -o $(TESTEROUTDIR)/bessel_eval.o -J$(TESTEROUTDIR)
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGEVALDir)/alegendre_eval.f90 -o $(TESTEROUTDIR)/alegendre_eval.o -J$(TESTEROUTDIR)
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGDir)/$(FDir)/alegendre_wrapper.f90 -o $(TESTEROUTDIR)/alegendre_wrapper.o -J$(TESTEROUTDIR)
+	$(CC) -c $(INCLUDEPATH) $(COMONCOMPFLAGS) $(ALEGDir)/$(CDir)/alegendre.c -o $(TESTEROUTDIR)/alegendre.o -J$(TESTEROUTDIR)
+	$(CC) $(INCLUDEPATH) $(COMONCOMPFLAGS) $(ALEGDir)/$(TESTDir)/alegendre_tester.c \
+		$(TESTEROUTDIR)/alegendre_wrapper.o \
+		$(TESTEROUTDIR)/alegendre.o \
+		$(TESTEROUTDIR)/alegendre_eval.o \
+		$(TESTEROUTDIR)/bessel_eval.o \
+		-lgfortran \
+		$(OUTDIRCMD) $(TESTEROUTDIR)/alegendre_tester.exe
+	rm $(TESTEROUTDIR)/*.mod
+	rm $(TESTEROUTDIR)/*.o
+	cp $(ALEGEVALDir)/*.bin $(TESTEROUTDIR)
+	cp $(ALEGEVALDir)/*.bin1 $(TESTEROUTDIR)
+	cp $(ALEGEVALDir)/*.bin2 $(TESTEROUTDIR)
+	cp $(ALEGEVALDir)/*.bin3 $(TESTEROUTDIR)
+	
 .PHONY : clean
 clean :
 	rm -r bin
+
 
