@@ -17,7 +17,7 @@
 #include "spherical_spectra.h"
 
 bool first_run = true;
-r_blt r_lookup;
+c_blt r_lookup;
 c_blt c_lookup;
 cg_table cgs;
 size_t bandlimit = 0;
@@ -39,7 +39,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         previous_bandlimit = bandlimit;
         cgs = allocate_cg_table(bandlimit);
         calculate_cg_table(bandlimit, &cgs);
-        r_lookup = r_build_bispectrum_lookup_table(bandlimit);
+        r_lookup = c_build_bispectrum_lookup_table(bandlimit);
         c_lookup = c_build_bispectrum_lookup_table(bandlimit);
         mexPrintf("Initialization completed.\n");
         first_run = false;
@@ -51,7 +51,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         mexPrintf("Bandlimit chagned. Reinitializing Clebsch-Gordan coefficients and bispectrum lookup table.\n");
         // Destroying the lookup tables and Clebsch-Gordan table
         destroy_cg_table(&cgs);
-        r_destroy_bispectrum_lookup_table(r_lookup, previous_bandlimit);
+        c_destroy_bispectrum_lookup_table(r_lookup, previous_bandlimit);
         c_destroy_bispectrum_lookup_table(c_lookup, previous_bandlimit);
 
         // Generate new tables
@@ -59,7 +59,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         cgs = allocate_cg_table(bandlimit);
 
         calculate_cg_table(bandlimit, &cgs);
-        r_lookup = r_build_bispectrum_lookup_table(bandlimit);
+        r_lookup = c_build_bispectrum_lookup_table(bandlimit);
         c_lookup = c_build_bispectrum_lookup_table(bandlimit);
 
         mexPrintf("Reinitialization completed.\n");
@@ -68,7 +68,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     // Create output
     if (real_vs_imag==0)
     {
-        plhs[0] = mxCreateDoubleMatrix((bandlimit+1)*(bandlimit+1), r_lookup[bandlimit][bandlimit][bandlimit]+1, mxREAL);
+        plhs[0] = mxCreateDoubleMatrix((bandlimit+1)*(bandlimit+1), r_lookup[bandlimit][bandlimit][bandlimit][1]+1, mxREAL);
         shc1 = r_init_shc(bandlimit, mxGetDoubles(prhs[0]));
         r_bispectrum_gradient(&shc1, r_lookup, &cgs, mxGetDoubles(plhs[0]));
     }

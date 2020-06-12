@@ -39,7 +39,7 @@ CLEBSCHGORDANRULES=cgVector
 SHRULES=normalizeSHC \
 			randomNormalizedSHC
 SPECTRARULES=calculateBispectrum \
-			calculateBispetrumGradient \
+			calculateBispectrumGradient \
 			powerSpectrum
 TESTERSRULES=clebsch_gordan_tester \
 			spherical_harmonics_tester \
@@ -79,8 +79,8 @@ randomNormalizedSHC :
 calculateBispectrum :
 	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SPECTRADir)/$(MEXDir)/calculateBispectrum.c $(CGFILE) $(SHFILE) $(SPECTRAFILE) $(SFMTFILE)
 
-calculateBispetrumGradient :
-	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SPECTRADir)/$(MEXDir)/calculateBispetrumGradient.c $(CGFILE) $(SHFILE) $(SPECTRAFILE) $(SFMTFILE)
+calculateBispectrumGradient :
+	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SPECTRADir)/$(MEXDir)/calculateBispectrumGradient.c $(CGFILE) $(SHFILE) $(SPECTRAFILE) $(SFMTFILE)
 
 powerSpectrum :
 	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SPECTRADir)/$(MEXDir)/powerSpectrum.c $(CGFILE) $(SHFILE) $(SPECTRAFILE) $(SFMTFILE)
