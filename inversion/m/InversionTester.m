@@ -3,7 +3,7 @@ L = 8;
 td = loadtd('sf071.02593');
 
 %%
-L = 4; 
+L = 8; 
 td = loadtd('sf071.02593');
 REAL=0; 
 shc = randomNormalizedSHC(L, REAL); 

@@ -300,8 +300,8 @@ double c_bispectral_invariant_imaginary_part(c_shc * const shc, const long l1, c
         {
             U   += get_cg(table, l1, l2, l, m, m1)
                     *( 
-                        c_get_shc(shc, REAL_PART, l1, m1)*c_get_shc(shc, REAL_PART, l2, m-m1)
-                            - c_get_shc(shc, IMAG_PART, l1, m1)*c_get_shc(shc, IMAG_PART, l2, m-m1)
+                        c_get_shc(shc, IMAG_PART, l1, m1)*c_get_shc(shc, IMAG_PART, l2, m-m1)
+                            - c_get_shc(shc, REAL_PART, l1, m1)*c_get_shc(shc, REAL_PART, l2, m-m1)
                     );
 
             M +=    get_cg(table, l1, l2, l, m, m1)
@@ -311,8 +311,8 @@ double c_bispectral_invariant_imaginary_part(c_shc * const shc, const long l1, c
                     );
         }
 
-        invariant   += c_get_shc(shc, IMAG_PART, l, m)*U 
-                        - c_get_shc(shc, REAL_PART, l, m)*M;
+        invariant   -= c_get_shc(shc, IMAG_PART, l, m)*U 
+                        + c_get_shc(shc, REAL_PART, l, m)*M;
     }
 
     return invariant;
@@ -421,10 +421,10 @@ void r_bispectrum_gradient(r_shc * const shc, const c_blt lookup, cg_table * con
                     r_bisp_grad[row_index_rl+l*l+2*m] += Mplus - ((m % 2)==0 ? 1 : -1)*Mminus;
 
                     // The derivative of b_{i,l1,l2,l} w.r.t f_{r,l,m} (m>=1)
-                    r_bisp_grad[row_index_im+l*l+2*m-1] += Mplus + ((m % 2)==0 ? 1 : -1)*Mminus;
+                    r_bisp_grad[row_index_im+l*l+2*m-1] -= Mplus + ((m % 2)==0 ? 1 : -1)*Mminus;
 
                     // The derivative of b_{i,l1,l2,l} w.r.t f_{i,l,m} (m>=1)
-                    r_bisp_grad[row_index_im+l*l+2*m] += - Uplus + ((m % 2)==0 ? 1 : -1)*Mminus;
+                    r_bisp_grad[row_index_im+l*l+2*m] -= - Uplus + ((m % 2)==0 ? 1 : -1)*Mminus;
                 }
 
                 // The derivative w.r.t f_{r,l,0}
@@ -440,7 +440,7 @@ void r_bispectrum_gradient(r_shc * const shc, const c_blt lookup, cg_table * con
                                                     );
 
                     // The derivative of b_{i,l1,l2,l} w.r.t f_{r,l,0}
-                    r_bisp_grad[row_index_im+l*l]  += get_cg(table, l1, l2, l, 0, m1)
+                    r_bisp_grad[row_index_im+l*l]  -= get_cg(table, l1, l2, l, 0, m1)
                                                     *( 
                                                         r_get_shc(shc, IMAG_PART, l1, m1)*r_get_shc(shc, REAL_PART, l2, -m1)
                                                         + r_get_shc(shc, REAL_PART, l1, m1)*r_get_shc(shc, IMAG_PART, l2, -m1)
@@ -502,10 +502,10 @@ void r_bispectrum_gradient(r_shc * const shc, const c_blt lookup, cg_table * con
                     r_bisp_grad[row_index_rl+l1*l1+2*m1] += Mplus - ((m1 % 2)==0 ? 1 : -1)*Mminus;
 
                     // The derivative of b_{i,l1,l2,l} w.r.t f_{r,l1,m1} (m1>=1)
-                    r_bisp_grad[row_index_im+l1*l1+2*m1-1] -= Mplus + ((m1 % 2)==0 ? 1 : -1)*Mminus;
+                    r_bisp_grad[row_index_im+l1*l1+2*m1-1] += Mplus + ((m1 % 2)==0 ? 1 : -1)*Mminus;
                 
                     // The derivative of b_{i,l1,l2,l} w.r.t f_{i,l1,m1} (m1>=1)
-                    r_bisp_grad[row_index_im+l1*l1+2*m1] += Uplus - ((m1 % 2)==0 ? 1 : -1)*Uminus;
+                    r_bisp_grad[row_index_im+l1*l1+2*m1] -= Uplus - ((m1 % 2)==0 ? 1 : -1)*Uminus;
                 }
 
                 // The derivative w.r.t f_{r,l1,0}
@@ -521,7 +521,7 @@ void r_bispectrum_gradient(r_shc * const shc, const c_blt lookup, cg_table * con
                                                     );
 
                     // The derivative of b_{i,l1,l2,l} w.r.t f_{r,l1,0}
-                    r_bisp_grad[row_index_im+l1*l1]    -= get_cg(table, l1, l2, l, m, 0)
+                    r_bisp_grad[row_index_im+l1*l1]    += get_cg(table, l1, l2, l, m, 0)
                                                     *( 
                                                         r_get_shc(shc, IMAG_PART, l, m)*r_get_shc(shc, REAL_PART, l2, m)
                                                         - r_get_shc(shc, REAL_PART, l, m)*r_get_shc(shc, IMAG_PART, l2, m)
@@ -584,10 +584,10 @@ void r_bispectrum_gradient(r_shc * const shc, const c_blt lookup, cg_table * con
                     r_bisp_grad[row_index_rl+l2*l2+2*m2] += Mplus - ((m2 % 2)==0 ? 1 : -1)*Mminus;
 
                     // The derivative of b_{i,l1,l2,l} w.r.t f_{r,l2,m2} (m2>=1)
-                    r_bisp_grad[row_index_im+l2*l2+2*m2-1] -= Mplus + ((m2 % 2)==0 ? 1 : -1)*Mminus;
+                    r_bisp_grad[row_index_im+l2*l2+2*m2-1] += Mplus + ((m2 % 2)==0 ? 1 : -1)*Mminus;
                 
                     // The derivative of b_{i,l1,l2,l} w.r.t f_{i,l2,m2} (m2>=1)
-                    r_bisp_grad[row_index_im+l2*l2+2*m2] += Uplus - ((m2 % 2)==0 ? 1 : -1)*Uminus;
+                    r_bisp_grad[row_index_im+l2*l2+2*m2] -= Uplus - ((m2 % 2)==0 ? 1 : -1)*Uminus;
                 }
 
                 // The derivative w.r.t f_{r,l2,0}
@@ -603,18 +603,14 @@ void r_bispectrum_gradient(r_shc * const shc, const c_blt lookup, cg_table * con
                                                     );
 
                     // The derivative of b_{i,l1,l2,l} w.r.t f_{r,l2,0}
-                    r_bisp_grad[row_index_im+l2*l2]    -= get_cg(table, l1, l2, l, m, m)
+                    r_bisp_grad[row_index_im+l2*l2]    += get_cg(table, l1, l2, l, m, m)
                                                     *( 
                                                         r_get_shc(shc, IMAG_PART, l, m)*r_get_shc(shc, REAL_PART, l1, m)
                                                         - r_get_shc(shc, REAL_PART, l, m)*r_get_shc(shc, IMAG_PART, l1, m)
                                                     );
                 }
-
-
-                // ==========================
-                // Derivative of the imaginary part of b_{l1,l2,l}
-                // ==========================
-                
+				
+				
             }
         }
     }

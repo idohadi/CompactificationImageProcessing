@@ -1,5 +1,5 @@
 %%
-L = 0;
+L = 4;
 shc_bisp = calculateBispectrum(randomNormalizedSHC(L, 0), L);
 
 problem.M = euclideanfactory((L+1)^2, 1);
