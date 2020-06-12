@@ -1,10 +1,10 @@
 %%
-L = 3;
-shc_bisp = calculateBispectrumOfRealValuedFunction(2*rand((L+1)^2, 1)-1, L);
+L = 0;
+shc_bisp = calculateBispectrum(randomNormalizedSHC(L, 0), L);
 
 problem.M = euclideanfactory((L+1)^2, 1);
-problem.cost = @(x) sum(abs(calculateBispectrumOfRealValuedFunction(x, L)-shc_bisp))^2;
-problem.grad = @(x) 2*calculateGradientOfBispectrumOfRealValuedFunction(x, L)*(calculateBispectrumOfRealValuedFunction(x, L)-shc_bisp);
+problem.cost = @(x) sum(abs(calculateBispectrum(x, L)-shc_bisp))^2;
+problem.grad = @(x) 2*calculateBispectrumGradient(x, L)*(calculateBispectrum(x, L)-shc_bisp);
 
 checkgradient(problem);
 

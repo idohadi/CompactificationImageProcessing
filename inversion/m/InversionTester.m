@@ -2,6 +2,48 @@
 L = 8;
 td = loadtd('sf071.02593');
 
+%%
+L = 4; 
+td = loadtd('sf071.02593');
+REAL=0; 
+shc = randomNormalizedSHC(L, REAL); 
+[b, g] = calculateBispectrum(shc, L, REAL); 
+
+%%
+[invertedSHC, rootedResidual, output] = invertRealValuedBispectrum(b, L);
+
+%%
+shcComplexified = r2c(shc, L);
+invertedSHCComplexified = r2c(invertedSHC, L);
+
+%%
+[relativeDistance, alignedSHC2, optimalRotation, refinedMaxCorrelation, crudeMaxCorrelation, fminserachOutput] = alignSphericalHarmonics(shcComplexified, invertedSHCComplexified, L, td, 'SequenceSize', 2^9*72);
+
+%%
+pointNo = 10^4;
+imFunHandle = @(theta, phi) real(evalYt(theta, phi, L).' * shcComplexified);
+recoveredFunHandle ...
+    = @(theta, phi) real(evalYt(theta, phi, L).' * invertedSHCComplexified);
+
+figure;
+tiledlayout(1, 2, ...
+        'TileSpacing', 'normal', ...
+        'Padding', 'Compact');
+
+% Plot original SHCs
+nexttile;
+caxis([-3, 3]);
+plotSphericalFunction(imFunHandle, pointNo);
+title('Estimated SHCs of image');
+axis off;
+
+% Plot recovered SHCs
+nexttile;
+caxis([-3, 3]);
+plotSphericalFunction(recoveredFunHandle, pointNo);
+title('Recovered SHCs');
+axis off;
+
 %% Real-valued SHC alignment test
 trialsNo = 100;
 
