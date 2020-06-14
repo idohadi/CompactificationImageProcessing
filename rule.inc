@@ -89,7 +89,7 @@ powerSpectrum :
 	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SPECTRADir)/$(MEXDir)/powerSpectrum.c $(CGFILE) $(SHFILE) $(SPECTRAFILE) $(SFMTFILE)
 
 
-
+AELGDEMOOUTDir=evalAlegendre_demo
 alegendre_mex :
 	mkdir -p $(MEXOUTDIR)
 	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGEVALDir)/bessel_eval.f90 -o $(MEXOUTDIR)/bessel_eval.o -J$(MEXOUTDIR)
@@ -110,8 +110,12 @@ alegendre_mex :
 	cp $(ALEGEVALDir)/*.bin1 $(MEXOUTDIR)
 	cp $(ALEGEVALDir)/*.bin2 $(MEXOUTDIR)
 	cp $(ALEGEVALDir)/*.bin3 $(MEXOUTDIR)
-
-
+	
+	mkdir -p $(MEXOUTDIR)/$(AELGDEMOOUTDir)
+	cp $(ALEGDir)/$(TESTDir)/demo.m $(MEXOUTDIR)/$(AELGDEMOOUTDir)
+	cp $(ALEGDir)/$(TESTDir)/demo_comparison.nb $(MEXOUTDIR)/$(AELGDEMOOUTDir)
+	
+	
 .PHONY3 : create_testers_folder
 create_testers_folder : 
 	mkdir -p $(TESTEROUTDIR)
@@ -147,6 +151,7 @@ alegendre_tester : create_testers_folder
 	cp $(ALEGEVALDir)/*.bin2 $(TESTEROUTDIR)
 	cp $(ALEGEVALDir)/*.bin3 $(TESTEROUTDIR)
 
+	
 tdesign_tester : create_testers_folder
 	$(CC) $(INCLUDEPATH) $(TDESIGNDir)/$(TESTDir)/tdesign_tester.c $(TDFILE) $(OUTDIRCMD) $(TESTEROUTDIR)/tdesign_tester.exe
 	mkdir -p bin/data
