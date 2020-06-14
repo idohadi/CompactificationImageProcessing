@@ -98,8 +98,7 @@ double alegendre(const long l, const long m, double t)
     else
     {
         // Calcualte S_{l}^{m}(t) for m>0; see Bateman, 3.4(17)
-        valq = gamma_ratio(l, m);
-        valp *= ((m%2)==0 ? 1 : -1) * valq*valq;
+        valp *= ((m%2)==0 ? 1 : -1);
         return valp;
     }
     
@@ -148,25 +147,36 @@ double alegendre_root(const long l, const long m, const long root_order)
 }
 
 
-double gamma_ratio(const long l, const long m)
-{
-    /* 
-    TODO: docs
+// double gamma_ratio(const long l, const long m)
+// {
+//     /* 
+//     TODO: docs
 
-    Calculate Gamma(l+m+1) / Gamma(l-m+1)  = (l+m)!/(l-m)!
-    */
+//     Calculate Gamma(l+m+1) / Gamma(l-m+1)  = (l+m)!/(l-m)!
+//     */
 
-   double val;
-   alegendre_gamma_ratio2_wrapper(l, m, &val);
-   return exp(val);
-}
+//     double val;
+//     alegendre_gamma_ratio2_wrapper(l, m, &val);
+//     return exp(-val);
 
-double double_factorial(const long l, const long m)
-{
-    /* 
-    TODO: docs. It is for the calculation of the alegendre at 0
+//    if (m>=0)
+//    {
+//         alegendre_gamma_ratio2_wrapper(l, m, &val);
+//         return exp(-val);
+//    }
+//    else
+//    {
+//        alegendre_gamma_ratio2_wrapper(l, -m, &val);
+//        return exp(val);
+//    }
+// }
 
-    Calculate (n+m-1)!! / (l-m+1)!!
-    */
+// double double_factorial(const long l, const long m)
+// {
+//     /* 
+//     TODO: docs. It is for the calculation of the alegendre at 0
 
-}
+//     Calculate (n+m-1)!! / (l-m+1)!!
+//     */
+
+// }

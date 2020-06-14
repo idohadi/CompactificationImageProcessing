@@ -7,7 +7,8 @@
  *      output = evalAlegendre(l, m, x)
  *  where
  *      l, m are order, degree of the polynomial.
- *      x is a double array. All numbers need to be in (-1, 1) and not include 0.
+ *      x is a double array. All numbers need to be in [-1, 1].
+ *      output(j) is the associated Legendre polynomial if x(i) in [-1,1] and NaN otherwise.
  * 
  * NOTE:
  *  Code performs no input checks.
@@ -27,7 +28,7 @@ bool first_run = true;
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-    // Initialize the fast Legendre function
+    // // Initialize the fast Legendre function
     if (first_run)
     {
         alegendre_init();
@@ -47,6 +48,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
     for (size_t i = 0; i<N; ++i)
     {
-        output[i] = alegendre2(l, m, x[i]);
+        if (x[i]<=1 && x[i]>=-1)
+        {
+            output[i] = alegendre2(l, m, x[i]);
+        }
+        else
+        {
+            output[i] = mxGetNaN();
+        }
     }
 }
