@@ -42,6 +42,7 @@ SHRULES=normalizeSHC \
 SPECTRARULES=calculateBispectrum \
 			calculateBispetrumGradient \
 			powerSpectrum
+ALEGENDRERULES=alegendre_mex
 TESTERSRULES=clebsch_gordan_tester \
 			spherical_harmonics_tester \
 			spherical_spectra_tester \
@@ -52,6 +53,7 @@ compile : 	$(ROTATIONSAMPLINGRULES) \
 				$(CLEBSCHGORDANRULES) \
 				$(SHRULES) \
 				$(SPECTRARULES) \
+				$(ALEGENDRERULES) \
 				$(TESTERSRULES)
 
 
@@ -87,6 +89,11 @@ powerSpectrum :
 	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SPECTRADir)/$(MEXDir)/powerSpectrum.c $(CGFILE) $(SHFILE) $(SPECTRAFILE) $(SFMTFILE)
 
 
+
+MEX1=/c/matlab-r2020a/extern/lib/win64/mingw64
+MEX2=/c/matlab-r2020a/extern/lib/win64/microsoft
+MEX3=/c/matlab-r2020a/extern/include
+
 alegendre_mex :
 	mkdir -p $(MEXOUTDIR)
 	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGEVALDir)/bessel_eval.f90 -o $(MEXOUTDIR)/bessel_eval.o -J$(MEXOUTDIR)
@@ -94,12 +101,19 @@ alegendre_mex :
 	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGDir)/$(FDir)/alegendre_wrapper.f90 -o $(MEXOUTDIR)/alegendre_wrapper.o -J$(MEXOUTDIR)
 	$(CC) -c $(INCLUDEPATH) $(COMONCOMPFLAGS) $(ALEGDir)/$(CDir)/alegendre.c -o $(MEXOUTDIR)/alegendre.o -J$(MEXOUTDIR)
 	
-	$(MEX) $(MATLABFAGS) $(NONSFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(ALEGDir)/$(MEXDir)/evalAlegendre.c \
-		$(MEXOUTDIR)/alegendre_wrapper.o \
-		$(MEXOUTDIR)/alegendre.o \
-		$(MEXOUTDIR)/alegendre_eval.o \
-		$(MEXOUTDIR)/bessel_eval.o \
-		-L$(GFORTLIBPATH) -lgfortran -lquadmath
+	$(CC) $(MEXOUTDIR)/alegendre.o $(MEXOUTDIR)/alegendre_wrapper.o $(MEXOUTDIR)/alegendre_eval.o $(MEXOUTDIR)/bessel_eval.o  \
+		-o evalAlegendre.mexw64 \
+		-lgfortran -L$(MEX1) \
+		-lmx -lmex -lmat
+	
+	#$(CC) -c $(INCLUDEPATH) -I$(MEX3) $(COMONCOMPFLAGS) $(ALEGDir)/$(MEXDir)/evalAlegendre.c -o $(MEXOUTDIR)/evalAlegendre.o -J$(MEXOUTDIR)
+	
+	#$(MEX) $(MATLABFAGS) $(NONSFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(ALEGDir)/$(MEXDir)/evalAlegendre.c \
+	#	$(MEXOUTDIR)/alegendre_wrapper.o \
+	#	$(MEXOUTDIR)/alegendre.o \
+	#	$(MEXOUTDIR)/alegendre_eval.o \
+	#	$(MEXOUTDIR)/bessel_eval.o \
+	#	-lgfortran -lquadmath
 	
 	rm $(MEXOUTDIR)/*.mod
 	rm $(MEXOUTDIR)/*.o
