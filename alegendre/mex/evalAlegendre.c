@@ -1,7 +1,7 @@
 // TODO: write docs
 
 /** 
- * Calculate the associated Legendre polynomial of input array.
+ * Calculate the associated Legendre polynomial of input array of nubmers in [-1,1].
  * 
  * MATLAB call form:
  *      output = evalAlegendre(l, m, x)
@@ -32,6 +32,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
         alegendre_init();
         first_run = false;
+        mexPrintf("evalAlegendre initialized successfully.\n");
     }
 
     // Obtain input
@@ -46,6 +47,6 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
     for (size_t i = 0; i<N; ++i)
     {
-        output[i] = alegendre(l, m, x[i]);
+        output[i] = alegendre2(l, m, x[i]);
     }
 }
