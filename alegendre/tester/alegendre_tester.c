@@ -1,6 +1,7 @@
-// TODO
+// TODO: docs in doxygen
 
 #include <stdio.h>
+#include <math.h>
 #include "alegendre.h"
 
 int main(int argc, char *argv[])
@@ -13,12 +14,12 @@ int main(int argc, char *argv[])
     if (argc==4)
     {
         long l, m;
-        double t;
+        double x;
         sscanf(argv[1], "%ld", &l);
         sscanf(argv[2], "%ld", &m);
-        sscanf(argv[3], "%lf", &t);
+        sscanf(argv[3], "%lf", &x);
 
-        printf("l = %d, m = %d, t = %f, val = %f\n", l, m, t, alegendre(l, m, t));
+        printf("l = %d, m = %d, x = %f, acos(x) = %f, val = %f\n", l, m, x, acos(x), alegendre2(l, m, x));
     }
     else
     {

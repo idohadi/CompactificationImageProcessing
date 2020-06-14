@@ -41,6 +41,34 @@ double alegendre(const long l, const long m, double t)
         t += 2.0*PI;
     }
     
+    // If t == 0 (numerically)
+    if (t<=DBL_EPSILON && t>=-DBL_EPSILON)
+    {
+        // Calculate S_{l}^{-|m|}(0) and return it; see Bateman, 3.9.2(9)
+        if (m==0)
+        {
+            return sqrt((2.0*l+1.0)/(4*PI));
+        }
+        else
+        {
+            return 0.0;
+        }
+    }
+
+    // If t == PI (numerically)
+    if (t<= PI + DBL_EPSILON && t>= PI-DBL_EPSILON ) // if (t == PI), the only remaining case
+    {
+        // Calculate S_{l}^{-|m|}(PI) and return it; see Bateman, 3.9.2(9) and 3.4(19)
+        if (m==0)
+        {
+            return ((l%2)==0 ? 1 : -1)*sqrt((2.0*l+1.0)/(4*PI));
+        }
+        else
+        {
+            return 0.0;
+        }
+    }
+
     // Calculate S_{l}^{-|m|} (t)
     if (t>0.0 && t<=0.5*PI)
     {
@@ -53,38 +81,14 @@ double alegendre(const long l, const long m, double t)
     }
     else if (t>0.5*PI && t<PI)
     {
-        // Calcualte S_{l}^{-|m|}(t-pi/2) * sqrt(sin(t-pi/2))
-        alegendre_eval_wrapper(l, (m>=0 ? m : -m), t-0.5*PI, 
+        // Calcualte S_{l}^{-|m|}(PI-t) * sqrt(sin(PI-t)); recall that cos(pi-t) = - cos(t)
+        alegendre_eval_wrapper(l, (m>=0 ? m : -m), PI-t, 
                             &alpha, &alphader, 
                             &vallogp, &vallogq, 
                             &valp, &valq);
-        valp /= sqrt(2.0*PI*sin(t-0.5*PI));
+        valp /= sqrt(2.0*PI*sin(PI-t));
         // Calculate S_{l}^{-|m|} (t); see Bateman 3.4(19)
         valp *= (((l+m) % 2) == 0 ? 1 : -1);
-    }
-    else if (t==0)
-    {
-        // Calculate S_{l}^{-|m|}(0) and return it; see Bateman, 3.9.2(9)
-        if (m==0)
-        {
-            return sqrt((2.0*l+1.0)/(4*PI));
-        }
-        else
-        {
-            return 0.0;
-        }
-    }
-    else // if (t == PI), the only remaining case
-    {
-        // Calculate S_{l}^{-|m|}(PI) and return it; see Bateman, 3.9.2(9) and 3.4(19)
-        if (m==0)
-        {
-            return ((m%2)==0 ? 1 : -1)*sqrt((2.0*l+1.0)/(4*PI));
-        }
-        else
-        {
-            return 0.0;
-        }
     }
     
     if (m<=0)
@@ -108,7 +112,7 @@ double alegendre2(const long l, const long m, const double x)
     /* 
     Calculates the normalized associated Legendre polynomial 
         sqrt(((2l+1)/(4*pi)) * ((l-m)! / (l+m)!))    *   P_{l}^{m} (x) 
-    for x in [-1,1].
+    for x in [-1,1git ].
 
     NOTES:
         (1) Must run alegendre_init once before using this function.
