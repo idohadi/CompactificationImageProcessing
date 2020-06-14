@@ -2,12 +2,13 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "tdesign.h"
 
 // TODO: add list of file names
 
 // A list of t-design file names
-const char *bandlimit_filename[]
+char * const bandlimit_filename[]
     = 
     {
         "../data/sf001.00003",
@@ -192,7 +193,7 @@ const char *bandlimit_filename[]
         "../data/sf180.16382"
     };
 
-const long tdesign_length[]
+long const tdesign_length[]
     = 
     {
         3,
@@ -417,7 +418,7 @@ tdesign_cart read_tdesign(const size_t bandlimit)
 
         double x1, x2, x3;
         size_t row = 0;
-        while (fscanf(f, " %22lf %22lf %22lf", &x1, &x2, &x3)!=EOF)
+        while (fscanf(f, " %23lf %23lf %23lf", &x1, &x2, &x3)!=EOF)
         {
             td.tdesign[3*row] = x1;
             td.tdesign[3*row+1] = x2;
@@ -437,10 +438,10 @@ void print_tdesign(tdesign_cart *td)
 {
     printf("Bandlimit = %d. t-design length = %d.\n", td->bandlimit, td->length);
     printf("=========================================================================\n");
-    printf("\tRow\t\tx1\t\tx2\t\tx3\n");
+    printf("\tRow\t\t   x1\t\t   x2\t\t   x3\n");
     printf("=========================================================================\n");
     for (long row = 0; row<td->length; ++row)
     {
-        printf("\t%d\t\t% lf\t\t% lf\t\t% lf\n", row+1, td->tdesign[3*row], td->tdesign[3*row+1], td->tdesign[3*row+2]);
+        printf("\t%d\t\t% 10.10lf\t% 10.10lf\t% 10.10lf\n", row+1, td->tdesign[3*row], td->tdesign[3*row+1], td->tdesign[3*row+2]);
     }
 }

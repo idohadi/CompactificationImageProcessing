@@ -1,6 +1,6 @@
 
-const char *bandlimit_filename[];
-const long tdesign_length[];
+extern char * const bandlimit_filename[];
+extern long const tdesign_length[];
 
 /* t-design in Cartesian coordinates. */
 typedef 

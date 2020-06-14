@@ -7,6 +7,7 @@ USE:
 */
 
 #include <stdint.h>
+#include <stdio.h>
 #include "tdesign.h"
 
 int main(int argc, char *argv[])
@@ -14,8 +15,7 @@ int main(int argc, char *argv[])
     if (argc==2)
     {
         size_t bandlimit;
-        sscanf(argv[2], "%zu", &bandlimit);
-
+        sscanf(argv[1], "%zu", &bandlimit);
         tdesign_cart td = read_tdesign(bandlimit);
 
         print_tdesign(&td);

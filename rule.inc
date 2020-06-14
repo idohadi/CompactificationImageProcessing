@@ -19,6 +19,7 @@ ROTATIONFILES=$(ROTATIONSAMPLINGDir)/$(CDir)/utility_functions.c \
 CGFILE=$(CGDir)/$(CDir)/clebsch_gordan_coefficients.c
 SHFILE=$(SHDir)/$(CDir)/spherical_harmonics.c
 SPECTRAFILE=$(SPECTRADir)/$(CDir)/spherical_spectra.c
+TDFILE=$(TDESIGNDir)/$(CDir)/tdesign.c
 
 INCLUDEPATH=-I$(SMFTDir) \
 	-I$(ROTATIONSAMPLINGDir)/$(CDir) \
@@ -142,6 +143,11 @@ alegendre_tester : create_testers_folder
 	cp $(ALEGEVALDir)/*.bin1 $(TESTEROUTDIR)
 	cp $(ALEGEVALDir)/*.bin2 $(TESTEROUTDIR)
 	cp $(ALEGEVALDir)/*.bin3 $(TESTEROUTDIR)
+
+tdesign_tester : create_testers_folder
+	$(CC) $(INCLUDEPATH) $(TDESIGNDir)/$(TESTDir)/tdesign_tester.c $(TDFILE) $(OUTDIRCMD) $(TESTEROUTDIR)/tdesign_tester.exe
+	mkdir -p bin/data
+	cp $(TDESIGNDir)/data/* bin/data
 	
 .PHONY : clean
 clean :
