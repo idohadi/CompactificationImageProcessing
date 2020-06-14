@@ -620,8 +620,16 @@ void c_rotate_spherical_harmonics()
 }
 
 
-void r_rotate_spherical_harmonics()
+void r_rotate_spherical_harmonics(const r_shc * restrict shc, const double * restrict rotation, r_shc * restrict output_shc)
 {
-    // TODO
+    /* 
+    Calcualte the spherical harmonics coefficients of the bandlimited function with spherical harmonics coefficients shc.
+    rotation is a an array of size 4, which is a quaternion representation of a rotation.
+    Result is saved in output_shc.
+    */
 }
 
+double r_eval_sh(const r_shc * shc, const double theta, const double phi)
+{
+    // Evaluate spherical function represented by shc
+}

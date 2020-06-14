@@ -19,6 +19,8 @@ void alegendre_init();
 
 double alegendre(const long l, const long m, const double t);
 
+double alegendre2(const long l, const long m, const double t);
+
 long alegendre_root_count(const long l, const long m);
 
 double alegendre_root(const long l, const long m, const long root_order);

@@ -119,3 +119,7 @@ void r_multiply_shc_in_place(r_shc * restrict shc, const double alpha);
 
 
 void c_multiply_shc_in_place(c_shc * restrict shc, const double alpha);
+
+void r_rotate_spherical_harmonics(const r_shc * restrict shc, const double * restrict rotation, r_shc * restrict output_shc);
+
+double r_eval_sh(const r_shc * shc, const double theta, const double phi);
