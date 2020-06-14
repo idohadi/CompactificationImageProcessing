@@ -1,11 +1,10 @@
-l = 1000; 
-m = -311; 
+l = 160; 
+m = -66; 
 
 
-N = 10^3; 
-epsi = 10^-3; 
+N = 5*10^3+1; 
 
-x = linspace(-1+epsi, 1-epsi, 2*N); 
+x = linspace(-1, 1, N); 
 t = tic();
 y = evalAlegendre(l, m, x);
 t = toc(t);
