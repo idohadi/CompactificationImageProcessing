@@ -412,6 +412,7 @@ tdesign_cart read_tdesign(const size_t bandlimit)
     {
         tdesign_cart td;
         td.bandlimit = bandlimit;
+        td.length = bandlimit_to_tdesign_length(bandlimit);
         td.tdesign = allocate_tdesign(bandlimit, CART);
 
         double x1, x2, x3;
@@ -431,9 +432,15 @@ tdesign_cart read_tdesign(const size_t bandlimit)
     }
 }
 
-void print_tdesign(double * const tdesign, const COORD_SYSTEM sys)
+
+void print_tdesign(tdesign_cart *td)
 {
-    
-    // TODO
-    // Print  t-design from file, based on bandlimit, not file name
+    printf("Bandlimit = %d. t-design length = %d.\n", td->bandlimit, td->length);
+    printf("=========================================================================\n");
+    printf("\tRow\t\tx1\t\tx2\t\tx3\n");
+    printf("=========================================================================\n");
+    for (long row = 0; row<td->length; ++row)
+    {
+        printf("\t%d\t\t% lf\t\t% lf\t\t% lf\n", row+1, td->tdesign[3*row], td->tdesign[3*row+1], td->tdesign[3*row+2]);
+    }
 }

@@ -7,6 +7,7 @@ typedef
     struct tdesign_cart
     {
         size_t bandlimit;
+        size_t length;
         double *tdesign;
     }
     tdesign_cart;
@@ -16,6 +17,7 @@ typedef
     struct tdesign_sph
     {
         size_t bandlimit;
+        size_t length;
         double *tdesign;
     }
     tdesign_sph;
@@ -31,3 +33,7 @@ long bandlimit_to_tdesign_length(const size_t bandlimit);
 double *allocate_tdesign(const size_t bandlimit, COORD_SYSTEM sys);
 
 void deallocate_tdesign(double *tdesign);
+
+tdesign_cart read_tdesign(const size_t bandlimit);
+
+void print_tdesign(tdesign_cart *td);
