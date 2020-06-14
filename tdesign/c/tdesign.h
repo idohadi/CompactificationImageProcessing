@@ -20,7 +20,7 @@ typedef
     }
     tdesign_sph;
 
-typedef enum COORD_SYSTEM {EUC, SPH} COORD_SYSTEM;
+typedef enum COORD_SYSTEM {CART, SPH} COORD_SYSTEM;
 
 
 /* Functions */

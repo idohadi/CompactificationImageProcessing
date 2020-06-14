@@ -1,6 +1,7 @@
 // TODO: write docs in doxygen
 
 #include <stdint.h>
+#include <stdio.h>
 #include "tdesign.h"
 
 // TODO: add list of file names
@@ -396,7 +397,7 @@ long bandlimit_to_tdesign_length(const size_t bandlimit)
 
 double *allocate_tdesign(const size_t bandlimit, COORD_SYSTEM sys)
 {
-    return malloc((sys==EUC ? 3 : 2)*bandlimit_to_tdesign_length(bandlimit)*sizeof(double));
+    return malloc((sys==CART ? 3 : 2)*bandlimit_to_tdesign_length(bandlimit)*sizeof(double));
 }
 
 void deallocate_tdesign(double *tdesign)
@@ -404,14 +405,35 @@ void deallocate_tdesign(double *tdesign)
     free(tdesign);
 }
 
-void read_tdesign(const size_t bandlimit, const COORD_SYSTEM sys)
+tdesign_cart read_tdesign(const size_t bandlimit)
 {
-    // TODO
-    // Read t-design from file, based on bandlimit, not file name
+    FILE *f = fopen(bandlimit_to_filename(bandlimit), "r");
+    if (f!=NULL)
+    {
+        tdesign_cart td;
+        td.bandlimit = bandlimit;
+        td.tdesign = allocate_tdesign(bandlimit, CART);
+
+        double x1, x2, x3;
+        size_t row = 0;
+        while (fscanf(f, " %22lf %22lf %22lf", &x1, &x2, &x3)!=EOF)
+        {
+            td.tdesign[3*row] = x1;
+            td.tdesign[3*row+1] = x2;
+            td.tdesign[3*row+2] = x3;
+            ++row;
+        }
+        return td;
+    }
+    else
+    {
+        printf("Reading t-design unsuccessful.\n");
+    }
 }
 
 void print_tdesign(double * const tdesign, const COORD_SYSTEM sys)
 {
+    
     // TODO
     // Print  t-design from file, based on bandlimit, not file name
 }
