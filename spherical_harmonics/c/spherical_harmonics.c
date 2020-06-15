@@ -7,6 +7,7 @@
 #include "spherical_harmonics.h"
 #include "SFMT.h"
 #include "alegendre.h"
+#include "tdesign.h"
 
 #define PI 3.14159265358979323846
 
@@ -621,13 +622,42 @@ void c_rotate_spherical_harmonics()
 }
 
 
-void r_rotate_spherical_harmonics(r_shc * const restrict shc, double * const restrict rotation, r_shc * restrict output_shc)
+void r_rotate_spherical_harmonics(r_shc * const restrict shc, double * const restrict rotation, tdesign_sph *td, r_shc * const restrict output_shc)
 {
     /* 
     Calcualte the spherical harmonics coefficients of the bandlimited function with spherical harmonics coefficients shc.
     rotation is a an array of size 4, which is a quaternion representation of a rotation.
-    Result is saved in output_shc.
+    Result is saved in output_shc, which is assumed to be all zeros..
+
+    Must run alegendre_init once before using this function.
+    This is a relatively naive implementation, without many optimizations.
     */
+
+    double theta, phi;
+    double sh_rp, sh_ip;
+    double func_val;
+    const double integration_factor = 2*PI/td->length;
+
+    for (size_t i = 0; i<td->length; ++i)
+    {
+        cartesian_unit_vector_to_spherical(&(td->tdesign[3*i]), &theta, &phi);
+        r_eval_sf(shc, theta, phi, &func_val);
+
+        for (long l = 0; l<shc->bandlimit; ++l)
+        {
+            for (long m = 1; m<=l; ++m)
+            {
+                eval_sh(l, m, theta, phi, &sh_rp, &sh_ip);
+                output_shc->coefficients[r_lm_to_index(REAL_PART, l, m)] += integration_factor*(m&2==0 ? 1 : -1)*func_val*sh_rp;
+                output_shc->coefficients[r_lm_to_index(IMAG_PART, l, m)] += integration_factor*(m&2==0 ? 1 : -1)*func_val*sh_ip;
+            }
+            // Handle m =0
+
+            eval_sh(l, 0, theta, phi, &sh_rp, &sh_ip);
+            output_shc->coefficients[r_lm_to_index(REAL_PART, l, 0)] += integration_factor*func_val*sh_rp;
+            output_shc->coefficients[r_lm_to_index(IMAG_PART, l, 0)] += integration_factor*func_val*sh_ip;
+        }
+    }
 }
 
 void r_eval_sf(r_shc * const shc, const double theta, const double phi, double * const restrict real_part)
@@ -677,4 +707,21 @@ void eval_sh(const long l, const long m, const double theta, const double phi, d
     
     *real_part *= cos(m*phi);
     *imag_part *= sin(m*phi);
+}
+
+void cartesian_unit_vector_to_spherical(double * const restrict x, double * const restrict theta, double * const restrict phi)
+{
+    /* 
+    x is an array of length 3, representing a unit vector in R^3.
+    Converts x to spherical coordinates (theta, phi) where 
+        0<=theta<=pi and 0<=phi<2pi.
+
+    Code performs no input checks.
+    */
+   *phi = atan2(x[1], x[0]);
+   if (*phi<0)
+   {
+       *phi += 2*PI;
+   }
+   *theta = acos(x[2]);
 }
