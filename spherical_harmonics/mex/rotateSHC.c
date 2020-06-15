@@ -19,6 +19,7 @@
 #include <stdbool.h>
 #include "mex.h"
 #include "spherical_harmonics.h"
+#include "alegendre.h"
 
 size_t bandlimit;
 size_t previous_tdesign_bandlimit, tdesign_bandlimit;

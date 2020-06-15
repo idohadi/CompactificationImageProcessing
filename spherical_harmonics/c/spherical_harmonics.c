@@ -622,7 +622,7 @@ void c_rotate_spherical_harmonics()
 }
 
 
-void r_rotate_spherical_harmonics(r_shc * const restrict shc, double * const restrict rotation, tdesign_sph *td, r_shc * const restrict output_shc)
+void r_rotate_spherical_harmonics(r_shc * const restrict shc, double * const restrict rotation, tdesign_cart *td, r_shc * const restrict output_shc)
 {
     /* 
     Calcualte the spherical harmonics coefficients of the bandlimited function with spherical harmonics coefficients shc.
