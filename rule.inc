@@ -114,7 +114,53 @@ alegendre_mex :
 	mkdir -p $(MEXOUTDIR)/$(AELGDEMOOUTDir)
 	cp $(ALEGDir)/$(TESTDir)/demo.m $(MEXOUTDIR)/$(AELGDEMOOUTDir)
 	cp $(ALEGDir)/$(TESTDir)/demo_comparison.nb $(MEXOUTDIR)/$(AELGDEMOOUTDir)
+
+evalSH :
+	mkdir -p $(MEXOUTDIR)
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGEVALDir)/bessel_eval.f90 -o $(MEXOUTDIR)/bessel_eval.o -J$(MEXOUTDIR)
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGEVALDir)/alegendre_eval.f90 -o $(MEXOUTDIR)/alegendre_eval.o -J$(MEXOUTDIR)
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGDir)/$(FDir)/alegendre_wrapper.f90 -o $(MEXOUTDIR)/alegendre_wrapper.o -J$(MEXOUTDIR)
+	$(CC) -c $(INCLUDEPATH) $(COMONCOMPFLAGS) $(ALEGDir)/$(CDir)/alegendre.c -o $(MEXOUTDIR)/alegendre.o -J$(MEXOUTDIR)
 	
+	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SHDir)/$(MEXDir)/evalSH.c \
+		$(SHFILE) $(SFMTFILE) $(TDFILE) $(ROTATIONFILES) \
+		$(MEXOUTDIR)/alegendre_wrapper.o \
+		$(MEXOUTDIR)/alegendre.o \
+		$(MEXOUTDIR)/alegendre_eval.o \
+		$(MEXOUTDIR)/bessel_eval.o \
+		-L$(GFORTLIBPATH) -lgfortran -lquadmath
+	
+	rm $(MEXOUTDIR)/*.mod
+	rm $(MEXOUTDIR)/*.o
+	cp $(ALEGEVALDir)/*.bin $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin1 $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin2 $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin3 $(MEXOUTDIR)
+
+rotateSHC :
+	mkdir -p $(MEXOUTDIR)
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGEVALDir)/bessel_eval.f90 -o $(MEXOUTDIR)/bessel_eval.o -J$(MEXOUTDIR)
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGEVALDir)/alegendre_eval.f90 -o $(MEXOUTDIR)/alegendre_eval.o -J$(MEXOUTDIR)
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGDir)/$(FDir)/alegendre_wrapper.f90 -o $(MEXOUTDIR)/alegendre_wrapper.o -J$(MEXOUTDIR)
+	$(CC) -c $(INCLUDEPATH) $(COMONCOMPFLAGS) $(ALEGDir)/$(CDir)/alegendre.c -o $(MEXOUTDIR)/alegendre.o -J$(MEXOUTDIR)
+	
+	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SHDir)/$(MEXDir)/rotateSHC.c \
+		$(SHFILE) $(SFMTFILE) $(TDFILE) $(ROTATIONFILES) \
+		$(MEXOUTDIR)/alegendre_wrapper.o \
+		$(MEXOUTDIR)/alegendre.o \
+		$(MEXOUTDIR)/alegendre_eval.o \
+		$(MEXOUTDIR)/bessel_eval.o \
+		-L$(GFORTLIBPATH) -lgfortran -lquadmath
+	
+	rm $(MEXOUTDIR)/*.mod
+	rm $(MEXOUTDIR)/*.o
+	cp $(ALEGEVALDir)/*.bin $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin1 $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin2 $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin3 $(MEXOUTDIR)
+	
+	mkdir -p $(MEXOUTDIR)/data
+	cp $(TDESIGNDir)/data/* $(MEXOUTDIR)/data
 	
 .PHONY3 : create_testers_folder
 create_testers_folder : 
