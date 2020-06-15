@@ -3,16 +3,23 @@ L = 8;
 td = loadtd('sf071.02593');
 
 %%
-L = 10; 
+L = 6; 
 td = loadtd('sf071.02593');
-REAL=0; 
-shc = randomNormalizedSHC(L, REAL); 
+REAL=0;
+shc = randomNormalizedSHC(L, REAL); ans
 [b, g] = calculateBispectrum(shc, L, REAL); 
 
 shcRot = c2r(rotateSphericalHarmonicsByEstimation(r2c(shc, L), L, td, generateUniformlyRandomRotations(1)), L);
 t = tic();
 norm(calculateBispectrum(shc, L) - calculateBispectrum(shcRot, L))/norm(calculateBispectrum(shc, L))
 toc(t)
+
+A = calculateBispectrum(shc, L); 
+A = A(2:2:end);
+
+%%
+K = bisp_vec(r2c(shc, L), L, CGs);
+K = imag(K);
 
 %%
 [invertedSHC, rootedResidual, output] = invertRealValuedBispectrum(b, L);
