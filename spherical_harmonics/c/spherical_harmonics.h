@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include "tdesign.h"
 #include "SFMT.h"
 
 /* Typedefs and enum's */
@@ -120,6 +121,14 @@ void r_multiply_shc_in_place(r_shc * restrict shc, const double alpha);
 
 void c_multiply_shc_in_place(c_shc * restrict shc, const double alpha);
 
-void r_rotate_spherical_harmonics(const r_shc * restrict shc, const double * restrict rotation, r_shc * restrict output_shc);
+
+void r_rotate_spherical_harmonics(r_shc * const restrict shc, double * const restrict rotation, tdesign_sph *td, r_shc * const restrict output_shc);
+
 
 void eval_sh(const long l, const long m, const double theta, const double phi, double * const restrict real_part, double * const restrict imag_part);
+
+
+void r_eval_sf(r_shc * const shc, const double theta, const double phi, double * const restrict real_part);
+
+
+void cartesian_unit_vector_to_spherical(double * const restrict x, double * const restrict theta, double * const restrict phi);

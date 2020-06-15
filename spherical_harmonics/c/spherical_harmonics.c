@@ -7,7 +7,7 @@
 #include "spherical_harmonics.h"
 #include "SFMT.h"
 #include "alegendre.h"
-#include "tdesign.h"
+#include "utility_functions.h"
 
 #define PI 3.14159265358979323846
 
@@ -634,13 +634,18 @@ void r_rotate_spherical_harmonics(r_shc * const restrict shc, double * const res
     */
 
     double theta, phi;
+    double rotated_x[3];
+
     double sh_rp, sh_ip;
     double func_val;
+
     const double integration_factor = 2*PI/td->length;
 
     for (size_t i = 0; i<td->length; ++i)
     {
-        cartesian_unit_vector_to_spherical(&(td->tdesign[3*i]), &theta, &phi);
+        apply_rotation(&(td->tdesign[3*i]), rotation, rotated_x);
+        cartesian_unit_vector_to_spherical(rotated_x, &theta, &phi);
+        
         r_eval_sf(shc, theta, phi, &func_val);
 
         for (long l = 0; l<shc->bandlimit; ++l)
