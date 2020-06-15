@@ -401,9 +401,9 @@ double *allocate_tdesign(const size_t bandlimit, COORD_SYSTEM sys)
     return malloc((sys==CART ? 3 : 2)*bandlimit_to_tdesign_length(bandlimit)*sizeof(double));
 }
 
-void deallocate_tdesign(double *tdesign)
+void deallocate_tdesign(tdesign_cart *tdesign)
 {
-    free(tdesign);
+    free(tdesign->tdesign);
 }
 
 tdesign_cart read_tdesign(const size_t bandlimit)

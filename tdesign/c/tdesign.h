@@ -32,7 +32,7 @@ long bandlimit_to_tdesign_length(const size_t bandlimit);
 
 double *allocate_tdesign(const size_t bandlimit, COORD_SYSTEM sys);
 
-void deallocate_tdesign(double *tdesign);
+void deallocate_tdesign(tdesign_cart *tdesign);
 
 tdesign_cart read_tdesign(const size_t bandlimit);
 
