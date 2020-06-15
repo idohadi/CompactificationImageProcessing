@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include "spherical_harmonics.h"
 #include "SFMT.h"
+#include "alegendre.h"
 
 #define PI 3.14159265358979323846
 
@@ -620,7 +621,7 @@ void c_rotate_spherical_harmonics()
 }
 
 
-void r_rotate_spherical_harmonics(const r_shc * restrict shc, const double * restrict rotation, r_shc * restrict output_shc)
+void r_rotate_spherical_harmonics(r_shc * const restrict shc, double * const restrict rotation, r_shc * restrict output_shc)
 {
     /* 
     Calcualte the spherical harmonics coefficients of the bandlimited function with spherical harmonics coefficients shc.
@@ -629,7 +630,51 @@ void r_rotate_spherical_harmonics(const r_shc * restrict shc, const double * res
     */
 }
 
-double r_eval_sh(const r_shc * shc, const double theta, const double phi)
+void r_eval_sf(r_shc * const shc, const double theta, const double phi, double * const restrict real_part)
 {
-    // Evaluate spherical function represented by shc
+    /* 
+    Evaluate real-valued spherical function represented by shc.
+    
+    Must run alegendre_init once before using this function.
+    */
+
+   double sh_rp, sh_ip;
+   *real_part = 0.0;
+   for (long l = 0; l<=shc->bandlimit; ++l)
+   {
+       for (long m = 1; m<=l; ++m)
+       {
+           eval_sh(l, m, theta, phi, &sh_rp, &sh_ip);
+           *real_part   += r_get_shc(shc, REAL_PART, l, m)*sh_rp 
+                            - r_get_shc(shc, IMAG_PART, l, m)*sh_ip;
+       }
+       *real_part *= 2;
+
+        eval_sh(l, 0, theta, phi, &sh_rp, &sh_ip);
+       *real_part += r_get_shc(shc, REAL_PART, l, 0)*sh_rp;
+   }
+}
+
+double c_eval_sf(c_shc * const shc, const double theta, const double phi, const PART part, double * const restrict real_part, double * const restrict imag_part)
+{
+    // Evaluate complex-valued spherical function represented by shc
+}
+
+void eval_sh(const long l, const long m, const double theta, const double phi, double * const restrict real_part, double * const restrict imag_part)
+{
+    /* 
+    Evaluate the real part or the imaginary part of the spherical harmonics 
+        Y_{l}^{m}(theta,phi) := e^{i m phi} * S_{l}^{m} (theta)
+    where S_{l}^{m} was defined in alegendre() docs in alegendre.h.
+
+    Output is placed in real_part and imag_part.
+
+    Must run alegendre_init once before using this function.
+    */
+
+    *real_part = alegendre(l, m, theta);
+    *imag_part = *real_part;
+    
+    *real_part *= cos(m*phi);
+    *imag_part *= sin(m*phi);
 }
