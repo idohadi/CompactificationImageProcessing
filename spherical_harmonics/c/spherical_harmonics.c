@@ -653,8 +653,8 @@ void r_rotate_spherical_harmonics(r_shc * const restrict shc, double * const res
             for (long m = 1; m<=l; ++m)
             {
                 eval_sh(l, m, theta, phi, &sh_rp, &sh_ip);
-                output_shc->coefficients[r_lm_to_index(REAL_PART, l, m)] += integration_factor*(m&2==0 ? 1 : -1)*func_val*sh_rp;
-                output_shc->coefficients[r_lm_to_index(IMAG_PART, l, m)] += integration_factor*(m&2==0 ? 1 : -1)*func_val*sh_ip;
+                output_shc->coefficients[r_lm_to_index(REAL_PART, l, m)] += integration_factor*(m%2==0 ? 1 : -1)*func_val*sh_rp;
+                output_shc->coefficients[r_lm_to_index(IMAG_PART, l, m)] += integration_factor*(m%2==0 ? 1 : -1)*func_val*sh_ip;
             }
             // Handle m =0
 
