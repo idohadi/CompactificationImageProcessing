@@ -486,7 +486,7 @@ void c_random_normalized_shc(sfmt_t * const sfmt, c_shc *output_shc)
    
     for (long l = 0; l<=output_shc->bandlimit; ++l)
     {
-        c_set_shc(output_shc, REAL_PART, l, 0, sample_normal(sfmt));
+        // c_set_shc(output_shc, REAL_PART, l, 0, sample_normal(sfmt));
         for (long m = -l; m<=l; ++m)
         {
             c_set_shc(output_shc, REAL_PART, l, m, sample_normal(sfmt));
