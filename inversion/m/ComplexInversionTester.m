@@ -1,6 +1,6 @@
 %% Parameters
 L = 8;
-td = loadtd('sf012.00086');
+td = loadtd('sf020.00222');
 CGs = build_CGs_vec(L);
 
 %% Test: complex-valued function inversion
@@ -8,8 +8,7 @@ trialsNo = 20;
 results = struct();
 
 for trial=1:trialsNo
-    shc = 2*rand((L+1)^2, 1)-1 + 1i*(2*rand((L+1)^2, 1)-1);
-    shc = nshc(shc);
+    shc = cfy(randomNormalizedSHC(L, 1));
     
     shcBisp = bisp_vec(shc, L, CGs);
     
@@ -34,12 +33,12 @@ for trial=1:trialsNo
         '. rel dist = ', num2str(relativeDistance), '.']);
 end
 
-complexValuedSHCInversionTestResults8 = results;
-% save('complexValuedSHCInversionTestResults8.mat', 'complexValuedSHCInversionTestResults8');
+complexValuedSHCInversionTestResultsNewTD = results;
+save('complexValuedSHCInversionTestResultsNewTD.mat', 'complexValuedSHCInversionTestResultsNewTD');
 
 %% Test: complex-valued function inversion, effect of initial point
 L = 8;
-td = loadtd('sf012.00086');
+td = loadtd('sf020.00222');
 CGs = build_CGs_vec(L);
 
 expNo = 5;
@@ -103,5 +102,5 @@ for expInd=1:expNo
     end
 end
 
-complexValuedSHCInverstionInitialPointTest = results;
-save('complexValuedSHCInverstionInitialPointTest.mat', 'complexValuedSHCInverstionInitialPointTest');
+complexValuedSHCInverstionInitialPointTestNewTD = results;
+save('complexValuedSHCInverstionInitialPointTestNewTD.mat', 'complexValuedSHCInverstionInitialPointTestNewTD');
