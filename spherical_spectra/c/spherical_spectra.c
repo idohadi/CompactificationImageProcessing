@@ -143,8 +143,6 @@ void r_power_spectrum(r_shc * const shc, double *r_pow_spec)
 
 void c_bispectrum(c_shc * const shc, const c_blt lookup, cg_table * const table, double *c_bisp)
 {
-    // #pragma omp parallel for collapse(3)
-    
     for (long l1 = 0; l1<=shc->bandlimit; ++l1)
     {
         for (long l2 = 0; l2<=l1; ++l2)

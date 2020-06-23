@@ -33,6 +33,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     // Get input variables
     bandlimit = (size_t) mxGetScalar(prhs[1]);
+    real_vs_imag = (size_t) mxGetScalar(prhs[2]);
 
     // Handle first run
     if (first_run == true)
