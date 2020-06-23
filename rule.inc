@@ -9,7 +9,8 @@ SIMDCOMPFLAGS=-msse2 -DHAVE_SSE2
 DSFMTVAR=-DSFMT_MEXP=2281
 
 
-SFMTCOMPSTR=COMPFLAGS='$COMPFLAGS $(COMONCOMPFLAGS) $(SIMDCOMPFLAGS)' $(DSFMTVAR)
+SFMTCOMPSTR=COMPFLAGS='$COMPFLAGS -Wall $(COMONCOMPFLAGS) $(SIMDCOMPFLAGS)' $(DSFMTVAR)
+SFMTCOMPOPMSTR=CFLAGS='-fopenmp $(COMONCOMPFLAGS) $(SIMDCOMPFLAGS)' $(DSFMTVAR)
 NONSFMTCOMPSTR=COMPFLAGS='$COMPFLAGS $(COMONCOMPFLAGS)'
 
 SFMTFILE=$(SMFTDir)/SFMT.c
@@ -29,7 +30,8 @@ INCLUDEPATH=-I$(SMFTDir) \
 	-I$(SHDir)/$(CDir) \
 	-I$(SPECTRADir)/$(CDir) \
 	-I$(TDESIGNDir)/$(CDir) \
-	-I$(ALEGDir)/$(FDir) -I$(ALEGDir)/$(CDir)
+	-I$(ALEGDir)/$(FDir) -I$(ALEGDir)/$(CDir) \
+	-I/c/matlab-r2020a/extern/include
 OUTPATH=-outdir $(MEXOUTDIR)
 
 #Rule names
@@ -75,15 +77,66 @@ normalizeSHC :
 	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SHDir)/$(MEXDir)/normalizeSHC.c $(SHFILE) $(SFMTFILE)
 
 randomNormalizedSHC :
-	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SHDir)/$(MEXDir)/randomNormalizedSHC.c $(SHFILE) $(SFMTFILE) 
-
+	mkdir -p $(MEXOUTDIR)
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGEVALDir)/bessel_eval.f90 -o $(MEXOUTDIR)/bessel_eval.o -J$(MEXOUTDIR)
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGEVALDir)/alegendre_eval.f90 -o $(MEXOUTDIR)/alegendre_eval.o -J$(MEXOUTDIR)
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGDir)/$(FDir)/alegendre_wrapper.f90 -o $(MEXOUTDIR)/alegendre_wrapper.o -J$(MEXOUTDIR)
+	$(CC) -c $(INCLUDEPATH) $(COMONCOMPFLAGS) $(ALEGDir)/$(CDir)/alegendre.c -o $(MEXOUTDIR)/alegendre.o -J$(MEXOUTDIR)
+	
+	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SHDir)/$(MEXDir)/randomNormalizedSHC.c \
+		$(CGFILE) $(SHFILE) $(SPECTRAFILE) $(SFMTFILE) $(ROTATIONFILES) \
+		$(MEXOUTDIR)/alegendre_wrapper.o \
+		$(MEXOUTDIR)/alegendre.o \
+		$(MEXOUTDIR)/alegendre_eval.o \
+		$(MEXOUTDIR)/bessel_eval.o \
+		-L$(GFORTLIBPATH) -lgfortran -lquadmath
 
 
 calculateBispectrum :
-	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SPECTRADir)/$(MEXDir)/calculateBispectrum.c $(CGFILE) $(SHFILE) $(SPECTRAFILE) $(SFMTFILE)
-
-calculateBispetrumGradient :
-	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SPECTRADir)/$(MEXDir)/calculateBispetrumGradient.c $(CGFILE) $(SHFILE) $(SPECTRAFILE) $(SFMTFILE)
+	mkdir -p $(MEXOUTDIR)
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGEVALDir)/bessel_eval.f90 -o $(MEXOUTDIR)/bessel_eval.o -J$(MEXOUTDIR)
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGEVALDir)/alegendre_eval.f90 -o $(MEXOUTDIR)/alegendre_eval.o -J$(MEXOUTDIR)
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGDir)/$(FDir)/alegendre_wrapper.f90 -o $(MEXOUTDIR)/alegendre_wrapper.o -J$(MEXOUTDIR)
+	$(CC) -c $(INCLUDEPATH) $(COMONCOMPFLAGS) $(ALEGDir)/$(CDir)/alegendre.c -o $(MEXOUTDIR)/alegendre.o -J$(MEXOUTDIR)
+	
+	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SPECTRADir)/$(MEXDir)/calculateBispectrum.c \
+		$(CGFILE) $(SHFILE) $(SPECTRAFILE) $(SFMTFILE) $(ROTATIONFILES) \
+		$(MEXOUTDIR)/alegendre_wrapper.o \
+		$(MEXOUTDIR)/alegendre.o \
+		$(MEXOUTDIR)/alegendre_eval.o \
+		$(MEXOUTDIR)/bessel_eval.o \
+		-L$(GFORTLIBPATH) -lgfortran -lquadmath
+	
+	rm $(MEXOUTDIR)/*.mod
+	rm $(MEXOUTDIR)/*.o
+	cp $(ALEGEVALDir)/*.bin $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin1 $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin2 $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin3 $(MEXOUTDIR)
+	
+	
+calculateBispectrumGradient :
+	mkdir -p $(MEXOUTDIR)
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGEVALDir)/bessel_eval.f90 -o $(MEXOUTDIR)/bessel_eval.o -J$(MEXOUTDIR)
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGEVALDir)/alegendre_eval.f90 -o $(MEXOUTDIR)/alegendre_eval.o -J$(MEXOUTDIR)
+	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGDir)/$(FDir)/alegendre_wrapper.f90 -o $(MEXOUTDIR)/alegendre_wrapper.o -J$(MEXOUTDIR)
+	$(CC) -c $(INCLUDEPATH) $(COMONCOMPFLAGS) $(ALEGDir)/$(CDir)/alegendre.c -o $(MEXOUTDIR)/alegendre.o -J$(MEXOUTDIR)
+	
+	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SPECTRADir)/$(MEXDir)/calculateBispectrumGradient.c \
+		$(CGFILE) $(SHFILE) $(SPECTRAFILE) $(SFMTFILE) $(ROTATIONFILES) \
+		$(MEXOUTDIR)/alegendre_wrapper.o \
+		$(MEXOUTDIR)/alegendre.o \
+		$(MEXOUTDIR)/alegendre_eval.o \
+		$(MEXOUTDIR)/bessel_eval.o \
+		-L$(GFORTLIBPATH) -lgfortran -lquadmath
+	
+	rm $(MEXOUTDIR)/*.mod
+	rm $(MEXOUTDIR)/*.o
+	cp $(ALEGEVALDir)/*.bin $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin1 $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin2 $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin3 $(MEXOUTDIR)
+	
 
 powerSpectrum :
 	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SPECTRADir)/$(MEXDir)/powerSpectrum.c $(CGFILE) $(SHFILE) $(SPECTRAFILE) $(SFMTFILE)
@@ -123,13 +176,14 @@ evalYt_mex :
 	$(FC) -c $(INCLUDEPATH) $(FCOMONCOMPFLAGS) $(ALEGDir)/$(FDir)/alegendre_wrapper.f90 -o $(MEXOUTDIR)/alegendre_wrapper.o -J$(MEXOUTDIR)
 	$(CC) -c $(INCLUDEPATH) $(COMONCOMPFLAGS) $(ALEGDir)/$(CDir)/alegendre.c -o $(MEXOUTDIR)/alegendre.o -J$(MEXOUTDIR)
 	
-	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SHDir)/$(MEXDir)/evalYt_mex.c \
+	$(MEX) $(MATLABFAGS) $(OUTPATH) $(INCLUDEPATH) $(SHDir)/$(MEXDir)/evalYt_mex.c \
 		$(SHFILE) $(SFMTFILE) $(TDFILE) $(ROTATIONFILES) \
 		$(MEXOUTDIR)/alegendre_wrapper.o \
 		$(MEXOUTDIR)/alegendre.o \
 		$(MEXOUTDIR)/alegendre_eval.o \
 		$(MEXOUTDIR)/bessel_eval.o \
-		-L$(GFORTLIBPATH) -lgfortran -lquadmath
+		$(SFMTCOMPOPMSTR) \
+		-L$(GFORTLIBPATH) -lgfortran -lquadmath -lgomp
 	
 	rm $(MEXOUTDIR)/*.mod
 	rm $(MEXOUTDIR)/*.o
