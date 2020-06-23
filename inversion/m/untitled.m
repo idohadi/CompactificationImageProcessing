@@ -43,13 +43,13 @@ end
 
 
 %%
-L = 10; 
+L = 5; 
 shc = 2*rand((L+1)^2, 1)-1;
 shc_complexified = cfy(realSHC2ComplexSHC(shc, L));
 shc_complexified = nshc(shc_complexified);
 shc = complexSHC2RealSHC(rlfy(shc_complexified), L);
 
-shc_bisp = calculateBispectrumOfRealValuedFunction(shc, L);
+shc_bisp = calculateBispectrum(shc, L);
 
 
 %%

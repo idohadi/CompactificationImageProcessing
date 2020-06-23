@@ -55,82 +55,73 @@ save('realValuedSHCAlignmentTestResults.mat', 'realValuedSHCAlignmentTestResults
 
 
 %% Parameters
-L = 10;
-td = loadtd('sf071.02593');
+L = 5;
+td = loadtd('sf012.00086');
 
 opts = optimoptions(@lsqnonlin, ...
     'SpecifyObjectiveGradient', true, ...
     'OptimalityTolerance', 10^-12, ...
     'FunctionTolerance', 10^-15, ...
     'StepTolerance', 10^-10, ...
-    'Display', 'off'); 
+    'Display', 'iter'); 
 
 %% Real-valued SHC bispectrum inversion test
-experimentsNo = 5;
-trialsNo = 75;
+trialsNo = 20;
 
 results = struct();
-
-for experiment=1:experimentsNo
-    shc = 2*rand((L+1)^2, 1)-1;
+for trial=1:trialsNo
+    shc = randomNormalizedSHC(L, 0);
     shcComplexified = r2c(shc, L);
-    shcComplexified = nshc(shcComplexified);
-    shc = c2r(shcComplexified, L);
+    shcBisp = calculateBispectrum(shc, L);
+        
+    func = @(xs) inversionObjectiveFunc(xs, shcBisp, L);
 
-    shcBispectrum = calculateBispectrumOfRealValuedFunction(shc, L);
-    
-    for trial=1:trialsNo
-        x0 = rand((L+1)^2, 1);
-        x0Complexified = r2c(x0, L);
-        x0Complexified = nshc(x0Complexified);
-        x0 = c2r(x0Complexified, L);
-        func = @(shc) inversionObjectiveFunc(shc, shcBispectrum, L);
-        
-        t = tic();
+    t = tic();
+    r = Inf;
+    while r >= 5*10^(-5)
+        x0 = randomNormalizedSHC(L, 0);
         [invertedSHC, res, ~, ~, output] = lsqnonlin(func, x0, [], [], opts);
-        bispectrumInversionRuntime = toc(t);
-        rootedResidual = sqrt(res);
-        
-        invertedSHCComplexified = r2c(invertedSHC, L);
-        
-        t = tic();
-        [relativeDistance, alignedInvertedSHCComplexified, optimalRotation, ...
-            refinedMaxCorrelation, crudeMaxCorrelation, fminserachOutput] ...
-            = alignSphericalHarmonics(shcComplexified, invertedSHCComplexified, ...
-                    L, td, 'SequenceSize', 2^9*72);
-        alignmentRuntime = toc(t);
-        
-        alignedInvertedSHC = c2r(alignedInvertedSHCComplexified, L);
-        
-        % Save results
-        results(trial, experiment).shc = shc;
-        results(trial, experiment).shcComplexified = shcComplexified;
-        results(trial, experiment).shcBispectrum = shcBispectrum;
-        results(trial, experiment).x0 = x0;
-        results(trial, experiment).rootedResidual = rootedResidual;
-        results(trial, experiment).invertedSHC = invertedSHC;
-        results(trial, experiment).invertedSHCComplexified ...
-            = invertedSHCComplexified;
-        results(trial, experiment).output = output;
-        results(trial, experiment).bispectrumInversionRuntime ...
-            = bispectrumInversionRuntime;
-        results(trial, experiment).alignedInvertedSHCComplexified ...
-            = alignedInvertedSHCComplexified;
-        results(trial, experiment).alignedInvertedSHC = alignedInvertedSHC;
-        results(trial, experiment).alignmentRuntime = alignmentRuntime;
-        
-        disp(['Exp. #', num2str(experiment), ...
-        ', Trial #', num2str(trial), '. ', ...
-        'Pre-alignment rel. dist. = ', ...
-            num2str(norm(shcComplexified-invertedSHCComplexified)/norm(shcComplexified)), ', ', ...
-        'Post-alignment rel. dist = ', num2str(relativeDistance), ...
-        '. Buisp. Inv. Runtime (sec) = ', num2str(bispectrumInversionRuntime), '.', ...
-        'Align. Runtime (sec) = ', num2str(alignmentRuntime), ]);
+        r = output.firstorderopt;
     end
+    bispectrumInversionRuntime = toc(t);
+    rootedResidual = sqrt(res);
+    
+    invertedSHCComplexified = r2c(invertedSHC, L);
+    t = tic();
+    [relativeDistance, alignedSHC2, optimalRotation, refinedMaxCorrelation, crudeMaxCorrelation, fminserachOutput] = alignSphericalHarmonics(shcComplexified, invertedSHCComplexified, L, td);
+    alignmentRuntime = toc(t);
+
+    alignedInvertedSHC = c2r(alignedSHC2, L);
+
+    % Save results
+    results(trial).shc = shc;
+    results(trial).shcComplexified = shcComplexified;
+    results(trial).shcBispectrum = shcBisp;
+    results(trial).rootedResidual = rootedResidual;
+    results(trial).invertedSHC = invertedSHC;
+    results(trial).invertedSHCComplexified ...
+        = invertedSHCComplexified;
+    results(trial).output = output;
+    results(trial).bispectrumInversionRuntime ...
+        = bispectrumInversionRuntime;
+    results(trial).alignedInvertedSHC = alignedInvertedSHC;
+    results(trial).alignmentRuntime = alignmentRuntime;
+    
+    results(trial).alignmentRuntime = relativeDistance;
+    results(trial).alignedSHC2 = alignedSHC2;
+    results(trial).optimalRotation = optimalRotation;
+    results(trial).refinedMaxCorrelation = refinedMaxCorrelation;
+    results(trial).crudeMaxCorrelation = crudeMaxCorrelation;
+    results(trial).fminserachOutput = fminserachOutput;
+    
+    disp(['Trial #', num2str(trial), '. ', ...
+        'rel dist = ', num2str(relativeDistance), ...
+    '. Buisp. Inv. Runtime (sec) = ', num2str(bispectrumInversionRuntime), '.', ...
+    'Align. Runtime (sec) = ', num2str(alignmentRuntime), ]);
 end
 
-realValuedBispectrumInversionTestResults = results;
-save('realValuedBispectrumInversionTestResults.mat', 'realValuedBispectrumInversionTestResults');
+realValuedBispectrumInversionTestResults4 = results;
+save('realValuedBispectrumInversionTestResults4.mat', 'realValuedBispectrumInversionTestResults4');
 
 
 %%
@@ -386,6 +377,6 @@ end
 end
 
 function [F, grad] = inversionObjectiveFunc(shc, bispectrum, L)
-F = calculateBispectrumOfRealValuedFunction(shc, L) - bispectrum;
-grad = calculateGradientOfBispectrumOfRealValuedFunction(shc, L)';
+F = calculateBispectrum(shc, L) - bispectrum;
+grad = calculateBispectrumGradient(shc, L)';
 end
