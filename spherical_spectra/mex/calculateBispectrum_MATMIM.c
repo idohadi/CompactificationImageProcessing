@@ -29,12 +29,14 @@ mxComplexDouble *shc_conjugated;
 
 void complexSum(mxComplexDouble *arg1, mxComplexDouble *arg2, mxComplexDouble *output)
 {
-    // TODO
+    output->real = arg1->real + arg2->real;
+    output->imag = arg1->imag + arg2->imag;
 }
 
 void complexProduct(mxComplexDouble *arg1, mxComplexDouble *arg2, mxComplexDouble *output)
 {
-    // TODO
+    output->real = arg1->real*arg2->real - arg1->imag*arg2->imag;
+    output->imag = arg1->real*arg2->imag + arg1->imag*arg2->real;
 }
 
 void bispectral_invariant(  mxComplexDouble * const shc, mxComplexDouble * const shc_conjugated, 
