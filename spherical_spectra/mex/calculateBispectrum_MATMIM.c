@@ -19,11 +19,15 @@
 #include "mex.h"
 #include "spherical_spectra.h"
 
+typedef enum PART {REAL_PART, IMAG_PART} PART;
 bool first_run = true;
+
 c_blt c_lookup;
 cg_table cgs;
+
 size_t bandlimit = 0;
 size_t previous_bandlimit = 0;
+
 mxComplexDouble *shc;
 mxComplexDouble *shc_conjugated;
 
@@ -39,21 +43,60 @@ void complexProduct(mxComplexDouble *arg1, mxComplexDouble *arg2, mxComplexDoubl
     output->imag = arg1->real*arg2->imag + arg1->imag*arg2->real;
 }
 
-void bispectral_invariant(  mxComplexDouble * const shc, mxComplexDouble * const shc_conjugated, 
-                            const long l1, const long l2, const long l, const size_t bandlimit, 
-                            const c_blt lookup, cg_table * const table, 
-                            double *output_rp, double *output_ip)
+double get_shc_val(mxComplexDouble * const input, const PART part, const long l, const long m)
 {
-    // TODO: calculate the bispectral invariant l1, l2, l
+    if (l > bandlimit)
+   {
+       return 0.0;
+   }
+   else if (m<-l || m>l)
+   {
+       mexPrintf("SHC (l,m) indices are non-standard.\n");
+       return 0.0;
+   }
+   else
+   {
+        if (part==REAL_PART)
+        {
+            return input[l*(l + 1) + m].real;
+        }
+        else (part==IMAG_PART)
+        {
+            return input[l*(l + 1) + m].imag;
+        }
+   }
 }
 
-void bisp(  mxComplexDouble * const shc, mxComplexDouble * const shc_conjugated, const size_t bandlimit, 
+void bispectral_invariant(  mxComplexDouble * const input, mxComplexDouble * const input_conjugated, 
+                            const long l1, const long l2, const long l, const size_t bandlimit, 
+                            const c_blt lookup, cg_table * const table, 
+                            mxComplexDouble *output)
+{
+    output->real = 0;
+    output->imag = 0;
+
+    mxComplexDouble temp;
+
+    for (long m = - l; m<=l; ++m)
+    {
+        temp.real = 0;
+        temp.imag = 0;
+        for (long m1 = (m-l2)<=-l1 ? -l1 : (m-l2); m1<=(m+l2)<=l1 ? (m+l2) : l1; ++m1)
+        {
+            
+        }
+
+    }
+    
+}
+
+void bisp(  mxComplexDouble * const input, mxComplexDouble * const input_conjugated, const size_t bandlimit, 
             const c_blt lookup, cg_table * const table, double *output)
 {
     // TODO: calculate all the bispectral invariants
 }
 
-void bispGrad(  mxComplexDouble * const shc, mxComplexDouble * const shc_conjugated, const size_t bandlimit, 
+void bispGrad(  mxComplexDouble * const input, mxComplexDouble * const input_conjugated, const size_t bandlimit, 
                 const c_blt lookup, cg_table * const table, double *output)
 {
     // TODO: calculate all the gradients of bispectral invariants 
