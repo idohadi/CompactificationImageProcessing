@@ -12,10 +12,11 @@ opts = optimoptions(@lsqnonlin, ...
     'CheckGradients', true); 
 
 %% Inversion loop
-func = @(shc) inversionObjectiveFunc(shc, bispectrum, bandlimit);
+func = @(shc) inversionObjectiveFunc(cfy(shc), bispectrum, bandlimit);
 % while r>10^-10
 x0 = randomNormalizedSHC(bandlimit, 1);
 [invertedSHC, rootedResidual, ~, ~, output] = lsqnonlin(func, x0, [], [], opts);
+invertedSHC = cfy(invertedSHC);
 rootedResidual = sqrt(rootedResidual);
 % end
 
@@ -27,6 +28,7 @@ function [F, grad] = inversionObjectiveFunc(shc, bispectrum, L)
         F = calculateBispectrum_MATMIM(shc, conj(shc), L) - bispectrum;
     else
         [F, grad] = calculateBispectrum_MATMIM(shc, conj(shc), L);
+        F = F - bispectrum;
         grad = grad.';
     end
 end
