@@ -98,6 +98,7 @@ mxComplexDouble *get_shc_ptr(mxComplexDouble * const input, const long l, const 
 {
     if (l > bandlimit)
    {
+       mexPrintf("SHC has lower bandlimit than requested.\n");
        return NULL;
    }
    else if (m<-l || m>l)
@@ -191,13 +192,12 @@ void sum_defining_bisp( mxComplexDouble * const input1, mxComplexDouble * const 
 
 void bispGrad(  mxComplexDouble * const input, mxComplexDouble * const input_conjugated, double *output)
 {
-    // TODO: calculate all the gradients of bispectral invariants 
+    // Calculate the gradients of bispectral invariants 
+    // TODO: DOCS
+    
     mxArray *arr = mxCreateDoubleMatrix((bandlimit+1)*(bandlimit+1), 1, mxCOMPLEX);
     mxComplexDouble *onei = mxGetComplexDoubles(arr);
-    for (long i = 0; i<=(bandlimit+1)*(bandlimit+1); ++i)
-    {
-        onei[i].real = 1;
-    }
+    
     mxComplexDouble temp;
 
     size_t row_index_rp, row_index_ip;
