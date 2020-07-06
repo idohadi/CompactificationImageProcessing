@@ -179,8 +179,8 @@ void sum_defining_bisp( mxComplexDouble * const input1, mxComplexDouble * const 
         temp.imag = 0;
         for (long m1 = ((m-l2)<=-l1 ? -l1 : (m-l2)); m1 <= ((m+l2)<=l1 ? (m+l2) : l1); ++m1)
         {
-            ccprod_addinsitu(   get_shc_ptr(input1, l, m1), 
-                                get_shc_ptr(input2, l, m-m1), 
+            ccprod_addinsitu(   get_shc_ptr(input1, l1, m1), 
+                                get_shc_ptr(input2, l2, m-m1), 
                                 get_cg(&cgs, l1, l2, l, m, m1), 
                                 &temp);
         }
