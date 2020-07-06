@@ -151,7 +151,7 @@ void bisp(mxComplexDouble * const input, mxComplexDouble * const input_conjugate
     {
         for (long l2 = 0; l2<=l1; ++l2)
         {
-            for (long l = l1-l2; l<=((bandlimit>=l1+l2) ?  l1+l2 : bandlimit); ++l)
+            for (long l = l1-l2; l<=bandlimit && l<=l1+l2; ++l)
             {
                 bispectral_invariant(input, input_conjugated, l1, l2, l, &temp);
                 output[lookup[l1][l2][l - (l1-l2)][REAL_PART]] = temp.real;
@@ -206,7 +206,7 @@ void bispGrad(  mxComplexDouble * const input, mxComplexDouble * const input_con
     {
         for (long l2 = 0; l2<=l1; ++l2)
         {
-            for (long l = l1-l2; l<=((bandlimit>=l1+l2) ?  l1+l2 : bandlimit); ++l)
+            for (long l = l1-l2; l<=bandlimit && l<=l1+l2; ++l)
             {
                 row_index_rp = 2*(bandlimit+1)*(bandlimit+1)*lookup[l1][l2][l-(l1-l2)][REAL_PART];
                 row_index_ip = 2*(bandlimit+1)*(bandlimit+1)*lookup[l1][l2][l-(l1-l2)][IMAG_PART];
@@ -219,8 +219,8 @@ void bispGrad(  mxComplexDouble * const input, mxComplexDouble * const input_con
                     temp.imag = 0;
                     onei[l1*(l1+1) + m1_der].real = -1;
                     sum_defining_bisp(onei, shc_conjugated, shc, l1, l2, l, &temp);
-                    output[row_index_rp + 2*(l1*(l1+1) + m1_der)] = temp.real; // Derivative of real part of b_{l1,l2,l}
-                    output[row_index_ip + 2*(l1*(l1+1) + m1_der)] = temp.imag; // Derivative of imag part of b_{l1,l2,l}
+                    output[row_index_rp + 2*(l1*(l1+1) + m1_der)] += temp.real; // Derivative of real part of b_{l1,l2,l}
+                    output[row_index_ip + 2*(l1*(l1+1) + m1_der)] += temp.imag; // Derivative of imag part of b_{l1,l2,l}
                     onei[l1*(l1+1) + m1_der].real = 0;
 
                     // Derivative w.r.t imaginary part
@@ -228,8 +228,8 @@ void bispGrad(  mxComplexDouble * const input, mxComplexDouble * const input_con
                     temp.imag = 0;
                     onei[l1*(l1+1) + m1_der].imag = -1;
                     sum_defining_bisp(onei, shc_conjugated, shc, l1, l2, l, &temp);
-                    output[row_index_rp + 2*(l1*(l1+1) + m1_der)+1] = temp.real; // Derivative of real part of b_{l1,l2,l}
-                    output[row_index_ip + 2*(l1*(l1+1) + m1_der)+1] = temp.imag; // Derivative of imag part of b_{l1,l2,l}
+                    output[row_index_rp + 2*(l1*(l1+1) + m1_der)+1] += temp.real; // Derivative of real part of b_{l1,l2,l}
+                    output[row_index_ip + 2*(l1*(l1+1) + m1_der)+1] += temp.imag; // Derivative of imag part of b_{l1,l2,l}
                     onei[l1*(l1+1) + m1_der].imag = 0;
                 }
 
@@ -242,8 +242,8 @@ void bispGrad(  mxComplexDouble * const input, mxComplexDouble * const input_con
                     temp.imag = 0;
                     onei[l2*(l2+1) + m2_der].real = -1;
                     sum_defining_bisp(shc_conjugated, onei, shc, l1, l2, l, &temp);
-                    output[row_index_rp + 2*(l2*(l2+1) + m2_der)] = temp.real; // Derivative of real part of b_{l1,l2,l}
-                    output[row_index_ip + 2*(l2*(l2+1) + m2_der)] = temp.imag; // Derivative of imag part of b_{l1,l2,l}
+                    output[row_index_rp + 2*(l2*(l2+1) + m2_der)] += temp.real; // Derivative of real part of b_{l1,l2,l}
+                    output[row_index_ip + 2*(l2*(l2+1) + m2_der)] += temp.imag; // Derivative of imag part of b_{l1,l2,l}
                     onei[l2*(l2+1) + m2_der].real = 0;
 
                     // Derivative w.r.t imaginary part
@@ -251,8 +251,8 @@ void bispGrad(  mxComplexDouble * const input, mxComplexDouble * const input_con
                     temp.imag = 0;
                     onei[l2*(l2+1) + m2_der].imag = -1;
                     sum_defining_bisp(shc_conjugated, onei, shc, l1, l2, l, &temp);
-                    output[row_index_rp + 2*(l2*(l2+1) + m2_der)+1] = temp.real; // Derivative of real part of b_{l1,l2,l}
-                    output[row_index_ip + 2*(l2*(l2+1) + m2_der)+1] = temp.imag; // Derivative of imag part of b_{l1,l2,l}
+                    output[row_index_rp + 2*(l2*(l2+1) + m2_der)+1] += temp.real; // Derivative of real part of b_{l1,l2,l}
+                    output[row_index_ip + 2*(l2*(l2+1) + m2_der)+1] += temp.imag; // Derivative of imag part of b_{l1,l2,l}
                     onei[l2*(l2+1) + m2_der].imag = 0;
                 }
 
@@ -265,8 +265,8 @@ void bispGrad(  mxComplexDouble * const input, mxComplexDouble * const input_con
                     temp.imag = 0;
                     onei[l*(l+1) + m_der].real = 1;
                     sum_defining_bisp(shc_conjugated, shc_conjugated, onei, l1, l2, l, &temp);
-                    output[row_index_rp + 2*(l*(l+1) + m_der)] = temp.real; // Derivative of real part of b_{l1,l2,l}
-                    output[row_index_ip + 2*(l*(l+1) + m_der)] = temp.imag; // Derivative of imag part of b_{l1,l2,l}
+                    output[row_index_rp + 2*(l*(l+1) + m_der)] += temp.real; // Derivative of real part of b_{l1,l2,l}
+                    output[row_index_ip + 2*(l*(l+1) + m_der)] += temp.imag; // Derivative of imag part of b_{l1,l2,l}
                     onei[l*(l+1) + m_der].real = 0;
 
                     // Derivative w.r.t imaginary part
@@ -274,8 +274,8 @@ void bispGrad(  mxComplexDouble * const input, mxComplexDouble * const input_con
                     temp.imag = 0;
                     onei[l*(l+1) + m_der].imag = 1;
                     sum_defining_bisp(shc_conjugated, shc_conjugated, onei, l1, l2, l, &temp);
-                    output[row_index_rp + 2*(l*(l+1) + m_der)+1] = temp.real; // Derivative of real part of b_{l1,l2,l}
-                    output[row_index_ip + 2*(l*(l+1) + m_der)+1] = temp.imag; // Derivative of imag part of b_{l1,l2,l}
+                    output[row_index_rp + 2*(l*(l+1) + m_der)+1] += temp.real; // Derivative of real part of b_{l1,l2,l}
+                    output[row_index_ip + 2*(l*(l+1) + m_der)+1] += temp.imag; // Derivative of imag part of b_{l1,l2,l}
                     onei[l*(l+1) + m_der].imag = 0;
                 }
             }
