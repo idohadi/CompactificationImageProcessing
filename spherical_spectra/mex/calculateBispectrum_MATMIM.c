@@ -217,7 +217,7 @@ void bispGrad(  mxComplexDouble * const input, mxComplexDouble * const input_con
                     // Derivative w.r.t real part
                     temp.real = 0;
                     temp.imag = 0;
-                    onei[l1*(l1+1) + m1_der].real = -1;
+                    onei[l1*(l1+1) + m1_der].real = 1;
                     sum_defining_bisp(onei, shc_conjugated, shc, l1, l2, l, &temp);
                     output[row_index_rp + 2*(l1*(l1+1) + m1_der)] += temp.real; // Derivative of real part of b_{l1,l2,l}
                     output[row_index_ip + 2*(l1*(l1+1) + m1_der)] += temp.imag; // Derivative of imag part of b_{l1,l2,l}
@@ -240,7 +240,7 @@ void bispGrad(  mxComplexDouble * const input, mxComplexDouble * const input_con
                     // Derivative w.r.t real part
                     temp.real = 0;
                     temp.imag = 0;
-                    onei[l2*(l2+1) + m2_der].real = -1;
+                    onei[l2*(l2+1) + m2_der].real = 1;
                     sum_defining_bisp(shc_conjugated, onei, shc, l1, l2, l, &temp);
                     output[row_index_rp + 2*(l2*(l2+1) + m2_der)] += temp.real; // Derivative of real part of b_{l1,l2,l}
                     output[row_index_ip + 2*(l2*(l2+1) + m2_der)] += temp.imag; // Derivative of imag part of b_{l1,l2,l}
