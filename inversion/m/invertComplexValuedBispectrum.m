@@ -1,4 +1,4 @@
-function [invertedSHC, squaredResidual, output] ...
+function [invertedSHC, rootedResidual, output] ...
     = invertComplexValuedBispectrum(bispectrum, bandlimit)
 %TODO: Docs
 
@@ -14,9 +14,9 @@ opts = optimoptions(@lsqnonlin, ...
 %% Inversion loop
 func = @(shc) inversionObjectiveFunc(shc, bispectrum, bandlimit);
 % while r>10^-10
-x0 = cfy(randomNormalizedSHC(L, 1));
-[invertedSHC, squaredResidual, ~, ~, output] = lsqnonlin(func, x0, [], [], opts);
-squaredResidual = sqrt(squaredResidual);
+x0 = randomNormalizedSHC(bandlimit, 1);
+[invertedSHC, rootedResidual, ~, ~, output] = lsqnonlin(func, x0, [], [], opts);
+rootedResidual = sqrt(rootedResidual);
 % end
 
 end
