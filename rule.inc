@@ -43,7 +43,8 @@ SHRULES=normalizeSHC \
 			randomNormalizedSHC
 SPECTRARULES=calculateBispectrum \
 			calculateBispetrumGradient \
-			powerSpectrum
+			powerSpectrum \
+			calculateBispectrum_MATMIM
 ALEGENDRERULES=alegendre_mex
 TESTERSRULES=clebsch_gordan_tester \
 			spherical_harmonics_tester \
@@ -114,6 +115,18 @@ calculateBispectrum :
 	cp $(ALEGEVALDir)/*.bin2 $(MEXOUTDIR)
 	cp $(ALEGEVALDir)/*.bin3 $(MEXOUTDIR)
 	
+calculateBispectrum_MATMIM :
+	mkdir -p $(MEXOUTDIR)
+	
+	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SPECTRADir)/$(MEXDir)/calculateBispectrum_MATMIM.c \
+		$(CGFILE) 
+	
+	rm $(MEXOUTDIR)/*.mod
+	rm $(MEXOUTDIR)/*.o
+	cp $(ALEGEVALDir)/*.bin $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin1 $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin2 $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin3 $(MEXOUTDIR)
 	
 calculateBispectrumGradient :
 	mkdir -p $(MEXOUTDIR)
