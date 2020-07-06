@@ -1,134 +1,71 @@
-%% Test1
+%% Parameters
+Ls = [5, 6, 8, 10, 12];
+color =     [0, 0.4470, 0.7410; ...
+            [0.8500 0.3250 0.0980]; ...
+            [0.9290 0.6940 0.1250]; ...
+            [0.4940 0.1840 0.5560]; ...
+            [0.4660 0.6740 0.1880]];
+trialsNo = 20;
+
+%% Test1: complex-valued function inversion
+
+results = load('complexValuedSHCInversionTestResultsNewMEXFunc.mat');
+results = results.complexValuedSHCInversionTestResultsNewMEXFunc;
+
 fig = figure();
 tiledlayout(3, 1, 'TileSpacing', 'compact', 'Padding', 'compact');
 
-trialsNo = 20;
-
-
 nexttile;
-
 hold;
-plot(1:trialsNo, [complexValuedSHCInversionTestResults.relativeDistance], ...
-    'Marker', 'o', ...
-    'MarkerFaceColor', [0 0.4470 0.7410]);
-plot(1:trialsNo, [complexValuedSHCInversionTestResults2.relativeDistance], ...
-    'Marker', 'o', ...
-    'MarkerFaceColor', [0.8500 0.3250 0.0980]);
-plot(1:trialsNo, [complexValuedSHCInversionTestResults6.relativeDistance], ...
-    'Marker', 'o', ...
-    'MarkerFaceColor', [0.9290 0.6940 0.1250]);
-plot(1:trialsNo, [complexValuedSHCInversionTestResults7.relativeDistance], ...
-    'Marker', 'o', ...
-    'MarkerFaceColor', [0.4940 0.1840 0.5560]);
-plot(1:trialsNo, [complexValuedSHCInversionTestResults8.relativeDistance], ...
-    'Marker', 'o', ...
-    'MarkerFaceColor', [0.4660 0.6740 0.1880]);
+for J=1:length(Ls)
+    plot(1:trialsNo, [results(:, J).relativeDistance], ...
+        'Marker', 'o', ...
+        'MarkerFaceColor', color(J, :));
+end
 hold off;
-
-% [0 0.4470 0.7410]
-% [0.8500 0.3250 0.0980]
-% [0.9290 0.6940 0.1250]
-% [0.4940 0.1840 0.5560]
-% [0.4660 0.6740 0.1880]
-
 set(gca, 'yscale', 'log');
 
 title('Bispectrum inversion of complex-valued spherical function');
 xlabel('Iteration');
 ylabel('Relative error');
-
-% legend({'bandlimit = 4', 'bandlimit = 5', 'bandlimit = 6', ...
-%     'bandlimit = 7', 'bandlimit = 8'}, ...
-%     'Location', 'southoutside', 'Orientation', 'horizontal');
 xticks(1:trialsNo);
-% yticks(10.^(-6:0));
 
 % ============
 
 nexttile;
-
 hold;
-plot(1:trialsNo, [complexValuedSHCInversionTestResults.rootedResidual], ...
-    'Marker', 'o', ...
-    'MarkerFaceColor', [0 0.4470 0.7410]);
-plot(1:trialsNo, [complexValuedSHCInversionTestResults2.rootedResidual], ...
-    'Marker', 'o', ...
-    'MarkerFaceColor', [0.8500 0.3250 0.0980]);
-plot(1:trialsNo, [complexValuedSHCInversionTestResults6.rootedResidual], ...
-    'Marker', 'o', ...
-    'MarkerFaceColor', [0.9290 0.6940 0.1250]);
-plot(1:trialsNo, [complexValuedSHCInversionTestResults7.rootedResidual], ...
-    'Marker', 'o', ...
-    'MarkerFaceColor', [0.4940 0.1840 0.5560]);
-plot(1:trialsNo, [complexValuedSHCInversionTestResults8.rootedResidual], ...
-    'Marker', 'o', ...
-    'MarkerFaceColor', [0.4660 0.6740 0.1880]);
+for J=1:length(Ls)
+    plot(1:trialsNo, [results(:, J).rootedResidual], ...
+        'Marker', 'o', ...
+        'MarkerFaceColor', color(J, :));
+end
 hold off;
-
-% [0 0.4470 0.7410]
-% [0.8500 0.3250 0.0980]
-% [0.9290 0.6940 0.1250]
-% [0.4940 0.1840 0.5560]
-% [0.4660 0.6740 0.1880]
-
 set(gca, 'yscale', 'log');
 
-% title('Bispectrum inversion of complex-valued spherical function');
 xlabel('Iteration');
 ylabel('Residual (rooted)');
-
-% legend({'bandlimit = 4', 'bandlimit = 5', 'bandlimit = 6', ...
-%     'bandlimit = 7', 'bandlimit = 8'}, ...
-%     'Location', 'southoutside', 'Orientation', 'horizontal');
 xticks(1:trialsNo);
 
 % ============
 
 nexttile;
-
+S = [results.output];
+S = reshape(S, [trialsNo, length(Ls)]);
 hold;
-
-S = [complexValuedSHCInversionTestResults.output];
-plot(1:trialsNo, [S.firstorderopt], ...
-    'Marker', 'o', ...
-    'MarkerFaceColor', [0 0.4470 0.7410]);
-
-S = [complexValuedSHCInversionTestResults2.output];
-plot(1:trialsNo, [S.firstorderopt], ...
-    'Marker', 'o', ...
-    'MarkerFaceColor', [0.8500 0.3250 0.0980]);
-
-S = [complexValuedSHCInversionTestResults6.output];
-plot(1:trialsNo, [S.firstorderopt], ...
-    'Marker', 'o', ...
-    'MarkerFaceColor', [0.9290 0.6940 0.1250]);
-
-S = [complexValuedSHCInversionTestResults7.output];
-plot(1:trialsNo, [S.firstorderopt], ...
-    'Marker', 'o', ...
-    'MarkerFaceColor', [0.4940 0.1840 0.5560]);
-
-S = [complexValuedSHCInversionTestResults8.output];
-plot(1:trialsNo, [S.firstorderopt], ...
-    'Marker', 'o', ...
-    'MarkerFaceColor', [0.4660 0.6740 0.1880]);
-
+for J=1:length(Ls)
+    plot(1:trialsNo, [S(:, J).firstorderopt], ...
+        'Marker', 'o', ...
+        'MarkerFaceColor', color(J, :));
+end
 hold off;
-
-% [0 0.4470 0.7410]
-% [0.8500 0.3250 0.0980]
-% [0.9290 0.6940 0.1250]
-% [0.4940 0.1840 0.5560]
-% [0.4660 0.6740 0.1880]
 
 set(gca, 'yscale', 'log');
 
-% title('Bispectrum inversion of complex-valued spherical function');
 xlabel('Iteration');
 ylabel('First order optimality condition');
 
-legend({'bandlimit = 4', 'bandlimit = 5', 'bandlimit = 6', ...
-    'bandlimit = 7', 'bandlimit = 8'}, ...
+legend({'bandlimit = 4', 'bandlimit = 6', 'bandlimit = 8', ...
+    'bandlimit = 10', 'bandlimit = 12'}, ...
     'Location', 'southoutside', 'Orientation', 'horizontal');
 xticks(1:trialsNo);
 
