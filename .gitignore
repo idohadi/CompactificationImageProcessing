@@ -6,3 +6,5 @@ bin/
 *.mod
 *.a
 *.mat
+*.pdf
+*.asv

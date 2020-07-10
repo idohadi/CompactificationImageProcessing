@@ -8,7 +8,7 @@ opts = optimoptions(@lsqnonlin, ...
     'OptimalityTolerance', 10^-12, ...
     'FunctionTolerance', 10^-15, ...
     'StepTolerance', 10^-10, ...
-    'Display', 'off', ...
+    'Display', 'iter', ...
     'CheckGradients', true); 
 r = Inf;
 
@@ -20,7 +20,9 @@ end
 %% Inversion loop
 func = @(shc) inversionObjectiveFunc(cfy(shc), bispectrum, bandlimit);
 while r>tol
-    x0 = randomNormalizedSHC(bandlimit, 1);
+%     x0 = randomNormalizedSHC(bandlimit, 1);
+    x0 = randomNormalizedSHC(bandlimit, 0);
+    x0 = rlfy(r2c(x0, bandlimit));
     [invertedSHC, rootedResidual, ~, ~, output] = lsqnonlin(func, x0, [], [], opts);
     r = output.firstorderopt;
 end

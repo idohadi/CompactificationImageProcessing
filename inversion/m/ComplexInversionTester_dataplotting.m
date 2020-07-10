@@ -155,7 +155,7 @@ for J=1:size(results, 2)
 end
 hold off;
 
-title('Bispectrum inversion of complex-valued spherical function');
+title('Bispectrum inversion of real-valued spherical function');
 xlabel('Iteration');
 ylabel('Relative error');
 xticks(1:trialsNo);

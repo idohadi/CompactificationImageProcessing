@@ -150,6 +150,17 @@ calculateBispectrumGradient :
 	cp $(ALEGEVALDir)/*.bin2 $(MEXOUTDIR)
 	cp $(ALEGEVALDir)/*.bin3 $(MEXOUTDIR)
 	
+bispectrumIndices_MATMIM :
+	mkdir -p $(MEXOUTDIR)
+	
+	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SPECTRADir)/$(MEXDir)/bispectrumIndices_MATMIM.c
+	
+	rm $(MEXOUTDIR)/*.mod
+	rm $(MEXOUTDIR)/*.o
+	cp $(ALEGEVALDir)/*.bin $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin1 $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin2 $(MEXOUTDIR)
+	cp $(ALEGEVALDir)/*.bin3 $(MEXOUTDIR)
 
 powerSpectrum :
 	$(MEX) $(MATLABFAGS) $(SFMTCOMPSTR) $(OUTPATH) $(INCLUDEPATH) $(SPECTRADir)/$(MEXDir)/powerSpectrum.c $(CGFILE) $(SHFILE) $(SPECTRAFILE) $(SFMTFILE)
