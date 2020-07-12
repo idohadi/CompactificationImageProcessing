@@ -380,12 +380,13 @@ save2pdf('Task2L12fig.pdf', fig);
 % In the real-valued case, what is the effect of the distance between the 
 % initial point and the ground truth?
 %% 
-Ls = [8, 10, 14, 16];
-tds = ['sf018.00182'; 'sf022.00266'; 'sf030.00482'; 'sf034.00614'];
+Ls = [8, 10, 12, 14, 16];
+tds = ['sf018.00182'; 'sf022.00266'; 'sf026.00366'; 'sf030.00482'; 'sf034.00614'];
+
 trialsNo = 30;
 % Lower and upper relative error in percents
 rel_err_lb = 5;
-rel_err_ub = 50;
+rel_err_ub = 100;
 
 opts = optimoptions(@lsqnonlin, ...
     'SpecifyObjectiveGradient', true, ...
@@ -462,20 +463,16 @@ for J=1:length(Ls)
     end
 end
 
-resultsL12 = load('Task2L12.mat');
-resultsL12 = resultsL12.Task2L12;
-finalResults = [results(:, 1:2), resultsL12, results(:, 3:end)];
-
-Task2SeveralLargeL = finalResults;
-save('Task2SeveralLargeL.mat', 'Task2SeveralLargeL');
+Task2SeveralLargeLAllExpanded = results;
+save('Task2SeveralLargeLAllExpanded.mat', 'Task2SeveralLargeLAllExpanded');
 
 %%
 % ===================
 % Ploting the results
 % ===================
 
-results = load('Task2SeveralLargeL.mat');
-results = results.Task2SeveralLargeL;
+results = load('Task2SeveralLargeLAllExpanded.mat');
+results = results.Task2SeveralLargeLAllExpanded;
 
 sz = 3;
 
@@ -496,7 +493,6 @@ for J=1:size(results, 2)
         'MarkerSize', sz);
 end
 hold off;
-set(gca, 'xscale', 'log');
 set(gca, 'yscale', 'log');
 
 title('Bispectrum inversion of real-valued spherical function');
@@ -518,9 +514,7 @@ for J=1:size(results, 2)
         'MarkerSize', sz);
 end
 hold off;
-
 set(gca, 'yscale', 'log');
-set(gca, 'xscale', 'log');
 
 ylabel('Residual (rooted)');
 
@@ -543,7 +537,6 @@ for J=1:size(results, 2)
         'MarkerSize', sz);
 end
 hold off;
-set(gca, 'xscale', 'log');
 set(gca, 'yscale', 'log');
 
 ylabel('First ord. opt. cond.');
@@ -564,7 +557,6 @@ for J=1:size(results, 2)
         'MarkerSize', sz);
 end
 hold off;
-set(gca, 'xscale', 'log');
 set(gca, 'yscale', 'log');
 
 ylabel('Inversion untime (sec)');
@@ -585,7 +577,6 @@ for J=1:size(results, 2)
         'MarkerSize', sz);
 end
 hold off;
-set(gca, 'xscale', 'log');
 set(gca, 'yscale', 'log');
 
 ylabel('Alignment runtime (sec)');
@@ -598,7 +589,243 @@ legend(legcell, ...
     'Orientation', 'horizontal', ...
     'Location', 'southoutside');
 
-xlabel('Distance between initial guess and ground truth');
+xlabel('Initial error relative to ground truth');
 
 
-save2pdf('Task2SeveralLargeLfig.pdf', fig);
+save2pdf('Task2SeveralLargeLAllfig.pdf', fig);
+
+%% Bispectrum inversion stability
+% In the real-valued case, what is the effect of the distance between the 
+% initial point and the ground truth?
+%% 
+Ls = [8, 10, 12, 14, 16];
+tds = ['sf018.00182'; 'sf022.00266'; 'sf026.00366'; 'sf030.00482'; 'sf034.00614'];
+
+trialsNo = 50;
+% Lower and upper relative error in percents
+rel_err_lb = 10^-2;
+rel_err_ub = 15;
+
+opts = optimoptions(@lsqnonlin, ...
+    'SpecifyObjectiveGradient', true, ...
+    'OptimalityTolerance', 10^-12, ...
+    'FunctionTolerance', 10^-15, ...
+    'StepTolerance', 10^-10, ...
+    'Display', 'off'); 
+tol = 10^-8;
+
+% Test results struct
+results = struct();
+
+% The test
+for J=1:length(Ls)
+    L = Ls(J);
+    td = loadtd(tds(J, :));
+    
+    [bispInds, ~] = utilityFunc(L);
+    
+    for trial=1:trialsNo
+        shc = r2c(randomNormalizedSHC(L, 0), L);
+        shcBisp = calculateBispectrum_M(shc, L);
+        % Perturb the bispectrum
+        shcBispPerturbationDirection = randn(length(shcBisp), 1);
+        shcBispPerturbationDirection(~bispInds) = 0;
+        shcBispPerturbationDirection ...
+            = shcBispPerturbationDirection/norm(shcBispPerturbationDirection, 2);
+        initialBispRelativeErrorPercent = (rel_err_ub-rel_err_lb)*rand() + rel_err_lb;
+        initialBispRelativeError = initialBispRelativeErrorPercent/100;
+        initBispDistance = norm(shcBisp, 2)*initialBispRelativeError;
+        shcBispPerturbed = shcBisp + initBispDistance*shcBispPerturbationDirection;
+        
+        t = tic();
+        func = @(x) inversionObjectiveFunc(cfy(x), shcBispPerturbed, L);
+        % Generating initial point
+        direction = r2c(randomNormalizedSHC(L, 0), L);
+        direction = direction/norm(direction, 2);
+        initialRelativeErrorPercent = 60;
+        initialRelativeError = initialRelativeErrorPercent/100;
+        initDistance = sqrt(L+1)*initialRelativeError;
+        x0 = initDistance*direction + shc;
+        % Inverting the bipsectrm of shc
+        [invertedSHC, rootedResidual, ~, ~, output] = lsqnonlin(func, rlfy(x0), [], [], opts);
+        invertedSHC = cfy(invertedSHC);
+        rootedResidual = sqrt(rootedResidual);
+        inversionRuntime = toc(t);
+
+
+        % Aligning the inverted SHC and the original one
+        t = tic();
+        [relativeDistance, alignedSHC2, optimalRotation, refinedMaxCorrelation, crudeMaxCorrelation, fminserachOutput] = alignSphericalHarmonics(shc, invertedSHC, L, td);
+        alignmentRuntime = toc(t);
+
+        % Save results
+        results(trial, J).bandlimit = L;
+        results(trial, J).shc = shc;
+        results(trial, J).shcBisp = shcBisp;
+        
+        results(trial, J).shcBispPerturbationDirection = shcBispPerturbationDirection;
+        results(trial, J).initialBispRelativeErrorPercent = initialBispRelativeErrorPercent;
+        results(trial, J).initialBispRelativeError = initialBispRelativeError;
+        results(trial, J).initBispDistance = initBispDistance;
+        results(trial, J).shcBispPerturbed = shcBispPerturbed;
+        
+        results(trial, J).direction = direction;
+        results(trial, J).initDistance = initDistance;
+        results(trial, J).initialRelativeErrorPercent = initialRelativeErrorPercent;
+        results(trial, J).initialRelativeError = initialRelativeError;
+        results(trial, J).x0 = x0;
+                
+        results(trial, J).invertedSHC = invertedSHC;
+        results(trial, J).rootedResidual = rootedResidual;
+        results(trial, J).output = output;
+        results(trial, J).relativeDistance = relativeDistance;
+        results(trial, J).alignedSHC2 = alignedSHC2;
+        results(trial, J).optimalRotation = optimalRotation;
+        results(trial, J).refinedMaxCorrelation = refinedMaxCorrelation;
+        results(trial, J).crudeMaxCorrelation = crudeMaxCorrelation;
+        results(trial, J).fminserachOutput = fminserachOutput;
+        results(trial, J).inversionRuntime = inversionRuntime;
+        results(trial, J).alignmentRuntime = alignmentRuntime;
+
+        disp(['iter #', num2str(trial), ' of ', num2str(trialsNo), ...
+            '. Bandlimit = ', num2str(L), ...
+            '. Inv runtime = ', num2str(inversionRuntime), ...
+            '. Align runtime = ', num2str(alignmentRuntime), '.']);
+        disp(['. rel init dist = ', num2str(initialRelativeError), ...
+            '. rel bisp pert size = ', num2str(initialBispRelativeError), ...
+            '. final res = ', num2str(rootedResidual), ...
+            '. rel dist = ', num2str(relativeDistance), ...
+            '. first ord. opt. = ', num2str(output.firstorderopt)]);
+    end
+end
+
+RealValuedBispInvStability = results;
+save('RealValuedBispInvStability.mat', 'RealValuedBispInvStability');
+
+%%
+% ===================
+% Ploting the results
+% ===================
+
+results = load('RealValuedBispInvStability.mat');
+results = results.RealValuedBispInvStability;
+
+sz = 3;
+
+fig = figure;
+tiledlayout(5, 1, 'TileSpacing', 'compact', 'Padding', 'compact');
+
+nexttile;
+hold;
+for J=1:size(results, 2)
+    x = [results(:, J).initialBispRelativeError];
+    x = x(:);
+    [x, inds] = sortrows(x);
+    y = [results(:, J).relativeDistance];
+    y = y(:);
+    y = y(inds);
+    plot(x, y, ...
+        'Marker', 'o', ...
+        'MarkerSize', sz);
+end
+hold off;
+set(gca, 'yscale', 'log');
+
+title('Bispectrum inversion of real-valued spherical function');
+ylabel('Relative error');
+
+% ============
+
+nexttile;
+hold;
+for J=1:size(results, 2)
+    x = [results(:, J).initialBispRelativeError];
+    x = x(:);
+    [x, inds] = sortrows(x);
+    y = [results(:, J).rootedResidual];
+    y = y(:);
+    y = y(inds);
+    plot(x, y, ...
+        'Marker', 'o', ...
+        'MarkerSize', sz);
+end
+hold off;
+set(gca, 'yscale', 'log');
+
+ylabel('Residual (rooted)');
+
+% ============
+
+nexttile;
+
+hold;
+for J=1:size(results, 2)
+    S = [results(:, J).output];
+
+    x = [results(:, J).initialBispRelativeError];
+    x = x(:);
+    [x, inds] = sortrows(x);
+    y = [S.firstorderopt];
+    y = y(:);
+    y = y(inds);
+    plot(x, y, ...
+        'Marker', 'o', ...
+        'MarkerSize', sz);
+end
+hold off;
+set(gca, 'yscale', 'log');
+
+ylabel('First ord. opt. cond.');
+
+
+nexttile;
+
+hold;
+for J=1:size(results, 2)
+    x = [results(:, J).initialBispRelativeError];
+    x = x(:);
+    [x, inds] = sortrows(x);
+    y = [results(:, J).inversionRuntime];
+    y = y(:);
+    y = y(inds);
+    plot(x, y, ...
+        'Marker', 'o', ...
+        'MarkerSize', sz);
+end
+hold off;
+set(gca, 'yscale', 'log');
+
+ylabel('Inversion untime (sec)');
+
+
+nexttile;
+
+hold;
+for J=1:size(results, 2)
+    x = [results(:, J).initialBispRelativeError];
+    x = x(:);
+    [x, inds] = sortrows(x);
+    y = [results(:, J).alignmentRuntime];
+    y = y(:);
+    y = y(inds);
+    plot(x, y, ...
+        'Marker', 'o', ...
+        'MarkerSize', sz);
+end
+hold off;
+set(gca, 'yscale', 'log');
+
+ylabel('Alignment runtime (sec)');
+
+legcell = cell(1, size(results, 2));
+for J=1:size(results, 2)
+    legcell{J} = ['bandlimit = ', num2str(results(1, J).bandlimit)];
+end
+legend(legcell, ...
+    'Orientation', 'horizontal', ...
+    'Location', 'southoutside');
+
+xlabel('Relative bispectrum perturbation size');
+
+
+save2pdf('Task2SeveralLargeLAllfig.pdf', fig);
