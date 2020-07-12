@@ -8,10 +8,10 @@ addpath 'C:\Code\SphericalInvariantAnalysis\spherical_harmonics\m'
 % In the real-valued case, what is the effect of the distance between the 
 % initial point and the ground truth?
 %% 
-L = 6;
-td = loadtd('sf025.00339');
-trialsNo = 100;
-expNo = 10;
+L = 20;
+td = loadtd('sf045.01059');
+trialsNo = 30;
+expNo = 3;
 pow_lb = -5;
 pow_ub = 0;
 
@@ -79,19 +79,22 @@ for ex=1:expNo
             '. Align runtime = ', num2str(alignmentRuntime), '.']);
         disp(['. init dist = ', num2str(initDistance), ...
             '. final res = ', num2str(rootedResidual), ...
-            '. rel dist = ', num2str(relativeDistance)]);
+            '. rel dist = ', num2str(relativeDistance), ...
+            '. first ord. opt. = ', num2str(output.firstorderopt)]);
     end
 end
 
-Task2L6 = results;
-save('Task2L6.mat', 'Task2L6');
+Task2L20 = results;
+save('Task2L20.mat', 'Task2L20');
 %%
 % ===================
 % Ploting the results
 % ===================
 
-results = load('Task2L6.mat');
-results = results.Task2L6;
+results = load('Task2L20.mat');
+results = results.Task2L20;
+trialsNo = size(results, 1);
+expNo = size(results, 2);
 
 color =     [0, 0.4470, 0.7410; ...
             [0.8500 0.3250 0.0980]; ...
@@ -135,7 +138,7 @@ for J=1:expNo
     x = [results(:, J).initDistance];
     x = x(:);
     [x, inds] = sortrows(x);
-    y = [S.firstorderopt];
+    y = [results(:, J).rootedResidual];
     y = y(:);
     y = y(inds);
     plot(x, y, ...
@@ -552,17 +555,16 @@ save2pdf('Task5L6fig.pdf', fig);
 % What happens when I use a MATLAB  function that takes into account the 
 % symmetries in the real-valued case?
 %% 
-L = 6;
-td = loadtd('sf025.00339');
-trialsNo = 100;
+L = 15;
+td = loadtd('sf032.00546');
+trialsNo = 30;
 
 opts = optimoptions(@lsqnonlin, ...
     'SpecifyObjectiveGradient', true, ...
     'OptimalityTolerance', 10^-12, ...
     'FunctionTolerance', 10^-15, ...
     'StepTolerance', 10^-10, ...
-    'Display', 'off', ...
-    'CheckGradients', true);
+    'Display', 'off');
 tol = 10^-8;
 maxTries = 10;
 [bispInds, symComp] = utilityFunc(L);
@@ -586,7 +588,7 @@ for trial=1:trialsNo
         func = @(x) inversionObjectiveFuncReal(r2c(x, L), shcBisp, L, bispInds, symComp);
         [invertedSHC, rootedResidual, ~, ~, output] = lsqnonlin(func, x0, [], [], opts);
         
-        r = rootedResidual;
+        r = output.firstorderopt;
         tries = tries + 1;
         
         if bestResidual>sqrt(rootedResidual)
@@ -636,22 +638,23 @@ for trial=1:trialsNo
             '. Bandlimit = ', num2str(L), ...
             '. Inv runtime = ', num2str(inversionRuntime), ...
             '. Align runtime = ', num2str(alignmentRuntime), '.']);
-    disp(['. init dist = ', num2str(initDistance), ...
-        '. init res = ', num2str(initResidual), ...
+    disp(['init res = ', num2str(initResidual), ...
         '. final res = ', num2str(rootedResidual), ...
-        '. rel dist = ', num2str(relativeDistance)]);
+        '. rel dist = ', num2str(relativeDistance), ...
+        '. first ord. opt. = ', num2str(output.firstorderopt), ...
+        '. tries = ', num2str(tries)]);
 end
 
-Task3L6 = results;
-save('Task3L6.mat', 'Task3L6');
+Task3L15 = results;
+save('Task3L15.mat', 'Task3L15');
 
 %%
 % ===================
 % Ploting the results
 % ===================
 
-results = load('Task3L6.mat');
-results = results.Task3L6;
+results = load('Task3L15.mat');
+results = results.Task3L15;
 
 color =     [0, 0.4470, 0.7410; ...
             [0.8500 0.3250 0.0980]; ...
@@ -1261,7 +1264,7 @@ for J=1:N
 end
 y = y(:);
 plot(y, ...
-    'Marker', 'o', ...
+    'Marker', 'o', ... 
     'MarkerSize', sz);
 hold off;
 set(gca, 'yscale', 'log');
