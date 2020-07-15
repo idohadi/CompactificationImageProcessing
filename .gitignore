@@ -5,3 +5,5 @@
 bin/
 *.mod
 *.a
+*.pdf
+*.mat
