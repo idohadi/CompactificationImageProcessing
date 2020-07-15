@@ -497,6 +497,7 @@ set(gca, 'yscale', 'log');
 
 title('Bispectrum inversion of real-valued spherical function');
 ylabel('Relative error');
+yticks(10.^(-13:3));
 
 % ============
 
@@ -517,6 +518,7 @@ hold off;
 set(gca, 'yscale', 'log');
 
 ylabel('Residual (rooted)');
+yticks(10.^(-13:3));
 
 % ============
 
@@ -540,6 +542,7 @@ hold off;
 set(gca, 'yscale', 'log');
 
 ylabel('First ord. opt. cond.');
+yticks(10.^(-13:3));
 
 
 nexttile;
@@ -560,7 +563,7 @@ hold off;
 set(gca, 'yscale', 'log');
 
 ylabel('Inversion untime (sec)');
-
+yticks(10.^(-13:3));
 
 nexttile;
 
@@ -713,7 +716,7 @@ results = results.RealValuedBispInvStability;
 sz = 3;
 
 fig = figure;
-tiledlayout(5, 1, 'TileSpacing', 'compact', 'Padding', 'compact');
+tiledlayout(3, 1, 'TileSpacing', 'compact', 'Padding', 'compact');
 
 nexttile;
 hold;
@@ -729,10 +732,10 @@ for J=1:size(results, 2)
         'MarkerSize', sz);
 end
 hold off;
-set(gca, 'yscale', 'log');
 
 title('Bispectrum inversion of real-valued spherical function');
 ylabel('Relative error');
+yticks(0:0.1:1);
 
 % ============
 
@@ -742,7 +745,7 @@ for J=1:size(results, 2)
     x = [results(:, J).initialBispRelativeError];
     x = x(:);
     [x, inds] = sortrows(x);
-    y = [results(:, J).rootedResidual];
+    y = [results(:, J).rootedResidual] - [results(:, J).initBispDistance];
     y = y(:);
     y = y(inds);
     plot(x, y, ...
@@ -750,9 +753,8 @@ for J=1:size(results, 2)
         'MarkerSize', sz);
 end
 hold off;
-set(gca, 'yscale', 'log');
 
-ylabel('Residual (rooted)');
+ylabel('Residual, final-truth');
 
 % ============
 
@@ -776,46 +778,7 @@ hold off;
 set(gca, 'yscale', 'log');
 
 ylabel('First ord. opt. cond.');
-
-
-nexttile;
-
-hold;
-for J=1:size(results, 2)
-    x = [results(:, J).initialBispRelativeError];
-    x = x(:);
-    [x, inds] = sortrows(x);
-    y = [results(:, J).inversionRuntime];
-    y = y(:);
-    y = y(inds);
-    plot(x, y, ...
-        'Marker', 'o', ...
-        'MarkerSize', sz);
-end
-hold off;
-set(gca, 'yscale', 'log');
-
-ylabel('Inversion untime (sec)');
-
-
-nexttile;
-
-hold;
-for J=1:size(results, 2)
-    x = [results(:, J).initialBispRelativeError];
-    x = x(:);
-    [x, inds] = sortrows(x);
-    y = [results(:, J).alignmentRuntime];
-    y = y(:);
-    y = y(inds);
-    plot(x, y, ...
-        'Marker', 'o', ...
-        'MarkerSize', sz);
-end
-hold off;
-set(gca, 'yscale', 'log');
-
-ylabel('Alignment runtime (sec)');
+yticks(10.^(-13:3));
 
 legcell = cell(1, size(results, 2));
 for J=1:size(results, 2)
@@ -828,4 +791,26 @@ legend(legcell, ...
 xlabel('Relative bispectrum perturbation size');
 
 
-save2pdf('Task2SeveralLargeLAllfig.pdf', fig);
+save2pdf('RealValuedBispInvStability.pdf', fig);
+
+
+disp('x is relative SHC distance. y is bispectrum relative perturbation.');
+for J=1:size(results, 2)
+    x = [results(:, J).initialBispRelativeError];
+    x = x(:);
+    
+    y = [results(:, J).relativeDistance];
+    y = y(:);
+    
+    p = polyfit(x, y, 1);
+    M = max(y./x, [], 'all');
+    if p(2)>=0
+        disp(['Bandlimit = ', num2str(results(1, J).bandlimit), ...
+            '. Fitting polyonmial is ', num2str(p(1)), '*x+', num2str(p(2)), '. ', ...
+            'Lip. const ~ ', num2str(M), '.']);
+    else
+        disp(['Bandlimit = ', num2str(results(1, J).bandlimit), ...
+            '. Fitting polyonmial is ', num2str(p(1)), '*x', num2str(p(2)), '. ', ...
+            'Lip. const ~ ', num2str(M), '.']);
+    end
+end
