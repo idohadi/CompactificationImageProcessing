@@ -9,6 +9,3 @@
 [submodule "extern/ALegendreEval"]
 	path = extern/ALegendreEval
 	url = https://github.com/JamesCBremerJr/ALegendreEval
-[submodule "extern/ButterflyLab"]
-	path = extern/ButterflyLab
-	url = https://github.com/ButterflyLab/ButterflyLab
