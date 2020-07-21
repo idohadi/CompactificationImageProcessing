@@ -1,17 +1,19 @@
-// TODO: write docs
-
 /** 
  * Calculate the Clebsch-Gordan coefficients of order (l1, l2, l, m)
  * 
  * MATLAB call form:
- *      output = cgVector(l1, l2, l, m)
+ *      output = cgr(l1, l2, l, m)
  *  where
  *      rotation is a quaternion representaiton of a rotation R and vectors is an 3 x N MATLAB array.
  *      output is a 3 x N MATLAB array such that
  *          output(:, n) = R * vectors(:, n)
  * 
  * NOTE:
- *  Code performs no input checks.
+ *  (1) Code performs no input checks.
+ *  (2) The coefficients are calcualted using  the method of [1]
+ * 
+ * REFERENCE:
+ *  [1] Straub, W. O. (n.d.). Efficient Computation of Clebsch-Gordan Coefficients. Retrieved October 28, 2019, from http://vixra.org/abs/1403.0263
   */
 
 #include <stdint.h>

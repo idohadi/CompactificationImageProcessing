@@ -1,4 +1,11 @@
-// TODO: write docs in doxygen
+/**
+ * Functions relating to the computation of Clebsch-Gordan coefficients.
+ * 
+ * The method implemented here is suggested in [1].
+ * 
+ * REFERENCE:
+ *  [1] Straub, W. O. (n.d.). Efficient Computation of Clebsch-Gordan Coefficients. Retrieved October 28, 2019, from http://vixra.org/abs/1403.0263
+ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -6,7 +13,9 @@
 #include "clebsch_gordan_coefficients.h"
 
 
-/* Clebsch-Gordan management functions */
+/* 
+Clebsch-Gordan utility functions. See [1] for details.
+*/
 long cg_lower_bound(const long l1, const long l2, const long m)
 {
     /* Returns the lowest m-index of Clebsch-Gordan coefficients of order (l1, l2, l, m)  */
@@ -77,7 +86,12 @@ void cg_vector(const long l1, const long l2, const long l, const long m, double 
 
 void calculate_cg_table(const size_t bandlimit, cg_table *table)
 {
-    /* Documentation of memory structure is in allocate_cg_table */
+    /**
+     * This function calcualtes the entire collection of Clebsch-Gordan coefficients.
+     * 
+     * NOTES:
+     *  Documentation of memory structure is in allocate_cg_table.
+    */
 
     #pragma omp parallel for collapse(2)
     for (long l1 = 0; l1<=bandlimit; ++l1)
@@ -197,7 +211,10 @@ void set_cg(cg_table *table, const long l1, const long l2, const long l, const l
 
 void print_cg(cg_table *table)
 {
-
+    /**
+     * Print a table of all Clebsch-Gordan coefficients in table.
+     */
+    
     // Print the table header
 
     printf("Bandlimit = %d.\n", table->bandlimit);
@@ -254,6 +271,11 @@ void print_cg(cg_table *table)
 
 void print_cg_vector(long l1, long l2, long l, long m)
 {
+    /**
+     * Print a table of Clebsch-Gordan coefficients of order (l1, l2, l, m).
+     * 
+     */
+
     // Calcualte the vector
     double *cg_vec = malloc((cg_upper_bound(l1, l2, m) - cg_lower_bound(l1, l2, m) + 1)*sizeof(double));
     cg_vector(l1, l2, l, m, cg_vec);
