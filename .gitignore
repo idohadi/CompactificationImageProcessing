@@ -7,3 +7,6 @@ bin/
 *.a
 *.pdf
 *.mat
+docs/*
+!/docs/*.tex
+!docs/*.bib
