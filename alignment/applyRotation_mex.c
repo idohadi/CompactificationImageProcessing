@@ -60,6 +60,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
     // Create output
     plhs[0] = mxCreateDoubleMatrix(3, N, mxREAL);
+    rotatedPoints = mxGetDoubles(plhs[0]);
     
     // Calculate output
     for (size_t n = 0; n<N; ++n)

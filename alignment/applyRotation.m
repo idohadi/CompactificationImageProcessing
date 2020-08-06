@@ -29,4 +29,4 @@ if size(x, 1)~=3
 end
 
 %% Calling the mex function
-applyRotation_mex(rotation, x);
+xRot = applyRotation_mex(rotation, x);
