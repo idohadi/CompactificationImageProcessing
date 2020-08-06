@@ -10,3 +10,4 @@ bin/
 docs/*
 !/docs/*.tex
 !docs/*.bib
+*.asv
