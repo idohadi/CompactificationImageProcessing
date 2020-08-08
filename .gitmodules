@@ -1,0 +1,3 @@
+[submodule "extern/SmallRotationToolbox"]
+	path = extern/SmallRotationToolbox
+	url = https://github.com/idohadi/SmallRotationToolbox
