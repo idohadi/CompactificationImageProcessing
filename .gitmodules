@@ -1,3 +1,6 @@
 [submodule "extern/SmallRotationToolbox"]
 	path = extern/SmallRotationToolbox
 	url = https://github.com/idohadi/SmallRotationToolbox
+[submodule "extern/FastSphericalHarmonicsTransform"]
+	path = extern/FastSphericalHarmonicsTransform
+	url = https://github.com/idohadi/FastSphericalHarmonicsTransform
