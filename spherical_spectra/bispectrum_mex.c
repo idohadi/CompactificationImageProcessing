@@ -4,10 +4,11 @@
  * Calculate the bispectrum and its gradient.
  * 
  * MATLAB call form:
- *      b = bispectrum_mex(shc, bandlimit, CGs)
- *      [b, grad] = bispectrum_mex(shc, bandlimit, CGs)
+ *      b = bispectrum_mex(shc, shc_conj, bandlimit, CGs)
+ *      [b, grad] = bispectrum_mex(shc, shc_conj, bandlimit, CGs)
  *  where
  *      shc         column or row complex array of length (bandlimit+1)^2 of spherical harmonics coefficients
+ *      shc_conj    the complex conjugate of shc
  *      bandlimit   scalar, the bandlimit of the function represented by shc
  *      CGs         a cell array containing the precomputed Clebsch-Gordan coefficents for bandlimit
  *      b           bispectrum vector, containing the bispectrum invariants b_{l1,l2,l} for 
