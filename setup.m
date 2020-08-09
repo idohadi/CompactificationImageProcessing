@@ -8,3 +8,4 @@ run(fullfile(p1, 'extern', 'SmallRotationToolbox', 'setup.m'));
 %% Adds the necessary folders to path
 addpath(p1);
 addpath(genpath(fullfile(p1, 'clebsch_gordan')));
+addpath(genpath(fullfile(p1, 'alignment')));
