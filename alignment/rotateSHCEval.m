@@ -56,15 +56,21 @@ function rotatedSHC = rotateSHCEval(shc, N, rotation, assocLegMat, omega, theta,
 % ***********************************************************
 %% Rotate SHC
 % Step 1
-[x, y, z] = sph2cart2(theta, phi, 1);
-rotatedPoints = applyRotation(rotation, [x'; y'; z']);
+[phiMesh, thetaMesh] = meshgrid(phi, theta);
+[x, y, z] = sph2cart2(thetaMesh, phiMesh, 1);
+rotatedPoints = applyRotation(rotation, [x(:)'; y(:)'; z(:)']);
 [rotatedTheta, rotatedPhi, ~] = cart2sph2(rotatedPoints(1, :), ...
                             rotatedPoints(2, :), ...
                             rotatedPoints(3, :));
 
 % Step 2
 assocLegMatRotGrid = assocLegendreMatrices(N, rotatedTheta);
-values = fsht(shc, N, assocLegMatRotGrid, rotatedPhi);
+values = zeros(numel(theta), numel(phi));
+for t=1:length(rotatedTheta)
+    assocLegMatTmp = cellfun(@(A) A(t, :), assocLegMatRotGrid, ...
+        'UniformOutput', false);
+    values(t) = fsht(shc, N, assocLegMatTmp, rotatedPhi(t));
+end
 
 % Step 3
 rotatedSHC = isht(values, N, assocLegMat, omega, phi);
