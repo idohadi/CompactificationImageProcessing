@@ -22,9 +22,7 @@ function powSpec = powerSpectrum(shc, bandlimit)
 %   (2) This function performs no input checks.
 % 
 % Reference
-%   [1] Straub, W. O. (n.d.). Efficient Computation of Clebsch-Gordan 
-%       Coefficients. Retrieved October 28, 2019, 
-%       from http://vixra.org/abs/1403.0263
+%   None
 % ***********************************************************
 % Author    Ido Hadi
 % Email     idohadi@mail.tau.ac.il
