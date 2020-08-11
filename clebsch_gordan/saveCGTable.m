@@ -1,11 +1,5 @@
 function saveCGTable(CGTable, filename)
 %%
-% save the CG table to file
-% Default is to save a .mat file
-% Alternatively, save a csv file with a table with headers
-%       l1 m1 l2 m2 | l m   value
-% 
-%%
 % Call format
 %   saveCGTable(CGTable, filename)
 % 
@@ -33,11 +27,11 @@ function saveCGTable(CGTable, filename)
 % 
 % Input arguments
 %   bandlimit       double      self-explanatory.
-% 
-% Output arguments
-%   CGTable         double      A cell array. Its specification is above.
 %   filename        char        path to file relative to currently open
 %                               folder.
+% 
+% Output arguments
+%   None
 % 
 % Notes
 %   None
