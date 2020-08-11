@@ -32,6 +32,8 @@ buildCGTable_mex :
 		clebsch_gordan/clebsch_gordan_coefficients.c \
 		-outdir clebsch_gordan/
 
+powerSpectrum_mex : 
+	$(MEX) $(MATLABFAGS) spherical_spectra/powerSpectrum_mex.c 
 
 
 # Cleaning rules
