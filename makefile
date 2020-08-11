@@ -26,6 +26,13 @@ ClebschGordanCoeffs_mex :
 		clebsch_gordan/clebsch_gordan_coefficients.c \
 		-outdir clebsch_gordan/
 
+buildCGTable_mex : 
+	$(MEX) $(MATLABFAGS) \
+		clebsch_gordan/buildCGTable_mex.c \
+		clebsch_gordan/clebsch_gordan_coefficients.c \
+		-outdir clebsch_gordan/
+
+
 
 # Cleaning rules
 .PHONY : clean
