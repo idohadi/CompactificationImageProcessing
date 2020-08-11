@@ -12,7 +12,7 @@ function shc = randSHC(bandlimit, N)
 %   bandlimit       double      positive integer, the bandlimit of shc.
 % 
 % Output arguments
-%   nshc            double      (2*N)^2 x 1 complex array, spherical 
+%   nshc            double      (bandlimit+1)^2 x N complex array, spherical 
 %                               harmonics coefficients, normalized such
 %                               that it has a power spectrm of all ones.
 % 
@@ -38,5 +38,5 @@ if nargin<2
 end
 
 %% Sampling SHCs
-shc = randn((bandlimit+1)^2, N);
+shc = randn((bandlimit+1)^2, N) + 1i*randn((bandlimit+1)^2, N);
 shc = normSHC(shc, bandlimit);
