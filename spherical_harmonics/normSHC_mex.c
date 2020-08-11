@@ -57,14 +57,14 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
             norm = 0;
             for (long m = -l; m<=l; ++m)
             {
-                norm += shcAbsSqr[n*cols_no + l*(l+1) + m];
+                norm += shcAbsSqr[n*rows_no + l*(l+1) + m];
             }
             norm = sqrt(norm);
 
             for (long m = -l; m<=l; ++m)
             {
-                nshc[n*cols_no + l*(l+1) + m].real /= norm;
-                nshc[n*cols_no + l*(l+1) + m].imag /= norm;
+                nshc[n*rows_no + l*(l+1) + m].real /= norm;
+                nshc[n*rows_no + l*(l+1) + m].imag /= norm;
             }
         }
     }
