@@ -3,9 +3,10 @@ include make.inc
 EXTERNAL = 	FastSphericalHarmonicsTransform \
 			SmallRotationToolbox
 
-MEXFILES = 	normSHC_mex 
+MEXFILES = 	normSHC_mex \
+			ClebschGordanCoeffs_mex
 
-all : EXTERNAL
+all : EXTERNAL MEXFILES
 
 # External repos
 FastSphericalHarmonicsTransform :
@@ -18,6 +19,12 @@ SmallRotationToolbox :
 # MEX files
 normSHC_mex : 
 	$(MEX) $(MATLABFAGS) spherical_harmonics/normSHC_mex.c -outdir spherical_harmonics/
+
+ClebschGordanCoeffs_mex : 
+	$(MEX) $(MATLABFAGS) \
+		clebsch_gordan/ClebschGordanCoeffs_mex.c \
+		clebsch_gordan/clebsch_gordan_coefficients.c \
+		-outdir clebsch_gordan/
 
 
 # Cleaning rules
