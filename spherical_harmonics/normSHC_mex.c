@@ -27,8 +27,8 @@ size_t bandlimit;
 
 mxComplexDouble *nshc;
 
-long N;
-long M;
+long rows_no;
+long cols_no;
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
@@ -37,34 +37,34 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     shcAbsSqr = mxGetDoubles(prhs[1]);
     bandlimit = mxGetScalar(prhs[2]);
     
-    M = mxGetM(prhs[0]);
-    N = mxGetN(prhs[0]);
+    rows_no = mxGetM(prhs[0]);
+    cols_no = mxGetN(prhs[0]);
 
     // Create output
-    plhs[0] = mxCreateDoubleMatrix(M, N, mxCOMPLEX);
+    plhs[0] = mxCreateDoubleMatrix(rows_no, cols_no, mxCOMPLEX);
     nshc = mxGetComplexDoubles(plhs[0]);
-    for (long n = 0; n<N*M; ++n)
+    for (long n = 0; n<rows_no*cols_no; ++n)
     {
         nshc[n] = shc[n];
     }
     
     // Compute output
     double norm;
-    for (size_t n = 0; n<N; ++n)
+    for (size_t n = 0; n<cols_no; ++n)
     {
         for (long l = 0; l<=bandlimit; ++l)
         {
             norm = 0;
             for (long m = -l; m<=l; ++m)
             {
-                norm += shcAbsSqr[n*M + l*(l+1) + m];
+                norm += shcAbsSqr[n*cols_no + l*(l+1) + m];
             }
             norm = sqrt(norm);
 
             for (long m = -l; m<=l; ++m)
             {
-                nshc[n*M + l*(l+1) + m].real /= norm;
-                nshc[n*M + l*(l+1) + m].imag /= norm;
+                nshc[n*cols_no + l*(l+1) + m].real /= norm;
+                nshc[n*cols_no + l*(l+1) + m].imag /= norm;
             }
         }
     }

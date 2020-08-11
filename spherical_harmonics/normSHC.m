@@ -12,9 +12,10 @@ function nshc = normSHC(shc, bandlimit)
 %   bandlimit       double      positive integer, the bandlimit of shc.
 % 
 % Output arguments
-%   nshc            double      (2*N)^2 x 1 complex array, spherical 
-%                               harmonics coefficients, normalized such
-%                               that it has a power spectrm of all ones.
+%   nshc            double      (bandlimit+1)^2 x N complex array, 
+%                               spherical harmonics coefficients, 
+%                               normalized such that it has a power 
+%                               spectrm of all ones.
 % 
 % Notes
 %   (1) This function performs no input checks.
