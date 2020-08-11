@@ -1,5 +1,6 @@
 %% Setup file
 [p1, ~, ~] = fileparts(mfilename('fullpath'));
+cd(p1);
 
 %% Run external setup files
 run(fullfile(p1, 'extern', 'FastSphericalHarmonicsTransform', 'setup.m'));
