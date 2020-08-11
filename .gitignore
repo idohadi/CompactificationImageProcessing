@@ -11,3 +11,4 @@ docs/*
 !/docs/*.tex
 !docs/*.bib
 *.asv
+clebsch_gordan/ClebschGordanCoeffs/*
