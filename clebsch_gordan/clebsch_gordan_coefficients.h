@@ -29,21 +29,4 @@ double backward_substitution_secondary_diagonal(const long l1, const long l2, co
 void cg_vector(const long l1, const long l2, const long l, const long m, double * restrict cg);
 
 
-void calculate_cg_table(const size_t bandlimit, cg_table *table);
-
-
-cg_table allocate_cg_table(const size_t bandlimit);
-
-
-void destroy_cg_table(cg_table *table);
-
-
 double get_cg(const cg_table *table, const long l1, const long l2, const long l, const long m, const long m1);
-
-
-void set_cg(cg_table *table, const long l1, const long l2, const long l, const long m, const long m1, const double coefficient);
-
-
-void print_cg(cg_table *table);
-
-void print_cg_vector(long l1, long l2, long l, long m);
