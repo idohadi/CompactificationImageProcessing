@@ -8,10 +8,17 @@ function CGTable = buildCGTable(bandlimit, filename)
 % them.
 % 
 % CGTable format specification
+%   For 
+%       0<=l1<=bandlimit, 
+%       0<=l2<=l2, 
+%       abs(l1-l2)<=l<=min(l1+l2,bandlimit),  and
+%       abs(m)<=l.
+%   
+%   The table has the following format:
 %   Name                                                                    Type        Size        
 %   CGTable                                                                 cell        (bandlimit+1) x 1
 %   CGTable{l1+1}                                                           cell        (l1+1) x 1
-%   CGTable{l1+1}{l2+1}                                                     cell        (l1+l2-abs(l1-l2)+1) x 1
+%   CGTable{l1+1}{l2+1}                                                     cell        (min(l1+l2, bandlimit)-abs(l1-l2)+1) x 1
 %   CGTable{l1+1}{l2+1}{l1+l2-abs(l1-l2)+1}                                 cell        (2*l+1) x 1
 %   CGTable{l1+1}{l2+1}{l1+l2-abs(l1-l2)+1}{m+l+1}                          double      (max{-l1, m-l2} - min{l1, m+l2} + 1) x 1
 %   CGTable{l1+1}{l2+1}{l1+l2-abs(l1-l2)+1}{m+l+1}(m1+max{-l1, m-l2}+1)     double      1 x 1
