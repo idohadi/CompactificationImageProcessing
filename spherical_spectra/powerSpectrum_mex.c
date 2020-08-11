@@ -36,11 +36,13 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   pow_spec = mxGetDoubles(plhs[0]);
 
   // Compute output
+  long current;
   for (long l = 0; l<=bandlimit; ++l)
   {
+    current = l*(l+1);
     for (long m = -l; m<=l; ++m)
     {
-      pow_spec[l] += shcAbsSqr[l*(l+1) + m]
+      pow_spec[l] += shcAbsSqr[current + m];
     }
   }
 }
