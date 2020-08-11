@@ -59,7 +59,8 @@ assert(round(bandlimit)==bandlimit && bandlimit>=1, ...
     'The bandlimit must be a positive integer.');
 
 if nargin==1
-    filename = ['ClebschGordanCoeffs/CGT', num2str(bandlimit), '.mat'];
+    [rfn, ~, ~] = fileparts(mfilename('fullpath'));
+    filename = fullfile(rfn, 'ClebschGordanCoeffs', ['CGT', num2str(bandlimit), '.mat']);
 end
 
 %% Build the table
