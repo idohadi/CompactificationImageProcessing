@@ -4,10 +4,9 @@
  * Calculate the bispectrum and its gradient.
  * 
  * MATLAB call form:
- *      p = powerSpectrum_mex(shc, bandlimit)
- *      p = powerSpectrum_mex(shc, bandlimit)
+ *      p = powerSpectrum_mex(shcAbsSqr, bandlimit)
  *  where
- *      shc         column or row complex array of length (bandlimit+1)^2 of spherical harmonics coefficients
+ *      shcAbsSqr   column or row complex array of length (bandlimit+1)^2 of the squared absolute value of the spherical harmonics coefficients
  *      bandlimit   scalar, the bandlimit of the function represented by shc
  *      p           bandlimit+1 column array, the power spectrum of shc
  * 
@@ -19,20 +18,29 @@
 
 #include <stdint.h>
 #include "mex.h"
-#include "clebsch_gordan_coefficients.h"
 
+
+double *shcAbsSqr;
+size_t bandlimit;
+
+double *pow_spec;
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
-    // Obtain input
-    // TODO
+  // Obtain input
+  shcAbsSqr = mxGetDoubles(prhs[0]);
+  bandlimit = mxGetScalar(prhs[1]);
+  
+  // Create output
+  plhs[0] = mxCreateDoubleMatrix(bandlimit+1, 1, mxREAL);
+  pow_spec = mxGetDoubles(plhs[0]);
 
-    // Handle first run
-    // TODO
-
-    // Create output
-    // TODO
-
-    // Compute output
-    // TODO
+  // Compute output
+  for (long l = 0; l<=bandlimit; ++l)
+  {
+    for (long m = -l; m<=l; ++m)
+    {
+      pow_spec[l] += shcAbsSqr[l*(l+1) + m]
+    }
+  }
 }
