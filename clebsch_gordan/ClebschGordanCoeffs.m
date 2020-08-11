@@ -18,7 +18,7 @@ function CGvec = ClebschGordanCoeffs(l1, l2, l, m)
 %                                       <l1 m1 l2 (m-m1) | l m >
 %                                   where 
 %                                       m1min = max{-l1, m-l2}, 
-%                                       m1max = max{l1, m+l2}, and
+%                                       m1max = min{l1, m+l2}, and
 %                                       N = m1max - m1min + 1.
 % 
 % Notes
