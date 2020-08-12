@@ -153,7 +153,7 @@ void create_CGTable()
             temp[1] = mxGetCell(temp[0], l2);
             cgt[l1][l2] = malloc(((l1+l2>=bandlimit ? bandlimit : l1+l2) - (l1-l2) + 1)*sizeof(double **));
 
-            for (long l = l1-l2; l<=(l1+l2>=bandlimit ? bandlimit : l1+l2); ++l)
+            for (long l = l1-l2; l<=l1+l2 && l<=bandlimit; ++l)
             {
                 temp[2] = mxGetCell(temp[1], l-(l1-l2));
                 cgt[l1][l2][l-(l1-l2)] = malloc((2*l+1)*sizeof(double *));
@@ -186,7 +186,7 @@ void destroy_CGTable()
 
 double get_cg(const long l1, const long l2, const long l, const long m, const long m1)
 {
-    cgt[l1][l2][l-(l1>=l2 ? l1-l2 : l2-l1)][m+l][m1-((m-l2<=-l1) ? -l1 : m-l2)];
+    return cgt[l1][l2][l-(l1>=l2 ? l1-l2 : l2-l1)][m+l][m1-((m-l2<=-l1) ? -l1 : m-l2)];
 }
 
 mxComplexDouble get_shc(const long l, const long m)
@@ -211,7 +211,7 @@ void bisp()
             for (long l = l1-l2; l<=l1+l2 && l<=bandlimit; ++l)
             {
                 long ind_real = bisp_lookup(l1, l2, l, REAL_PART);
-                long ind_imag = ind_real + 1;
+                long ind_imag = bisp_lookup(l1, l2, l, IMAG_PART);
 
                 double b_real;
                 double b_imag;
@@ -230,8 +230,10 @@ void bisp()
                                         + get_shc(l1, m1).imag * get_shc(l2, m-m1).real);
                     }
                     
-                    b[ind_real] += get_shc(l, m).real * b_real - get_shc(l, m).imag * b_imag;
-                    b[ind_imag] += get_shc(l, m).imag * b_real + get_shc(l, m).real * b_imag;
+                    // b[ind_real] += get_shc(l, m).real * b_real - get_shc(l, m).imag * b_imag;
+                    // b[ind_imag] += get_shc(l, m).imag * b_real + get_shc(l, m).real * b_imag;
+                    b[ind_real] += b_real;
+                    b[ind_imag] += b_imag;
                 }
             }
         }
@@ -291,7 +293,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         destroy_CGTable();
 
         previous_bandlimit = bandlimit;
-        
+
         build_bisp_lookup_table();
         create_CGTable();
     }
@@ -317,7 +319,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
 
     // Compute output
-    // bisp();
+    bisp();
 
     // if (nlhs>1)
     // {
