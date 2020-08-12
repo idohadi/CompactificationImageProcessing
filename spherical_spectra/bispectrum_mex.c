@@ -238,15 +238,71 @@ void bisp()
 
 void bisp_grad()
 {
-    for (long l1 = 0; l1<=bandlimit; ++l1)
+    long l1;
+    long l2;
+    long l;
+
+    // Calculate the derivative of b_{l1,l2,l} for l1<l2, l!=l1 and l!=l2
+    for (l1 = 0; l1<=bandlimit; ++l1)
     {
-        for (long l2 = 0; l2<=l1; ++l2)
+        for (l2 = 0; l2<l1; ++l2)
         {
-            for (long l = l1-l2; l<=bandlimit && l<=l1+l2; ++l)
+            // Calculate the derivative of b_{l1,l2,l} for l1<l2, l<l2
+            for (l = l1-l2; l<l2; ++l)
+            {
+                // TODO
+            }
+
+            // Calculate the derivative of b_{l1,l2,l} for l1<l2, l2<l<l1
+            for (l = l2+1; l<l1; ++l)
+            {
+                // TODO
+            }
+
+            // Calculate the derivative of b_{l1,l2,l} for l1<l2, l<=l1+l2
+            for (l = l1+1; l<=l1+l2; ++l)
             {
                 // TODO
             }
         }
+    }
+
+    // Calculate the derivative of b_{l1,l2,l} for l1<l2, l=l1 or l=l2
+    for (l1 = 0; l1<=bandlimit; ++l1)
+    {
+        for (l2 = 0; l2<l1; ++l1)
+        {
+            // Calculate the derivative of b_{l1,l2,l} for l1<l2, l=l1
+            l = l1;
+            // TODO
+
+            // Calculate the derivative of b_{l1,l2,l} for l1<l2, l=l2
+            if (2*l2>=l1)
+            {
+                l = l2;
+                // TODO
+            }
+        }
+    }
+
+    // Calculate the derivative of b_{l1,l2,l} for l1=l2, l!=l1
+    for (l1 = 0; l1<=bandlimit; ++l1)
+    {
+        l2 = l1;
+
+        for (l = 0; l<l1; ++l)
+        {
+            // TODO
+        }
+    }
+
+    // Calculate the derivative of b_{l1,l2,l} for l1=l2=l
+    for (l1 = 0; l1<=bandlimit; ++l1)
+    {
+        l2 = l1;
+        l = l1;
+
+        // TODO
     }
 }
 
