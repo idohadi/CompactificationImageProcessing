@@ -63,6 +63,8 @@ blt lookup;
 bool first_run = true;
 size_t previous_bandlimit;
 
+size_t nnz_ind;
+
 
 /* utility functions */
 void build_bisp_lookup_table()
@@ -236,13 +238,43 @@ void bisp()
     }
 }
 
+long m1_lb(const long l1, const long l2, const long m)
+{
+    return (-l1>=m-l2 ? -l1 : m-l2);
+}
+
+long m1_ub(const long l1, const long l2, const long m)
+{
+    return (l1>=m+l2 ? m+l2 : l1);
+}
+
+void bisp_grad_case1(const long l1, const long l2, const long l)
+{
+    // Case 1: Calculate the derivative of b_{l1,l2,l} for l1<l2, l!=l1 and l!=l2
+    
+    // Derivative of real(b_{l1,l2,l})
+    // TODO
+
+    // Derivative of imag(b_{l1,l2,l})
+    // TODO
+
+}
+
 void bisp_grad()
 {
+    nnz_ind = 0;
+    
+    long row_ind;
+    long col_ind;
+
     long l1;
     long l2;
     long l;
 
-    // Calculate the derivative of b_{l1,l2,l} for l1<l2, l!=l1 and l!=l2
+    double der_real;
+    double der_imag;
+
+    // Case 1: Calculate the derivative of b_{l1,l2,l} for l1<l2, l!=l1 and l!=l2
     for (l1 = 0; l1<=bandlimit; ++l1)
     {
         for (l2 = 0; l2<l1; ++l2)
@@ -250,24 +282,91 @@ void bisp_grad()
             // Calculate the derivative of b_{l1,l2,l} for l1<l2, l<l2
             for (l = l1-l2; l<l2; ++l)
             {
+                // Derivative w.r.t real(f_{l,m}) and imag(f_{l,m})
+                for (long m = -l; m<=l; ++m)
+                {
+                    der_real = 0;
+                    der_imag = 0;
+
+                    col_ind = 2*(l*(l+1) + m); // Column index of the derivative w.r.t to real(f_{l,m})
+
+                    for (long m1 = m1_lb(l1, l2, m); m1<=m1_ub(l1, l2, m); ++m1)
+                    {
+                        der_real += get_cg(l1, l2, l, m, m1) 
+                                    * (get_shc(l1, m1).real * get_shc(l2, m-m1).real 
+                                        - get_shc(l1, m1).imag * get_shc(l2, m-m1).imag);
+                        der_imag += - get_cg(l1, l2, l, m, m1) 
+                                    * (get_shc(l1, m1).real * get_shc(l2, m-m1).imag 
+                                        + get_shc(l1, m1).imag * get_shc(l2, m-m1).real);
+                    }
+
+                    // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l,m})
+                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                    grad_j[nnz_ind] = col_ind;
+                    grad_vals[nnz_ind++] = der_real;
+
+                    // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l,m})
+                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                    grad_j[nnz_ind] = col_ind;
+                    grad_vals[nnz_ind++] = der_imag;
+
+                    // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l,m})
+                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                    grad_j[nnz_ind] = ++col_ind;
+                    grad_vals[nnz_ind++] = -der_imag;
+
+                    // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l,m})
+                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                    grad_j[nnz_ind] = col_ind;
+                    grad_vals[nnz_ind++] = der_real;
+                    
+                }
+
+
+                // Derivative w.r.t real(f_{l1,m1})
                 // TODO
+
+                ++nnz_ind;
+
+
+                // Derivative w.r.t imag(f_{l1,m1})
+                // TODO
+
+                ++nnz_ind;
+
+
+
+                // Derivative w.r.t real(f_{l2,m2})
+                // TODO
+
+                ++nnz_ind;
+
+
+                // Derivative w.r.t imag(f_{l2,m2})
+                // TODO
+
+                ++nnz_ind;
             }
 
             // Calculate the derivative of b_{l1,l2,l} for l1<l2, l2<l<l1
             for (l = l2+1; l<l1; ++l)
             {
                 // TODO
+
+                ++nnz_ind;
             }
 
             // Calculate the derivative of b_{l1,l2,l} for l1<l2, l<=l1+l2
             for (l = l1+1; l<=l1+l2 && l<=bandlimit; ++l)
             {
                 // TODO
+
+                ++nnz_ind;
             }
         }
     }
 
-    // Calculate the derivative of b_{l1,l2,l} for l1<l2, l=l1 or l=l2
+    // Case 2: Calculate the derivative of b_{l1,l2,l} for l1<l2, l=l1 or l=l2
     for (l1 = 0; l1<=bandlimit; ++l1)
     {
         for (l2 = 0; l2<l1; ++l2)
@@ -276,11 +375,15 @@ void bisp_grad()
             l = l1;
             // TODO
 
+            ++nnz_ind;
+
             // Calculate the derivative of b_{l1,l2,l} for l1<l2, l=l2
             if (2*l2>=l1)
             {
                 l = l2;
                 // TODO
+
+                ++nnz_ind;
             }
         }
     }
@@ -294,12 +397,16 @@ void bisp_grad()
         for (l = 0; l<l1; ++l)
         {
             // TODO
+
+            ++nnz_ind;
         }
 
         // Calculate the derivative of b_{l1,l2,l} for l1=l2, l1<l<l1+l2
         for (l = l1+1; l<=2*l1 && l<=bandlimit; ++l)
         {
             // TODO
+
+            ++nnz_ind;
         }
     }
 
@@ -310,6 +417,8 @@ void bisp_grad()
         l = l1;
 
         // TODO
+
+        ++nnz_ind;
     }
 }
 
