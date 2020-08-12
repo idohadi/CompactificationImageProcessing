@@ -51,5 +51,6 @@ assert(round(bandlimit)==bandlimit && bandlimit>=1, ...
 [rfn, ~, ~] = fileparts(mfilename('fullpath'));
 filename = fullfile(rfn, 'ClebschGordanCoeffs', ['CGT', num2str(bandlimit), '.mat']);
 
+global CGs
 CGs = load(filename, '-mat');
 CGs = CGs.CGTable;
