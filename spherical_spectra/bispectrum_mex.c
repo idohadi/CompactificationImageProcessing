@@ -50,7 +50,7 @@ mxComplexDouble *shc;
 mxComplexDouble *shc_conj;
 size_t bandlimit;
 CGTable cg;
-
+mxArray *CGs;
 
 /* Output variables */
 double *b;
@@ -97,55 +97,90 @@ void rcprod(double *arg1, mxComplexDouble *arg2, mxComplexDouble *output)
 
 void build_bisp_lookup_table()
 {
-  // TODO
-    size_t index = 0; 
+    size_t index = 0;
 
-    size_t ****lookup_table = malloc((bandlimit+1)*sizeof(size_t ***));
+    lookup = malloc((bandlimit+1)*sizeof(size_t ***));
+
     for (long l1 = 0; l1<=bandlimit; ++l1)
     {
-        lookup_table[l1] = malloc((l1+1)*sizeof(size_t **));
+        lookup[l1] = malloc((l1+1)*sizeof(size_t **));
         for (long l2=0; l2<=l1; ++l2)
         {
-            lookup_table[l1][l2] = malloc((((l1+l2)>=bandlimit ? bandlimit : l1+l2)  - (l1>=l2 ? l1-l2 : l2-l1) + 1)*sizeof(size_t *));
+            lookup[l1][l2] = malloc((((l1+l2)>=bandlimit ? bandlimit : l1+l2)  - (l1>=l2 ? l1-l2 : l2-l1) + 1)*sizeof(size_t *));
             for (long l = (l1>=l2 ? l1-l2 : l2-l1); l<=l1+l2 && l<=bandlimit; ++l)
             {
-                lookup_table[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)] = malloc(2*sizeof(size_t));
-                lookup_table[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)][0] = index++;
-                lookup_table[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)][1] = index++;
+                lookup[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)] = malloc(2*sizeof(size_t));
+                lookup[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)][0] = index++;
+                lookup[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)][1] = index++;
             }
         }
     }
-    return lookup_table;
 }
 
 
-void destory_bisp_lookup_table(c_blt table, size_t bandlimit)
+void destory_bisp_lookup_table()
 {
-  // TODO
     for (long l1 = 0; l1<=bandlimit; ++l1)
     {
         for (long l2=0; l2<=l1; ++l2)
         {
             for (long l = (l1>=l2 ? l1-l2 : l2-l1); l<=l1+l2 && l<=bandlimit; ++l)
             {
-                free(table[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)]);
+                free(lookup[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)]);
             }
-            free(table[l1][l2]);
+            free(lookup[l1][l2]);
         }
-        free(table[l1]);
+        free(lookup[l1]);
     }
-    free(table);
+    free(lookup);
 }
 
 
 void create_CGTable()
 {
-  // TODO
+    mxArray *temp[3];
+
+    cg = malloc((bandlimit+1)*sizeof(double ****));
+
+    for (long l1 = 0; l1<=bandlimit; ++l1)
+    {
+        temp[0] = mxGetCell(CGs, l1);
+        cg[l1] = malloc((l1+1)*sizeof(double ***));
+
+        for (long l2 = 0; l2<=l1; ++l2)
+        {
+            temp[1] = mxGetCell(temp[0], l2);
+            cg[l1][l2] = malloc(((l1+l2>=bandlimit ? bandlimit : l1+l2) - (l1-l2) + 1)*sizeof(double **));
+
+            for (long l = l1-l2; l<=(l1+l2>=bandlimit ? bandlimit : l1+l2); ++l)
+            {
+                temp[2] = mxGetCell(temp[1], l-(l1-l2));
+                cg[l1][l2][l-(l1-l2)] = malloc((2*l+1)*sizeof(double *));
+
+                for (long m = -l; m<=l; ++m)
+                {
+                    cg[l1][l2][l-(l1-l2)][m+l] = mxGetDoubles(mxGetCell(temp[2], m+l));
+                }
+            }
+        }
+    }
 }
 
 void destroy_CGTable()
 {
-  // TODO
+    for (long l1 = 0; l1<=bandlimit; ++l1)
+    {
+        for (long l2 = 0; l2<=l1; ++l2)
+        {
+            for (long l = l1-l2; l<=(l1+l2>=bandlimit ? bandlimit : l1+l2); ++l)
+            {
+                free(cg[l1][l2][l-(l1-l2)]);
+            }
+            free(cg[l1][l2]);
+        }
+        free(cg[l1]);
+    }
+    free(cg);
 }
 
 
