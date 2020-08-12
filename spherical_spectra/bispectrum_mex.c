@@ -49,13 +49,16 @@ typedef double ***** CGTable;
 mxComplexDouble *shc;
 mxComplexDouble *shc_conj;
 size_t bandlimit;
-CGTable cg;
+CGTable cgt;
 mxArray *CGs;
 
 /* Output variables */
 double *b;
 double *grad_inds;
 double *grad_vals;
+double grad_nnz;
+double grad_rows_no;
+double grad_cols_no;
 
 
 /* Utility variables */
@@ -97,6 +100,8 @@ void rcprod(double *arg1, mxComplexDouble *arg2, mxComplexDouble *output)
 
 void build_bisp_lookup_table()
 {
+    grad_nnz = 0;
+    
     size_t index = 0;
 
     lookup = malloc((bandlimit+1)*sizeof(size_t ***));
@@ -112,9 +117,33 @@ void build_bisp_lookup_table()
                 lookup[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)] = malloc(2*sizeof(size_t));
                 lookup[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)][0] = index++;
                 lookup[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)][1] = index++;
+
+                if (l1==l2 && l2==l)
+                {
+                    grad_nnz += 1;
+                }
+                else if (l1==l2)
+                {
+                    grad_nnz += 2;
+                }
+                else if (l1==l)
+                {
+                    grad_nnz += 2;
+                }
+                else if (l2==l)
+                {
+                    grad_nnz += 2;
+                }
+                else
+                {
+                    grad_nnz += 3;
+                }
             }
         }
     }
+
+    grad_rows_no = index + 1;
+    grad_cols_no = (bandlimit+1)*(bandlimit+1);
 }
 
 
@@ -140,26 +169,26 @@ void create_CGTable()
 {
     mxArray *temp[3];
 
-    cg = malloc((bandlimit+1)*sizeof(double ****));
+    cgt = malloc((bandlimit+1)*sizeof(double ****));
 
     for (long l1 = 0; l1<=bandlimit; ++l1)
     {
         temp[0] = mxGetCell(CGs, l1);
-        cg[l1] = malloc((l1+1)*sizeof(double ***));
+        cgt[l1] = malloc((l1+1)*sizeof(double ***));
 
         for (long l2 = 0; l2<=l1; ++l2)
         {
             temp[1] = mxGetCell(temp[0], l2);
-            cg[l1][l2] = malloc(((l1+l2>=bandlimit ? bandlimit : l1+l2) - (l1-l2) + 1)*sizeof(double **));
+            cgt[l1][l2] = malloc(((l1+l2>=bandlimit ? bandlimit : l1+l2) - (l1-l2) + 1)*sizeof(double **));
 
             for (long l = l1-l2; l<=(l1+l2>=bandlimit ? bandlimit : l1+l2); ++l)
             {
                 temp[2] = mxGetCell(temp[1], l-(l1-l2));
-                cg[l1][l2][l-(l1-l2)] = malloc((2*l+1)*sizeof(double *));
+                cgt[l1][l2][l-(l1-l2)] = malloc((2*l+1)*sizeof(double *));
 
                 for (long m = -l; m<=l; ++m)
                 {
-                    cg[l1][l2][l-(l1-l2)][m+l] = mxGetDoubles(mxGetCell(temp[2], m+l));
+                    cgt[l1][l2][l-(l1-l2)][m+l] = mxGetDoubles(mxGetCell(temp[2], m+l));
                 }
             }
         }
@@ -174,13 +203,13 @@ void destroy_CGTable()
         {
             for (long l = l1-l2; l<=(l1+l2>=bandlimit ? bandlimit : l1+l2); ++l)
             {
-                free(cg[l1][l2][l-(l1-l2)]);
+                free(cgt[l1][l2][l-(l1-l2)]);
             }
-            free(cg[l1][l2]);
+            free(cgt[l1][l2]);
         }
-        free(cg[l1]);
+        free(cgt[l1]);
     }
-    free(cg);
+    free(cgt);
 }
 
 
