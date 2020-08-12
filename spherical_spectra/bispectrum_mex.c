@@ -185,6 +185,15 @@ void destroy_CGTable()
     free(cgt);
 }
 
+double get_cg(const long l1, const long l2, const long l, const long m, const long m1)
+{
+    cgt[l1][l2][l-(l1>=l2 ? l1-l2 : l2-l1)][m+l][m1-((m-l2<=-l1) ? -l1 : m-l2)];
+}
+
+mxComplexDouble get_shc(const long l, const long m)
+{
+    return shc[l*(l+1)+m];
+}
 
 /* Functions calculating the bispectrum and its gradient */
 
