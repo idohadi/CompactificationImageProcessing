@@ -33,8 +33,11 @@ buildCGTable_mex :
 		-outdir clebsch_gordan/
 
 powerSpectrum_mex : 
-	$(MEX) $(MATLABFAGS) spherical_spectra/powerSpectrum_mex.c 
+	$(MEX) $(MATLABFAGS) spherical_spectra/powerSpectrum_mex.c -outdir spherical_spectra/
 
+bispectrum_mex : 
+	$(MEX) $(MATLABFAGS) spherical_spectra/bispectrum_mex.c -outdir spherical_spectra/
+	
 
 # Cleaning rules
 .PHONY : clean
