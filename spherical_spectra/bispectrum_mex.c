@@ -195,11 +195,27 @@ mxComplexDouble get_shc(const long l, const long m)
     return shc[l*(l+1)+m];
 }
 
+long bisp_lookup(const long l1, const long l2, const long l, const PART part)
+{
+    return lookup[l1][l2][l - (l1-l2)][part];
+}
+
+
 /* Functions calculating the bispectrum and its gradient */
 
 void bisp()
 {
-    // TODO
+    for (long l1 = 0; l1<=bandlimit; ++l1)
+    {
+        for (long l2 = 0; l2<=l1; ++l2)
+        {
+            for (long l = l1-l2; l<=(l1+l2>=bandlimit ? bandlimit : l1+l2); ++l)
+            {
+                
+                // TOOD
+            }
+        }
+    }
 }
 
 void bisp_grad()
@@ -221,6 +237,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     if (first_run==true)
     {
         build_bisp_lookup_table();
+
+        mxArray *inputMxArray[1];
+        inputMxArray[0] = mxCreateDoubleScalar(bandlimit);
+        mexCallMATLAB(0, NULL, 1, inputMxArray, "loadCGTable");
 
         CGs = mexGetVariablePtr("global", "CGs");
         create_CGTable();
