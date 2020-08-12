@@ -649,17 +649,23 @@ void bisp_grad()
         {
             // Calculate the derivative of b_{l1,l2,l} for l1<l2, l=l1
             l = l1;
+
+            // Derivative w.r.t real(f_{l,m}) and imag(f_{l,m})
             // TODO
 
-            ++nnz_ind;
+            // Derivative w.r.t real(f_{l2,m2}) and imag(f_{l2,m2})
+            // TODO
+            
 
             // Calculate the derivative of b_{l1,l2,l} for l1<l2, l=l2
             if (2*l2>=l1)
             {
                 l = l2;
+                // Derivative w.r.t real(f_{l,m}) and imag(f_{l,m})
                 // TODO
 
-                ++nnz_ind;
+                // Derivative w.r.t real(f_{l1,m1}) and imag(f_{l1,m1})
+                // TODO
             }
         }
     }
