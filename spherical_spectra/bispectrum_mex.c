@@ -211,8 +211,29 @@ void bisp()
         {
             for (long l = l1-l2; l<=(l1+l2>=bandlimit ? bandlimit : l1+l2); ++l)
             {
-                
-                // TOOD
+                long ind_real = bisp_lookup(l1, l2, l, REAL_PART);
+                long ind_imag = ind_real + 1;
+
+                double b_real;
+                double b_imag;
+                for (long m = -l; m<=l; ++m)
+                {
+                    b_real = 0;
+                    b_imag = 0;
+                    
+                    for (long m1 = ((m-l2)<=-l1 ? -l1 : (m-l2)); m1 <= ((m+l2)<=l1 ? (m+l2) : l1); ++m1)
+                    {
+                        b_real += get_cg(l1, l2, l, m, m1) 
+                                    * (get_shc(l1, m1).real * get_shc(l2, m-m1).real 
+                                        - get_shc(l1, m1).imag * get_shc(l2, m-m1).imag);
+                        b_imag += - get_cg(l1, l2, l, m, m1) 
+                                    * (get_shc(l1, m1).real * get_shc(l2, m-m1).imag 
+                                        + get_shc(l1, m1).imag * get_shc(l2, m-m1).real);
+                    }
+                    
+                    b[ind_real] += get_shc(l, m).real * b_real - get_shc(l, m).imag * b_imag;
+                    b[ind_imag] += get_shc(l, m).imag * b_real + get_shc(l, m).real * b_imag;
+                }
             }
         }
     }
