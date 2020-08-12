@@ -87,23 +87,23 @@ void build_bisp_lookup_table()
 
                 if (l1==l2 && l2==l)
                 {
-                    grad_nnz += 1;
+                    grad_nnz += 2*l+1;
                 }
                 else if (l1==l2)
                 {
-                    grad_nnz += 2;
+                    grad_nnz += 2*(l1 + l) + 2;
                 }
                 else if (l1==l)
                 {
-                    grad_nnz += 2;
+                    grad_nnz += 2*(l1 + l2) + 2;
                 }
                 else if (l2==l)
                 {
-                    grad_nnz += 2;
+                    grad_nnz += 2*(l2 + l1) + 2;
                 }
                 else
                 {
-                    grad_nnz += 3;
+                    grad_nnz += 2*(l1+l2+l) + 3;
                 }
             }
         }
