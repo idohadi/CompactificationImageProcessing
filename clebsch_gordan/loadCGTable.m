@@ -1,4 +1,4 @@
-function CGs = loadCGTable(bandlimit)
+function loadCGTable(bandlimit)
 %%
 % Call format
 %   loadCGTable(bandlimit)
