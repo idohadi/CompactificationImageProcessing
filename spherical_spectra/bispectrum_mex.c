@@ -3,16 +3,12 @@
  * 
  * MATLAB call form:
  *      b = bispectrum_mex(shc, bandlimit)
- *      [b, grad_i, grad_j, grad_vals, grad_nnz, grad_rows_no, grad_cols_no] = bispectrum_mex(shc, shc_conj, bandlimit, CGs)
+ *      [b, grad_i, grad_j, grad_vals, grad_nnz, grad_rows_no, grad_cols_no] = bispectrum_mex(shc, bandlimit)
  *  where
  *      shc                           column or row complex array of length 
  *                                    (bandlimit+1)^2 of spherical harmonics coefficients
- *      shc_conj                      the complex conjugate of shc
  *      bandlimit                     scalar, the bandlimit of the function represented 
  *                                    by shc
- *      CGs                           a cell array containing the precomputed Clebsch-Gordan
- *                                    coefficents for bandlimit. 
- *                                    Their format is documented bispectrum.m docs.
  *      b                             bispectrum column vector, containing the bispectrum 
  *                                    invariants b_{l1,l2,l} for 
  *                                         0<=l1<=bandlimit, 0<=l2<=l1, abs(l1-l2)<=l<=min(bandlmit, l1+l2)
@@ -321,8 +317,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     // Compute output
     bisp();
 
-    // if (nlhs>1)
-    // {
-    //     bisp_grad();
-    // }
+    if (nlhs>1)
+    {
+        bisp_grad();
+    }
 }

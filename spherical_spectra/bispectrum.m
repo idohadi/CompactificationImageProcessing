@@ -53,7 +53,7 @@ function [b, grad] = bispectrum(shc, bandlimit, CGTable)
 % ***********************************************************
 %% Calculate the bispectrum
 if nargout==1
-    b = bispectrum_mex(shc, conj(shc), bandlimit, CGTable);
+    b = bispectrum_mex(shc, bandlimit);
 elseif nargout==2
     [b, gradI, gradJ, gradVals, gradNNZ, gradRowsNo, gradColsNo] ...
         = bispectrum_mex(shc, conj(shc), bandlimit, CGs);
