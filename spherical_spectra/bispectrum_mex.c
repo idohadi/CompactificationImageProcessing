@@ -50,21 +50,20 @@ mxComplexDouble *shc;
 // mxComplexDouble *shc_conj;
 size_t bandlimit;
 CGTable cgt;
-mxArray *CGs;
+const mxArray *CGs;
 
 /* Output variables */
 double *b;
 double *grad_i;
 double *grad_j;
 double *grad_vals;
-long grad_nnz;
+long grad_nnz; // Number of non-zero elements in the bispectrum gradient matrix
 long grad_rows_no;
 long grad_cols_no;
 
 
 /* Utility variables */
 blt lookup;
-size_t grad_nnz; // Number of non-zero elements in the bispectrum gradient matrix
 bool first_run = true;
 size_t previous_bandlimit;
 
@@ -81,14 +80,14 @@ void build_bisp_lookup_table()
     for (long l1 = 0; l1<=bandlimit; ++l1)
     {
         lookup[l1] = malloc((l1+1)*sizeof(size_t **));
-        for (long l2=0; l2<=l1; ++l2)
+        for (long l2 = 0; l2<=l1; ++l2)
         {
-            lookup[l1][l2] = malloc((((l1+l2)>=bandlimit ? bandlimit : l1+l2)  - (l1>=l2 ? l1-l2 : l2-l1) + 1)*sizeof(size_t *));
-            for (long l = (l1>=l2 ? l1-l2 : l2-l1); l<=l1+l2 && l<=bandlimit; ++l)
+            lookup[l1][l2] = malloc((((l1+l2)>=bandlimit ? bandlimit : l1+l2)  - (l1-l2) + 1)*sizeof(size_t *));
+            for (long l = l1-l2; l<=l1+l2 && l<=bandlimit; ++l)
             {
-                lookup[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)] = malloc(2*sizeof(size_t));
-                lookup[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)][0] = index++;
-                lookup[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)][1] = index++;
+                lookup[l1][l2][l - (l1-l2)] = malloc(2*sizeof(size_t));
+                lookup[l1][l2][l - (l1-l2)][0] = index++;
+                lookup[l1][l2][l - (l1-l2)][1] = index++;
 
                 if (l1==l2 && l2==l)
                 {
@@ -122,13 +121,13 @@ void build_bisp_lookup_table()
 
 void destory_bisp_lookup_table()
 {
-    for (long l1 = 0; l1<=bandlimit; ++l1)
+    for (long l1 = 0; l1<=previous_bandlimit; ++l1)
     {
-        for (long l2=0; l2<=l1; ++l2)
+        for (long l2 = 0; l2<=l1; ++l2)
         {
-            for (long l = (l1>=l2 ? l1-l2 : l2-l1); l<=l1+l2 && l<=bandlimit; ++l)
+            for (long l = l1-l2; l<=l1+l2 && l<=previous_bandlimit; ++l)
             {
-                free(lookup[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)]);
+                free(lookup[l1][l2][l - (l1-l2)]);
             }
             free(lookup[l1][l2]);
         }
@@ -170,11 +169,11 @@ void create_CGTable()
 
 void destroy_CGTable()
 {
-    for (long l1 = 0; l1<=bandlimit; ++l1)
+    for (long l1 = 0; l1<=previous_bandlimit; ++l1)
     {
         for (long l2 = 0; l2<=l1; ++l2)
         {
-            for (long l = l1-l2; l<=(l1+l2>=bandlimit ? bandlimit : l1+l2); ++l)
+            for (long l = l1-l2; l<=l1+l2 && l<=previous_bandlimit; ++l)
             {
                 free(cgt[l1][l2][l-(l1-l2)]);
             }
@@ -209,7 +208,7 @@ void bisp()
     {
         for (long l2 = 0; l2<=l1; ++l2)
         {
-            for (long l = l1-l2; l<=(l1+l2>=bandlimit ? bandlimit : l1+l2); ++l)
+            for (long l = l1-l2; l<=l1+l2 && l<=bandlimit; ++l)
             {
                 long ind_real = bisp_lookup(l1, l2, l, REAL_PART);
                 long ind_imag = ind_real + 1;
@@ -241,7 +240,16 @@ void bisp()
 
 void bisp_grad()
 {
-    // TODO
+    for (long l1 = 0; l1<=bandlimit; ++l1)
+    {
+        for (long l2 = 0; l2<=l1; ++l2)
+        {
+            for (long l = l1-l2; l<=bandlimit && l<=l1+l2; ++l)
+            {
+                // TODO
+            }
+        }
+    }
 }
 
 
@@ -273,17 +281,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     // Handle change of bandlimit
     if (bandlimit!=previous_bandlimit)
     {
-        previous_bandlimit = bandlimit;
-
-        destory_bisp_lookup_table();
-        destroy_CGTable();
-
         mxArray *inputMxArray[1];
         inputMxArray[0] = mxCreateDoubleScalar(bandlimit);
         mexCallMATLAB(0, NULL, 1, inputMxArray, "loadCGTable");
 
         CGs = mexGetVariablePtr("global", "CGs");
 
+        destory_bisp_lookup_table();
+        destroy_CGTable();
+
+        previous_bandlimit = bandlimit;
+        
         build_bisp_lookup_table();
         create_CGTable();
     }
@@ -309,10 +317,10 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
 
     // Compute output
-    bisp();
+    // bisp();
 
-    if (nlhs>1)
-    {
-        grad_bisp();
-    }
+    // if (nlhs>1)
+    // {
+    //     bisp_grad();
+    // }
 }
