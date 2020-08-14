@@ -111,7 +111,7 @@ void build_bisp_lookup_table()
         }
     }
 
-    grad_nnz *= 2;
+    grad_nnz *= 4;
     grad_rows_no = index;
     grad_cols_no = 2*(bandlimit+1)*(bandlimit+1);
 }
