@@ -249,460 +249,912 @@ long minimum(const long a, const long b)
 }
 
 
+void calc_l_sum(const long l1, const long l2, const long l, const long n, double *l_sum_real, double *l_sum_imag)
+{
+    for (long m1 = maximum(-l1, n-l2); m1<=minimum(l1, n+l2); ++m1)
+    {
+        *l_sum_real += get_cg(l1, l2, l, n, m1) *
+                        (get_shc(l1, m1).real * get_shc(l2, n-m1).real 
+                        - get_shc(l1, m1).imag * get_shc(l2, n-m1).imag);
+        *l_sum_imag += -get_cg(l1, l2, l, n, m1) *
+                        (get_shc(l1, m1).imag * get_shc(l2, n-m1).real
+                        + get_shc(l1, m1).real * get_shc(l2, n-m1).imag);
+    }
+}
+
+
+void calc_l1_sum(const long l1, const long l2, const long l, const long n, double *l1_sum_real, double *l1_sum_imag)
+{
+    for (long m = maximum(-l, n-l2); m<=minimum(l, n+l2); ++m)
+    {
+        *l1_sum_real += get_cg(l1, l2, l, m, n) *
+                        (get_shc(l, m).real * get_shc(l2, m-n).real 
+                        + get_shc(l, m).imag * get_shc(l2, m-n).imag);
+        *l1_sum_imag += get_cg(l1, l2, l, m, n) *
+                        (get_shc(l, m).imag * get_shc(l2, m-n).real
+                        - get_shc(l, m).real * get_shc(l2, m-n).imag);
+    }
+}
+
+
+void calc_l2_sum(const long l1, const long l2, const long l, const long n, double *l2_sum_real, double *l2_sum_imag)
+{
+    for (long m = maximum(-l, n-l1); m<=minimum(l, n+l1); ++m)
+    {
+        *l2_sum_real += get_cg(l1, l2, l, m, m-n) *
+                        (get_shc(l, m).real * get_shc(l1, m-n).real 
+                        + get_shc(l, m).imag * get_shc(l1, m-n).imag);
+        *l2_sum_imag += get_cg(l1, l2, l, m, m-n) *
+                        (get_shc(l, m).imag * get_shc(l1, m-n).real
+                        - get_shc(l, m).real * get_shc(l1, m-n).imag);
+    }
+}
+
 void bisp_grad()
 {
     nnz_ind = 0;
-    
-    long row_ind;
+
     long col_ind;
 
-    long l1;
-    long l2;
-    long l;
+    double l1_sum_real, l1_sum_imag;
+    double l2_sum_real, l2_sum_imag;
+    double l_sum_real, l_sum_imag;
 
-    double der_real;
-    double der_imag;
-
-    // Case 1: Calculate the derivative of b_{l1,l2,l} for l1<l2, l!=l1 and l!=l2
-    for (l1 = 0; l1<=bandlimit; ++l1)
+    for (long l1 = 0; l1<=bandlimit; ++l1)
     {
-        for (l2 = 0; l2<l1; ++l2)
+        for (long l2 = 0; l2<=l1; ++l2)
         {
-            // Calculate the derivative of b_{l1,l2,l} for l1<l2, l<l2
-            for (l = l1-l2; l<l2; ++l)
+            for (long l = l1-l2; l<=l1+l2 && l<=bandlimit; ++l)
             {
-                // Derivative w.r.t real(f_{l,m}) and imag(f_{l,m})
-                for (long m = -l; m<=l; ++m)
+                if (l1==l2 && l==l1)  // if l1=l2=l
                 {
-                    der_real = 0;
-                    der_imag = 0;
-
-                    col_ind = 2*(l*(l+1) + m); // Column index of the derivative w.r.t to real(f_{l,m})
-
-                    for (long m1 = maximum(-l1, m-l2); m1<=minimum(l1, m+l2); ++m1)
+                    // Calculate derivative of b_{l1,l2,l} w.r.t real(f_{l,n}) and imag(f_{l,n})
+                    for (long n = -l; n<=l; ++n)
                     {
-                        der_real += get_cg(l1, l2, l, m, m1) 
-                                    * (get_shc(l1, m1).real * get_shc(l2, m-m1).real 
-                                        - get_shc(l1, m1).imag * get_shc(l2, m-m1).imag);
-                        der_imag += - get_cg(l1, l2, l, m, m1) 
-                                    * (get_shc(l1, m1).imag * get_shc(l2, m-m1).real 
-                                        + get_shc(l1, m1).real * get_shc(l2, m-m1).imag);
+                        col_ind = 2*(l*(l+1) + n);
+                        
+                        l1_sum_real = 0; 
+                        l1_sum_imag = 0;
+                        l2_sum_real = 0; 
+                        l2_sum_imag = 0;
+                        l_sum_real = 0;
+                        l_sum_imag = 0;
+
+                        calc_l1_sum(l1, l2, l, n, &l1_sum_real, &l1_sum_imag);
+                        calc_l2_sum(l1, l2, l, n, &l2_sum_real, &l2_sum_imag);
+                        calc_l_sum(l1, l2, l, n, &l_sum_real, &l_sum_imag);
+
+                         // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l_sum_real + l1_sum_real + l2_sum_real;
+
+                        // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l_sum_imag + l1_sum_imag + l2_sum_imag;
+
+                        // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                        grad_j[nnz_ind] = ++col_ind;
+                        grad_vals[nnz_ind++] = -(l_sum_imag - l1_sum_imag - l2_sum_imag);
+
+                        // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l_sum_real - l1_sum_real - l2_sum_real;
+                        
+                    }
+                }
+                else if (l1==l2)  // if l1=l2 and l!=l1
+                {
+                    // Calculate derivative of b_{l1,l2,l} w.r.t real(f_{l,n}) and imag(f_{l,n})
+                    for (long n = -l; n<=l; ++n)
+                    {
+                        col_ind = 2*(l*(l+1) + n);
+                        
+                        l_sum_real = 0;
+                        l_sum_imag = 0;
+
+                        calc_l_sum(l1, l2, l, n, &l_sum_real, &l_sum_imag);
+
+                         // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l_sum_real;
+
+                        // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l_sum_imag;
+
+                        // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                        grad_j[nnz_ind] = ++col_ind;
+                        grad_vals[nnz_ind++] = -l_sum_imag;
+
+                        // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l_sum_real;
+                        
                     }
 
-                    // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l,m})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_real;
-
-                    // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l,m})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_imag;
-
-                    // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l,m})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
-                    grad_j[nnz_ind] = ++col_ind;
-                    grad_vals[nnz_ind++] = -der_imag;
-
-                    // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l,m})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_real;
-                    
-                }
-
-
-                // Derivative w.r.t real(f_{l1,m1}) and imag(f_{l1,m1})
-                for (long m1 = -l1; m1<=l1; ++m1)
-                {
-                    der_real = 0;
-                    der_imag = 0;
-
-                    col_ind = 2*(l1*(l1+1) + m1); // Column index of the derivative w.r.t to real(f_{l1,m1})
-
-                    for (long m = maximum(-l, m1-l2); m<=minimum(l, m1+l2); ++m)
+                    // Calculate derivative of b_{l1,l2,l} w.r.t real(f_{l1,n}) and imag(f_{l1,n})
+                    for (long n = -l1; n<=l1; ++n)
                     {
-                        der_real += get_cg(l1, l2, l, m, m-m1) 
-                                    * (get_shc(l, m).real * get_shc(l2, m-m1).real 
-                                        + get_shc(l, m).imag * get_shc(l2, m-m1).imag);
-                        der_imag += get_cg(l1, l2, l, m, m-m1) 
-                                    * (get_shc(l, m).imag * get_shc(l2, m-m1).real 
-                                        + get_shc(l, m).real * get_shc(l2, m-m1).imag);
+                        col_ind = 2*(l1*(l1+1) + n);
+                        
+                        l1_sum_real = 0; 
+                        l1_sum_imag = 0;
+                        l2_sum_real = 0; 
+                        l2_sum_imag = 0;
+
+                        calc_l1_sum(l1, l2, l, n, &l1_sum_real, &l1_sum_imag);
+                        calc_l2_sum(l1, l2, l, n, &l2_sum_real, &l2_sum_imag);
+
+                         // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l1_sum_real + l2_sum_real;
+
+                        // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l1_sum_imag + l2_sum_imag;
+
+                        // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                        grad_j[nnz_ind] = ++col_ind;
+                        grad_vals[nnz_ind++] = l1_sum_imag + l2_sum_imag;
+
+                        // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = - l1_sum_real - l2_sum_real;
+                        
+                    }
+                }
+                else if (l==l1)  // if l1=l and l!=l2
+                {
+                    // Calculate derivative of b_{l1,l2,l} w.r.t real(f_{l2,n}) and imag(f_{l2,n})
+                    for (long n = -l2; n<=l2; ++n)
+                    {
+                        col_ind = 2*(l2*(l2+1) + n);
+
+                        l2_sum_real = 0; 
+                        l2_sum_imag = 0;
+
+                        calc_l2_sum(l1, l2, l, n, &l2_sum_real, &l2_sum_imag);
+
+                         // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l2_sum_real;
+
+                        // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l2_sum_imag;
+
+                        // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                        grad_j[nnz_ind] = ++col_ind;
+                        grad_vals[nnz_ind++] = l2_sum_imag;
+
+                        // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = -l2_sum_real;
+                        
                     }
 
-                    // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l1,m1})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_real;
-
-                    // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l1,m1})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_imag;
-
-                    // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l1,m1})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
-                    grad_j[nnz_ind] = ++col_ind;
-                    grad_vals[nnz_ind++] = -der_imag;
-
-                    // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l1,m1})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = -der_real;
-                }
-
-
-                // Derivative w.r.t real(f_{l2,m2}) and imag(f_{l2,m2})
-                for (long m2 = -l2; m2<=l2; ++m2)
-                {
-                    der_real = 0;
-                    der_imag = 0;
-
-                    col_ind = 2*(l2*(l2+1) + m2); // Column index of the derivative w.r.t to real(f_{l2,m2})
-
-                    for (long m = maximum(-l, m2-l2); m<=minimum(l, m2+l2); ++m)
+                    // Calculate derivative of b_{l1,l2,l} w.r.t real(f_{l,n}) and imag(f_{l,n})
+                    for (long n = -l; n<=l; ++n)
                     {
-                        der_real += get_cg(l1, l2, l, m, m-m2) 
-                                    * (get_shc(l, m).real * get_shc(l1, m-m2).real 
-                                        + get_shc(l, m).imag * get_shc(l1, m-m2).imag);
-                        der_imag += get_cg(l1, l2, l, m, m-m2) 
-                                    * (get_shc(l, m).imag * get_shc(l1, m-m2).real 
-                                        + get_shc(l, m).real * get_shc(l1, m-m2).imag);
+                        col_ind = 2*(l*(l+1) + n);
+                        
+                        l1_sum_real = 0; 
+                        l1_sum_imag = 0;
+                        l_sum_real = 0;
+                        l_sum_imag = 0;
+
+                        calc_l1_sum(l1, l2, l, n, &l1_sum_real, &l1_sum_imag);
+                        calc_l_sum(l1, l2, l, n, &l_sum_real, &l_sum_imag);
+
+                         // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l_sum_real + l1_sum_real;
+
+                        // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l_sum_imag + l1_sum_imag;
+
+                        // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                        grad_j[nnz_ind] = ++col_ind;
+                        grad_vals[nnz_ind++] = -(l_sum_imag - l1_sum_imag);
+
+                        // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l_sum_real - l1_sum_real;
+                        
+                    }
+                }
+                else if(l==l2)  // if l2=l and l!=l1
+                {
+                    // Calculate derivative of b_{l1,l2,l} w.r.t real(f_{l1,n}) and imag(f_{l1,n})
+                    for (long n = -l1; n<=l1; ++n)
+                    {
+                        col_ind = 2*(l1*(l1+1) + n);
+                        
+                        l1_sum_real = 0; 
+                        l1_sum_imag = 0;
+
+                        calc_l1_sum(l1, l2, l, n, &l1_sum_real, &l1_sum_imag);
+
+                         // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l1_sum_real;
+
+                        // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l1_sum_imag;
+
+                        // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                        grad_j[nnz_ind] = ++col_ind;
+                        grad_vals[nnz_ind++] = l1_sum_imag;
+
+                        // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = - l1_sum_real;
+                        
                     }
 
-                    // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l2,m2})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_real;
-
-                    // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l2,m2})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_imag;
-
-                    // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l2,m2})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
-                    grad_j[nnz_ind] = ++col_ind;
-                    grad_vals[nnz_ind++] = -der_imag;
-
-                    // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l2,m2})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = -der_real;
-                }
-            }
-
-            // Calculate the derivative of b_{l1,l2,l} for l1<l2, l2<l<l1
-            for (l = l2+1; l<l1; ++l)
-            {
-                // Derivative w.r.t real(f_{l,m}) and imag(f_{l,m})
-                for (long m = -l; m<=l; ++m)
-                {
-                    der_real = 0;
-                    der_imag = 0;
-
-                    col_ind = 2*(l*(l+1) + m); // Column index of the derivative w.r.t to real(f_{l,m})
-
-                    for (long m1 = maximum(-l1, m-l2); m1<=minimum(l1, m+l2); ++m1)
+                    // Calculate derivative of b_{l1,l2,l} w.r.t real(f_{l,n}) and imag(f_{l,n})
+                    for (long n = -l; n<=l; ++n)
                     {
-                        der_real += get_cg(l1, l2, l, m, m1) 
-                                    * (get_shc(l1, m1).real * get_shc(l2, m-m1).real 
-                                        - get_shc(l1, m1).imag * get_shc(l2, m-m1).imag);
-                        der_imag += - get_cg(l1, l2, l, m, m1) 
-                                    * (get_shc(l1, m1).imag * get_shc(l2, m-m1).real 
-                                        + get_shc(l1, m1).real * get_shc(l2, m-m1).imag);
+                        col_ind = 2*(l*(l+1) + n);
+                        
+                        l2_sum_real = 0; 
+                        l2_sum_imag = 0;
+                        l_sum_real = 0;
+                        l_sum_imag = 0;
+
+                        calc_l2_sum(l1, l2, l, n, &l2_sum_real, &l2_sum_imag);
+                        calc_l_sum(l1, l2, l, n, &l_sum_real, &l_sum_imag);
+
+                         // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l_sum_real + l2_sum_real;
+
+                        // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l_sum_imag + l2_sum_imag;
+
+                        // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                        grad_j[nnz_ind] = ++col_ind;
+                        grad_vals[nnz_ind++] = -(l_sum_imag - l2_sum_imag);
+
+                        // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l_sum_real - l2_sum_real;
+                        
                     }
 
-                    // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l,m})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_real;
-
-                    // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l,m})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_imag;
-
-                    // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l,m})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
-                    grad_j[nnz_ind] = ++col_ind;
-                    grad_vals[nnz_ind++] = -der_imag;
-
-                    // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l,m})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_real;
-                    
                 }
-
-
-                // Derivative w.r.t real(f_{l1,m1}) and imag(f_{l1,m1})
-                for (long m1 = -l1; m1<=l1; ++m1)
+                else   // if l1!=l2, l!=l1 and l!=l2
                 {
-                    der_real = 0;
-                    der_imag = 0;
-
-                    col_ind = 2*(l1*(l1+1) + m1); // Column index of the derivative w.r.t to real(f_{l1,m1})
-
-                    for (long m = maximum(-l, m1-l2); m<=minimum(l, m1+l2); ++m)
+                    // Calculate derivative of b_{l1,l2,l} w.r.t real(f_{l1,n}) and imag(f_{l1,n})
+                    for (long n = -l1; n<=l1; ++n)
                     {
-                        der_real += get_cg(l1, l2, l, m, m-m1) 
-                                    * (get_shc(l, m).real * get_shc(l2, m-m1).real 
-                                        + get_shc(l, m).imag * get_shc(l2, m-m1).imag);
-                        der_imag += get_cg(l1, l2, l, m, m-m1) 
-                                    * (get_shc(l, m).imag * get_shc(l2, m-m1).real 
-                                        + get_shc(l, m).real * get_shc(l2, m-m1).imag);
+                        col_ind = 2*(l1*(l1+1) + n);
+                        
+                        l1_sum_real = 0; 
+                        l1_sum_imag = 0;
+
+                        calc_l1_sum(l1, l2, l, n, &l1_sum_real, &l1_sum_imag);
+
+                         // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l1_sum_real;
+
+                        // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l1_sum_imag;
+
+                        // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                        grad_j[nnz_ind] = ++col_ind;
+                        grad_vals[nnz_ind++] = l1_sum_imag;
+
+                        // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = -l1_sum_real;
+                        
                     }
 
-                    // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l1,m1})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_real;
-
-                    // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l1,m1})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_imag;
-
-                    // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l1,m1})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
-                    grad_j[nnz_ind] = ++col_ind;
-                    grad_vals[nnz_ind++] = -der_imag;
-
-                    // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l1,m1})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = -der_real;
-                }
-
-
-                // Derivative w.r.t real(f_{l2,m2}) and imag(f_{l2,m2})
-                for (long m2 = -l2; m2<=l2; ++m2)
-                {
-                    der_real = 0;
-                    der_imag = 0;
-
-                    col_ind = 2*(l2*(l2+1) + m2); // Column index of the derivative w.r.t to real(f_{l2,m2})
-
-                    for (long m = maximum(-l, m2-l2); m<=minimum(l, m2+l2); ++m)
+                    // Calculate derivative of b_{l1,l2,l} w.r.t real(f_{l2,n}) and imag(f_{l2,n})
+                    for (long n = -l2; n<=l2; ++n)
                     {
-                        der_real += get_cg(l1, l2, l, m, m-m2) 
-                                    * (get_shc(l, m).real * get_shc(l1, m-m2).real 
-                                        + get_shc(l, m).imag * get_shc(l1, m-m2).imag);
-                        der_imag += get_cg(l1, l2, l, m, m-m2) 
-                                    * (get_shc(l, m).imag * get_shc(l1, m-m2).real 
-                                        + get_shc(l, m).real * get_shc(l1, m-m2).imag);
+                        col_ind = 2*(l2*(l2+1) + n);
+                        
+                        l2_sum_real = 0; 
+                        l2_sum_imag = 0;
+
+                        calc_l2_sum(l1, l2, l, n, &l2_sum_real, &l2_sum_imag);
+
+                         // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l2,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] =  l2_sum_real;
+
+                        // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l2,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l2_sum_imag;
+
+                        // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l2,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                        grad_j[nnz_ind] = ++col_ind;
+                        grad_vals[nnz_ind++] = l2_sum_imag;
+
+                        // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l2,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = -l2_sum_real;
+                        
                     }
 
-                    // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l2,m2})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_real;
-
-                    // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l2,m2})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_imag;
-
-                    // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l2,m2})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
-                    grad_j[nnz_ind] = ++col_ind;
-                    grad_vals[nnz_ind++] = -der_imag;
-
-                    // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l2,m2})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = -der_real;
-                }
-            }
-
-            // Calculate the derivative of b_{l1,l2,l} for l1<l2, l<=l1+l2
-            for (l = l1+1; l<=l1+l2 && l<=bandlimit; ++l)
-            {
-                // Derivative w.r.t real(f_{l,m}) and imag(f_{l,m})
-                for (long m = -l; m<=l; ++m)
-                {
-                    der_real = 0;
-                    der_imag = 0;
-
-                    col_ind = 2*(l*(l+1) + m); // Column index of the derivative w.r.t to real(f_{l,m})
-
-                    for (long m1 = maximum(-l1, m-l2); m1<=minimum(l1, m+l2); ++m1)
+                    // Calculate derivative of b_{l1,l2,l} w.r.t real(f_{l,n}) and imag(f_{l,n})
+                    for (long n = -l; n<=l; ++n)
                     {
-                        der_real += get_cg(l1, l2, l, m, m1) 
-                                    * (get_shc(l1, m1).real * get_shc(l2, m-m1).real 
-                                        - get_shc(l1, m1).imag * get_shc(l2, m-m1).imag);
-                        der_imag += - get_cg(l1, l2, l, m, m1) 
-                                    * (get_shc(l1, m1).imag * get_shc(l2, m-m1).real 
-                                        + get_shc(l1, m1).real * get_shc(l2, m-m1).imag);
+                        col_ind = 2*(l*(l+1) + n);
+                        
+                        l_sum_real = 0;
+                        l_sum_imag = 0;
+
+                        calc_l_sum(l1, l2, l, n, &l_sum_real, &l_sum_imag);
+
+                         // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l_sum_real;
+
+                        // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l_sum_imag;
+
+                        // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+                        grad_j[nnz_ind] = ++col_ind;
+                        grad_vals[nnz_ind++] = -l_sum_imag;
+
+                        // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l,n})
+                        grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+                        grad_j[nnz_ind] = col_ind;
+                        grad_vals[nnz_ind++] = l_sum_real;
+                        
                     }
 
-                    // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l,m})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_real;
-
-                    // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l,m})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_imag;
-
-                    // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l,m})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
-                    grad_j[nnz_ind] = ++col_ind;
-                    grad_vals[nnz_ind++] = -der_imag;
-
-                    // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l,m})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_real;
-                    
                 }
 
-
-                // Derivative w.r.t real(f_{l1,m1}) and imag(f_{l1,m1})
-                for (long m1 = -l1; m1<=l1; ++m1)
-                {
-                    der_real = 0;
-                    der_imag = 0;
-
-                    col_ind = 2*(l1*(l1+1) + m1); // Column index of the derivative w.r.t to real(f_{l1,m1})
-
-                    for (long m = maximum(-l, m1-l2); m<=minimum(l, m1+l2); ++m)
-                    {
-                        der_real += get_cg(l1, l2, l, m, m-m1) 
-                                    * (get_shc(l, m).real * get_shc(l2, m-m1).real 
-                                        + get_shc(l, m).imag * get_shc(l2, m-m1).imag);
-                        der_imag += get_cg(l1, l2, l, m, m-m1) 
-                                    * (get_shc(l, m).imag * get_shc(l2, m-m1).real 
-                                        + get_shc(l, m).real * get_shc(l2, m-m1).imag);
-                    }
-
-                    // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l1,m1})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_real;
-
-                    // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l1,m1})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_imag;
-
-                    // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l1,m1})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
-                    grad_j[nnz_ind] = ++col_ind;
-                    grad_vals[nnz_ind++] = -der_imag;
-
-                    // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l1,m1})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = -der_real;
-                }
-
-
-                // Derivative w.r.t real(f_{l2,m2}) and imag(f_{l2,m2})
-                for (long m2 = -l2; m2<=l2; ++m2)
-                {
-                    der_real = 0;
-                    der_imag = 0;
-
-                    col_ind = 2*(l2*(l2+1) + m2); // Column index of the derivative w.r.t to real(f_{l2,m2})
-
-                    for (long m = maximum(-l, m2-l2); m<=minimum(l, m2+l2); ++m)
-                    {
-                        der_real += get_cg(l1, l2, l, m, m-m2) 
-                                    * (get_shc(l, m).real * get_shc(l1, m-m2).real 
-                                        + get_shc(l, m).imag * get_shc(l1, m-m2).imag);
-                        der_imag += get_cg(l1, l2, l, m, m-m2) 
-                                    * (get_shc(l, m).imag * get_shc(l1, m-m2).real 
-                                        + get_shc(l, m).real * get_shc(l1, m-m2).imag);
-                    }
-
-                    // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l2,m2})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_real;
-
-                    // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l2,m2})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = der_imag;
-
-                    // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l2,m2})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
-                    grad_j[nnz_ind] = ++col_ind;
-                    grad_vals[nnz_ind++] = -der_imag;
-
-                    // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l2,m2})
-                    grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
-                    grad_j[nnz_ind] = col_ind;
-                    grad_vals[nnz_ind++] = -der_real;
-                }
             }
         }
-    }
-
-    // Case 2: Calculate the derivative of b_{l1,l2,l} for l1<l2, l=l1 or l=l2
-    for (l1 = 0; l1<=bandlimit; ++l1)
-    {
-        for (l2 = 0; l2<l1; ++l2)
-        {
-            // Calculate the derivative of b_{l1,l2,l} for l1<l2, l=l1
-            l = l1;
-
-            // Derivative w.r.t real(f_{l,m}) and imag(f_{l,m})
-            // TODO
-
-            // Derivative w.r.t real(f_{l2,m2}) and imag(f_{l2,m2})
-            // TODO
-            
-
-            // Calculate the derivative of b_{l1,l2,l} for l1<l2, l=l2
-            if (2*l2>=l1)
-            {
-                l = l2;
-                // Derivative w.r.t real(f_{l,m}) and imag(f_{l,m})
-                // TODO
-
-                // Derivative w.r.t real(f_{l1,m1}) and imag(f_{l1,m1})
-                // TODO
-            }
-        }
-    }
-
-    // Case 3: Calculate the derivative of b_{l1,l2,l} for l1=l2, l!=l1
-    for (l1 = 0; l1<=bandlimit; ++l1)
-    {
-        l2 = l1;
-
-        // Calculate the derivative of b_{l1,l2,l} for l1=l2, l<l1
-        for (l = 0; l<l1; ++l)
-        {
-            // TODO
-
-            ++nnz_ind;
-        }
-
-        // Calculate the derivative of b_{l1,l2,l} for l1=l2, l1<l<l1+l2
-        for (l = l1+1; l<=2*l1 && l<=bandlimit; ++l)
-        {
-            // TODO
-
-            ++nnz_ind;
-        }
-    }
-
-    // Case 4: Calculate the derivative of b_{l1,l2,l} for l1=l2=l
-    for (l1 = 0; l1<=bandlimit; ++l1)
-    {
-        l2 = l1;
-        l = l1;
-
-        // TODO
-
-        ++nnz_ind;
     }
 }
+
+// void bisp_grad()
+// {
+//     nnz_ind = 0;
+    
+//     long row_ind;
+//     long col_ind;
+
+//     long l1;
+//     long l2;
+//     long l;
+
+//     double der_real;
+//     double der_imag;
+//     double der_real2;
+//     double der_imag2;
+//     double der_real3;
+//     double der_imag3;
+
+//     // Case 1: Calculate the derivative of b_{l1,l2,l} for l1<l2, l!=l1 and l!=l2
+//     for (l1 = 0; l1<=bandlimit; ++l1)
+//     {
+//         for (l2 = 0; l2<l1; ++l2)
+//         {
+//             // Calculate the derivative of b_{l1,l2,l} for l1<l2, l<l2
+//             for (l = l1-l2; l<l2; ++l)
+//             {
+//                 // Derivative w.r.t real(f_{l,m}) and imag(f_{l,m})
+//                 for (long m = -l; m<=l; ++m)
+//                 {
+//                     der_real = 0;
+//                     der_imag = 0;
+
+//                     col_ind = 2*(l*(l+1) + m); // Column index of the derivative w.r.t to real(f_{l,m})
+
+//                     for (long m1 = maximum(-l1, m-l2); m1<=minimum(l1, m+l2); ++m1)
+//                     {
+//                         der_real += get_cg(l1, l2, l, m, m1) 
+//                                     * (get_shc(l1, m1).real * get_shc(l2, m-m1).real 
+//                                         - get_shc(l1, m1).imag * get_shc(l2, m-m1).imag);
+//                         der_imag += - get_cg(l1, l2, l, m, m1) 
+//                                     * (get_shc(l1, m1).imag * get_shc(l2, m-m1).real 
+//                                         + get_shc(l1, m1).real * get_shc(l2, m-m1).imag);
+//                     }
+
+//                     // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l,m})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_real;
+
+//                     // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l,m})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_imag;
+
+//                     // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l,m})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+//                     grad_j[nnz_ind] = ++col_ind;
+//                     grad_vals[nnz_ind++] = -der_imag;
+
+//                     // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l,m})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_real;
+                    
+//                 }
+
+
+//                 // Derivative w.r.t real(f_{l1,m1}) and imag(f_{l1,m1})
+//                 for (long m1 = -l1; m1<=l1; ++m1)
+//                 {
+//                     der_real = 0;
+//                     der_imag = 0;
+
+//                     col_ind = 2*(l1*(l1+1) + m1); // Column index of the derivative w.r.t to real(f_{l1,m1})
+
+//                     for (long m = maximum(-l, m1-l2); m<=minimum(l, m1+l2); ++m)
+//                     {
+//                         der_real += get_cg(l1, l2, l, m, m-m1) 
+//                                     * (get_shc(l, m).real * get_shc(l2, m-m1).real 
+//                                         + get_shc(l, m).imag * get_shc(l2, m-m1).imag);
+//                         der_imag += get_cg(l1, l2, l, m, m-m1) 
+//                                     * (get_shc(l, m).imag * get_shc(l2, m-m1).real 
+//                                         + get_shc(l, m).real * get_shc(l2, m-m1).imag);
+//                     }
+
+//                     // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l1,m1})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_real;
+
+//                     // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l1,m1})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_imag;
+
+//                     // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l1,m1})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+//                     grad_j[nnz_ind] = ++col_ind;
+//                     grad_vals[nnz_ind++] = -der_imag;
+
+//                     // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l1,m1})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = -der_real;
+//                 }
+
+
+//                 // Derivative w.r.t real(f_{l2,m2}) and imag(f_{l2,m2})
+//                 for (long m2 = -l2; m2<=l2; ++m2)
+//                 {
+//                     der_real = 0;
+//                     der_imag = 0;
+
+//                     col_ind = 2*(l2*(l2+1) + m2); // Column index of the derivative w.r.t to real(f_{l2,m2})
+
+//                     for (long m = maximum(-l, m2-l2); m<=minimum(l, m2+l2); ++m)
+//                     {
+//                         der_real += get_cg(l1, l2, l, m, m-m2) 
+//                                     * (get_shc(l, m).real * get_shc(l1, m-m2).real 
+//                                         + get_shc(l, m).imag * get_shc(l1, m-m2).imag);
+//                         der_imag += get_cg(l1, l2, l, m, m-m2) 
+//                                     * (get_shc(l, m).imag * get_shc(l1, m-m2).real 
+//                                         + get_shc(l, m).real * get_shc(l1, m-m2).imag);
+//                     }
+
+//                     // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l2,m2})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_real;
+
+//                     // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l2,m2})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_imag;
+
+//                     // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l2,m2})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+//                     grad_j[nnz_ind] = ++col_ind;
+//                     grad_vals[nnz_ind++] = -der_imag;
+
+//                     // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l2,m2})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = -der_real;
+//                 }
+//             }
+
+//             // Calculate the derivative of b_{l1,l2,l} for l1<l2, l2<l<l1
+//             for (l = l2+1; l<l1; ++l)
+//             {
+//                 // Derivative w.r.t real(f_{l,m}) and imag(f_{l,m})
+//                 for (long m = -l; m<=l; ++m)
+//                 {
+//                     der_real = 0;
+//                     der_imag = 0;
+
+//                     col_ind = 2*(l*(l+1) + m); // Column index of the derivative w.r.t to real(f_{l,m})
+
+//                     for (long m1 = maximum(-l1, m-l2); m1<=minimum(l1, m+l2); ++m1)
+//                     {
+//                         der_real += get_cg(l1, l2, l, m, m1) 
+//                                     * (get_shc(l1, m1).real * get_shc(l2, m-m1).real 
+//                                         - get_shc(l1, m1).imag * get_shc(l2, m-m1).imag);
+//                         der_imag += - get_cg(l1, l2, l, m, m1) 
+//                                     * (get_shc(l1, m1).imag * get_shc(l2, m-m1).real 
+//                                         + get_shc(l1, m1).real * get_shc(l2, m-m1).imag);
+//                     }
+
+//                     // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l,m})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_real;
+
+//                     // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l,m})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_imag;
+
+//                     // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l,m})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+//                     grad_j[nnz_ind] = ++col_ind;
+//                     grad_vals[nnz_ind++] = -der_imag;
+
+//                     // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l,m})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_real;
+                    
+//                 }
+
+
+//                 // Derivative w.r.t real(f_{l1,m1}) and imag(f_{l1,m1})
+//                 for (long m1 = -l1; m1<=l1; ++m1)
+//                 {
+//                     der_real = 0;
+//                     der_imag = 0;
+
+//                     col_ind = 2*(l1*(l1+1) + m1); // Column index of the derivative w.r.t to real(f_{l1,m1})
+
+//                     for (long m = maximum(-l, m1-l2); m<=minimum(l, m1+l2); ++m)
+//                     {
+//                         der_real += get_cg(l1, l2, l, m, m-m1) 
+//                                     * (get_shc(l, m).real * get_shc(l2, m-m1).real 
+//                                         + get_shc(l, m).imag * get_shc(l2, m-m1).imag);
+//                         der_imag += get_cg(l1, l2, l, m, m-m1) 
+//                                     * (get_shc(l, m).imag * get_shc(l2, m-m1).real 
+//                                         + get_shc(l, m).real * get_shc(l2, m-m1).imag);
+//                     }
+
+//                     // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l1,m1})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_real;
+
+//                     // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l1,m1})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_imag;
+
+//                     // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l1,m1})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+//                     grad_j[nnz_ind] = ++col_ind;
+//                     grad_vals[nnz_ind++] = -der_imag;
+
+//                     // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l1,m1})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = -der_real;
+//                 }
+
+
+//                 // Derivative w.r.t real(f_{l2,m2}) and imag(f_{l2,m2})
+//                 for (long m2 = -l2; m2<=l2; ++m2)
+//                 {
+//                     der_real = 0;
+//                     der_imag = 0;
+
+//                     col_ind = 2*(l2*(l2+1) + m2); // Column index of the derivative w.r.t to real(f_{l2,m2})
+
+//                     for (long m = maximum(-l, m2-l2); m<=minimum(l, m2+l2); ++m)
+//                     {
+//                         der_real += get_cg(l1, l2, l, m, m-m2) 
+//                                     * (get_shc(l, m).real * get_shc(l1, m-m2).real 
+//                                         + get_shc(l, m).imag * get_shc(l1, m-m2).imag);
+//                         der_imag += get_cg(l1, l2, l, m, m-m2) 
+//                                     * (get_shc(l, m).imag * get_shc(l1, m-m2).real 
+//                                         + get_shc(l, m).real * get_shc(l1, m-m2).imag);
+//                     }
+
+//                     // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l2,m2})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_real;
+
+//                     // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l2,m2})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_imag;
+
+//                     // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l2,m2})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+//                     grad_j[nnz_ind] = ++col_ind;
+//                     grad_vals[nnz_ind++] = -der_imag;
+
+//                     // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l2,m2})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = -der_real;
+//                 }
+//             }
+
+//             // Calculate the derivative of b_{l1,l2,l} for l1<l2, l<=l1+l2
+//             for (l = l1+1; l<=l1+l2 && l<=bandlimit; ++l)
+//             {
+//                 // Derivative w.r.t real(f_{l,m}) and imag(f_{l,m})
+//                 for (long m = -l; m<=l; ++m)
+//                 {
+//                     der_real = 0;
+//                     der_imag = 0;
+
+//                     col_ind = 2*(l*(l+1) + m); // Column index of the derivative w.r.t to real(f_{l,m})
+
+//                     for (long m1 = maximum(-l1, m-l2); m1<=minimum(l1, m+l2); ++m1)
+//                     {
+//                         der_real += get_cg(l1, l2, l, m, m1) 
+//                                     * (get_shc(l1, m1).real * get_shc(l2, m-m1).real 
+//                                         - get_shc(l1, m1).imag * get_shc(l2, m-m1).imag);
+//                         der_imag += - get_cg(l1, l2, l, m, m1) 
+//                                     * (get_shc(l1, m1).imag * get_shc(l2, m-m1).real 
+//                                         + get_shc(l1, m1).real * get_shc(l2, m-m1).imag);
+//                     }
+
+//                     // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l,m})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_real;
+
+//                     // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l,m})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_imag;
+
+//                     // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l,m})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+//                     grad_j[nnz_ind] = ++col_ind;
+//                     grad_vals[nnz_ind++] = -der_imag;
+
+//                     // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l,m})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_real;
+                    
+//                 }
+
+
+//                 // Derivative w.r.t real(f_{l1,m1}) and imag(f_{l1,m1})
+//                 for (long m1 = -l1; m1<=l1; ++m1)
+//                 {
+//                     der_real = 0;
+//                     der_imag = 0;
+
+//                     col_ind = 2*(l1*(l1+1) + m1); // Column index of the derivative w.r.t to real(f_{l1,m1})
+
+//                     for (long m = maximum(-l, m1-l2); m<=minimum(l, m1+l2); ++m)
+//                     {
+//                         der_real += get_cg(l1, l2, l, m, m-m1) 
+//                                     * (get_shc(l, m).real * get_shc(l2, m-m1).real 
+//                                         + get_shc(l, m).imag * get_shc(l2, m-m1).imag);
+//                         der_imag += get_cg(l1, l2, l, m, m-m1) 
+//                                     * (get_shc(l, m).imag * get_shc(l2, m-m1).real 
+//                                         + get_shc(l, m).real * get_shc(l2, m-m1).imag);
+//                     }
+
+//                     // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l1,m1})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_real;
+
+//                     // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l1,m1})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_imag;
+
+//                     // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l1,m1})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+//                     grad_j[nnz_ind] = ++col_ind;
+//                     grad_vals[nnz_ind++] = -der_imag;
+
+//                     // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l1,m1})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = -der_real;
+//                 }
+
+
+//                 // Derivative w.r.t real(f_{l2,m2}) and imag(f_{l2,m2})
+//                 for (long m2 = -l2; m2<=l2; ++m2)
+//                 {
+//                     der_real = 0;
+//                     der_imag = 0;
+
+//                     col_ind = 2*(l2*(l2+1) + m2); // Column index of the derivative w.r.t to real(f_{l2,m2})
+
+//                     for (long m = maximum(-l, m2-l2); m<=minimum(l, m2+l2); ++m)
+//                     {
+//                         der_real += get_cg(l1, l2, l, m, m-m2) 
+//                                     * (get_shc(l, m).real * get_shc(l1, m-m2).real 
+//                                         + get_shc(l, m).imag * get_shc(l1, m-m2).imag);
+//                         der_imag += get_cg(l1, l2, l, m, m-m2) 
+//                                     * (get_shc(l, m).imag * get_shc(l1, m-m2).real 
+//                                         + get_shc(l, m).real * get_shc(l1, m-m2).imag);
+//                     }
+
+//                     // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l2,m2})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_real;
+
+//                     // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l2,m2})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = der_imag;
+
+//                     // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l2,m2})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+//                     grad_j[nnz_ind] = ++col_ind;
+//                     grad_vals[nnz_ind++] = -der_imag;
+
+//                     // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l2,m2})
+//                     grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+//                     grad_j[nnz_ind] = col_ind;
+//                     grad_vals[nnz_ind++] = -der_real;
+//                 }
+//             }
+//         }
+//     }
+
+//     // Case 2: Calculate the derivative of b_{l1,l2,l} for l1<l2, l=l1 or l=l2
+//     for (l1 = 0; l1<=bandlimit; ++l1)
+//     {
+//         for (l2 = 0; l2<l1; ++l2)
+//         {
+//             // Calculate the derivative of b_{l1,l2,l} for l1<l2, l=l1
+//             l = l1;
+
+//             // Derivative w.r.t real(f_{l,m}) and imag(f_{l,m})
+//             for (long m = -l; m<=l; ++m)
+//             {
+//                 der_real = 0;
+//                 der_imag = 0;
+
+//                 col_ind = 2*(l*(l+1) + m); // Column index of the derivative w.r.t to real(f_{l,m})
+
+//                 for (long m1 = maximum(-l1, m-l2); m1<=minimum(l1, m+l2); ++m1)
+//                 {
+//                     der_real += get_cg(l1, l2, l, m, m-m1) 
+//                                 * (get_shc(l1, m1).real * get_shc(l2, m-m1).real
+//                                     - get_shc(l1, m1).imag * get_shc(l2, m-m1).imag);
+//                     der_imag += - get_cg(l1, l2, l, m, m-m1) *
+//                                 (get_shc(l1, m1).imag * get_shc(l2, m-m1).real 
+//                                 + get_shc(l1, m1).real * get_shc(l2, m-m1).imag) ;
+//                 }
+
+//                 // Save the derivative of real(b_{l1,l2,l}) w.r.t real(f_{l,m})
+//                 grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+//                 grad_j[nnz_ind] = col_ind;
+//                 grad_vals[nnz_ind++] = der_real;
+
+//                 // Save the derivative of imag(b_{l1,l2,l}) w.r.t real(f_{l,m})
+//                 grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+//                 grad_j[nnz_ind] = col_ind;
+//                 grad_vals[nnz_ind++] = der_imag;
+
+//                 // Save the derivative of real(b_{l1,l2,l}) w.r.t imag(f_{l,m})
+//                 grad_i[nnz_ind] = bisp_lookup(l1, l2, l, REAL_PART);
+//                 grad_j[nnz_ind] = ++col_ind;
+//                 grad_vals[nnz_ind++] = -der_imag;
+
+//                 // Save the derivative of imag(b_{l1,l2,l}) w.r.t imag(f_{l,m})
+//                 grad_i[nnz_ind] = bisp_lookup(l1, l2, l, IMAG_PART);
+//                 grad_j[nnz_ind] = col_ind;
+//                 grad_vals[nnz_ind++] = der_real;
+                
+//             }
+//             // TODO
+
+//             // Derivative w.r.t real(f_{l2,m2}) and imag(f_{l2,m2})
+//             // TODO
+            
+
+//             // Calculate the derivative of b_{l1,l2,l} for l1<l2, l=l2
+//             if (2*l2>=l1)
+//             {
+//                 l = l2;
+//                 // Derivative w.r.t real(f_{l,m}) and imag(f_{l,m})
+//                 // TODO
+
+//                 // Derivative w.r.t real(f_{l1,m1}) and imag(f_{l1,m1})
+//                 // TODO
+//             }
+//         }
+//     }
+
+//     // Case 3: Calculate the derivative of b_{l1,l2,l} for l1=l2, l!=l1
+//     for (l1 = 0; l1<=bandlimit; ++l1)
+//     {
+//         l2 = l1;
+
+//         // Calculate the derivative of b_{l1,l2,l} for l1=l2, l<l1
+//         for (l = 0; l<l1; ++l)
+//         {
+//             // TODO
+
+//             ++nnz_ind;
+//         }
+
+//         // Calculate the derivative of b_{l1,l2,l} for l1=l2, l1<l<l1+l2
+//         for (l = l1+1; l<=2*l1 && l<=bandlimit; ++l)
+//         {
+//             // TODO
+
+//             ++nnz_ind;
+//         }
+//     }
+
+//     // Case 4: Calculate the derivative of b_{l1,l2,l} for l1=l2=l
+//     for (l1 = 0; l1<=bandlimit; ++l1)
+//     {
+//         l2 = l1;
+//         l = l1;
+
+//         // TODO
+
+//         ++nnz_ind;
+//     }
+// }
 
 
 /**
