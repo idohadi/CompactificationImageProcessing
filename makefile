@@ -18,25 +18,25 @@ SmallRotationToolbox :
 
 # MEX files
 normSHC_mex : 
-	$(MEX) $(MATLABFAGS) spherical_harmonics/normSHC_mex.c -outdir spherical_harmonics/
+	$(MEX) $(MATLABFLAGS) spherical_harmonics/normSHC_mex.c -outdir spherical_harmonics/
 
 ClebschGordanCoeffs_mex : 
-	$(MEX) $(MATLABFAGS) \
+	$(MEX) $(MATLABFLAGS) \
 		clebsch_gordan/ClebschGordanCoeffs_mex.c \
 		clebsch_gordan/clebsch_gordan_coefficients.c \
 		-outdir clebsch_gordan/
 
 buildCGTable_mex : 
-	$(MEX) $(MATLABFAGS) \
+	$(MEX) $(MATLABFLAGS) \
 		clebsch_gordan/buildCGTable_mex.c \
 		clebsch_gordan/clebsch_gordan_coefficients.c \
 		-outdir clebsch_gordan/
 
 powerSpectrum_mex : 
-	$(MEX) $(MATLABFAGS) spherical_spectra/powerSpectrum_mex.c -outdir spherical_spectra/
+	$(MEX) $(MATLABFLAGS) spherical_spectra/powerSpectrum_mex.c -outdir spherical_spectra/
 
 bispectrum_mex : 
-	$(MEX) $(MATLABFAGS) spherical_spectra/bispectrum_mex.c -outdir spherical_spectra/
+	$(MEX) $(MATLABFLAGSBISP) spherical_spectra/bispectrum_mex.c -outdir spherical_spectra/
 	
 
 # Cleaning rules
