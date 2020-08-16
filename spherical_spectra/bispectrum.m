@@ -1,4 +1,4 @@
-function [b, grad] = bispectrum(shc, bandlimit, CGTable)
+function [b, grad] = bispectrum(shc, bandlimit)
 %%
 % Call format
 %   b = bispectrum(shc, bandlimit, CGTable)
@@ -31,14 +31,13 @@ function [b, grad] = bispectrum(shc, bandlimit, CGTable)
 %   shc             double      (bandlimit+1)^2 x 1 complex array, 
 %                               spherical harmonics coefficients.
 %   bandlimit       double      positive integer, the bandlimit of shc.
-%   CGTable         cell        Table of Clebsch-Gordan coefficients. 
-%                               Their format is documented above.
 % 
 % Output arguments
-%   powSpec         double      (bandlimit+1) x 1 array, the power spectrum
-%                               of the spherical function represented by
-%                               shc, such that
-%                                   powSpec(l+1) = l-order spectra of shc.
+%   b               double      bispectrum f spherical function
+%                               represented by shc.
+%   grad            double      gradient of b as a function of 
+%                                   [real(shc(1)); imag(shc(1)); ...
+%                                   real(shc(end)); imag(shc(end))]
 % 
 % Notes
 %   (1) This function depends on bispectrum_mex.
