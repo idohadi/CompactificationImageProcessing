@@ -14,8 +14,8 @@ rots_true = rand_rots(1);
 im = cryo_project(vol_true, rots_true, imSz, 'double');
 
 %% Prepare to use im2shc
-scalingParam = 2;
-N = 25; 
+scalingParam = 1;
+N = 50; 
 
 [assocLegMat, omega, theta, phi] = assocLegendreMatrices(N);
 evalPoints = calcEvalPoints(theta, phi, scalingParam);

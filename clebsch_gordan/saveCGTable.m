@@ -45,4 +45,4 @@ function saveCGTable(CGTable, filename)
 % ***********************************************************
 
 %% Save table
-save(filename, 'CGTable', '-mat');
+save(filename, 'CGTable', '-v7.3');
