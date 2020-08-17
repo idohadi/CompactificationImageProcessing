@@ -243,8 +243,6 @@ void bisp()
                     
                     b[ind_real] += get_shc(l, m).real * b_real - get_shc(l, m).imag * b_imag;
                     b[ind_imag] += get_shc(l, m).imag * b_real + get_shc(l, m).real * b_imag;
-                    // b[ind_real] += b_real;
-                    // b[ind_imag] += b_imag;
                 }
             }
         }
