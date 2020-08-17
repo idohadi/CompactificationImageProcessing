@@ -53,7 +53,7 @@ Y = linspace(-0.5, 0.5, size(im, 1));
 interpVals = interp2(X, Y, im, ...
                     evalPoints(:, 1), evalPoints(:, 2), ...
                     'cubic', 0);
-interpVals = reshape(interpVals, [2*N, 4*N-1]);
+interpVals = complex(reshape(interpVals, [2*N, 4*N-1]));
 
 % Estimate the spherical harmonics coefficients
 shc = isht(interpVals, N, assocLegMat, omega, phi);
