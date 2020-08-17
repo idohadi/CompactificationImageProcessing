@@ -26,3 +26,6 @@ shc = im2shc(im, evalPoints, N, assocLegMat, omega, phi);
 toc;
 
 fig = plotSphericalFunction(shc, N);
+
+figure; imagesc(im); 
+colormap('hot');
