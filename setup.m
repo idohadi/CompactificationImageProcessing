@@ -13,3 +13,4 @@ addpath(genpath(fullfile(p1, 'clebsch_gordan')));
 addpath(genpath(fullfile(p1, 'spherical_harmonics')));
 addpath(genpath(fullfile(p1, 'spherical_spectra')));
 addpath(genpath(fullfile(p1, 'inversion')));
+addpath(genpath(fullfile(p1, 'compactification')));
