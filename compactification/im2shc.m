@@ -47,7 +47,7 @@ function shc = im2shc(im, evalPoints, N, assocLegMat, omega, phi)
 % Compute grid on which such that im(k) is the value given in (X(k), Y(k))
 X = linspace(-0.5, 0.5, size(im, 2));
 Y = linspace(-0.5, 0.5, size(im, 1));
-[X, Y] = meshgrid(X, Y);
+[X, Y] = meshgrid(X, flip(Y));
 
 % Interpolate the given values to evalPoints
 interpVals = interp2(X, Y, im, ...

@@ -1,4 +1,6 @@
 %% im2shc_demo
+% TODO: eliminate the use in ASPIRE
+
 imSz = 101;  % Size of image
 
 % Generate a volume
@@ -13,12 +15,14 @@ im = cryo_project(vol_true, rots_true, imSz, 'double');
 
 %% Prepare to use im2shc
 scalingParam = 2;
-N = 10; 
+N = 25; 
 
 [assocLegMat, omega, theta, phi] = assocLegendreMatrices(N);
 evalPoints = calcEvalPoints(theta, phi, scalingParam);
 
 %% Estimate SHC using im2shc
+tic;
 shc = im2shc(im, evalPoints, N, assocLegMat, omega, phi);
+toc;
 
 fig = plotSphericalFunction(shc, N);
