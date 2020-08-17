@@ -1,7 +1,7 @@
 function shc = im2shc(im, evalPoints, N, assocLegMat, omega, phi)
 %%
 % Call format
-%   shc = im2shc(im, evalPoints, N)
+%   shc = im2shc(im, evalPoints, N, assocLegMat, omega, phi)
 % 
 % Interpolates the image im to certain evaluation points and use them to
 % estimate the spherical harmonics coefficients of the projection of the
