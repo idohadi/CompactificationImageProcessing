@@ -51,15 +51,15 @@ assert(round(lowBandlimit)==lowBandlimit ...
     'Bandlimit must be a positive integer.');
 
 if nargin==2
-    imageSize = [150, 150];
+    imageSize = 150;
     paddingSize = 50;
 elseif nargin==3
     paddingSize = 50;
 end
-assert(all(round(imageSize)==imageSize) ...
-    && all(imageSize>0) ...
-    && numel(imageSize)==2, ...
-    'Image size must be a 2x1 or 1x2 array of positive integers.');
+assert(round(imageSize)==imageSize ...
+    && imageSize>0 ...
+    && numel(imageSize)==1, ...
+    'Image size must be a positive integer.');
 assert(round(paddingSize)==paddingSize ...
     && paddingSize>0 ...
     && numel(paddingSize)==1, ...
@@ -76,11 +76,14 @@ a = 1;
 im = shc2image(shc, lowBandlimit, imageSize, KondorProj(a), interval, interval);
 
 % Step 3
-im = padarray(im, [paddingSize, paddingSize]);
+im(1:paddingSize, :) = 0;
+im(end-paddingSize:end, :) = 0;
+im(:, 1:paddingSize) = 0;
+im(:, end-paddingSize:end) = 0;
 
 % Step 4
-sigma = 0.5;
-im = imgaussfilt(im, sigma);
+sigma = 5;
+im = imgaussfilt(real(im), sigma);
 
 % Step 5
 td = loadtd('sf050.01302');
@@ -88,3 +91,4 @@ shc = image2shc(im, highBandlimit, td, KondorBackProj(a), interval, interval);
 
 % Step 6
 im = shc2image(shc, highBandlimit, imageSize, KondorProj(a), interval, interval);
+im = real(im);
