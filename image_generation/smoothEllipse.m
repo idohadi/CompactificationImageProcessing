@@ -1,4 +1,4 @@
-function im = smoothElipse(a, b, imageSize, bandlimit)
+function im = smoothEllipse(a, b, imageSize, bandlimit)
 
 %% Input validation
 narginchk(2, 4);
