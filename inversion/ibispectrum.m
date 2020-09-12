@@ -56,6 +56,7 @@ rootedResidual = Inf;
 %% Invert the bispectrum
 nearOptimal = false;
 nearOptimalTries = 0;
+ef = 0;
 while rootedResidual>tol
     if ~nearOptimal || nearOptimalTries>3
         nearOptimalTries = 0;
@@ -70,11 +71,14 @@ while rootedResidual>tol
         nearOptimal = false;
     end
     
-    [invertedSHC, squaredResidual, ~, ~, output] = lsqnonlin(@inversionObjectiveFunc, initialSHC, [], [], opts);
+    [invertedSHC, squaredResidual, ~, ef, output] = lsqnonlin(@inversionObjectiveFunc, initialSHC, [], [], opts);
     if output.firstorderopt<=10^-4 && squaredResidual <=10^-4
         nearOptimal = true;
     end
     rootedResidual = sqrt(squaredResidual);
+    if ef==1 && rootedResidual<=5*10^-3
+        break;
+    end
 end
 invertedSHC = rSHC2cSHC(invertedSHC);
 
