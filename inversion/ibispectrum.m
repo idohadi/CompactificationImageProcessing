@@ -54,12 +54,26 @@ opts = optimoptions(@lsqnonlin, ...
 rootedResidual = Inf;
 
 %% Invert the bispectrum
+nearOptimal = false;
+nearOptimalTries = 0;
 while rootedResidual>tol
-    initialSHC = randSHC(bandlimit);
+    if ~nearOptimal || nearOptimalTries>3
+        nearOptimalTries = 0;
+        initialSHC = randSHC(bandlimit);
 %     initialSHC = r2c(initialSHC, bandlimit);
-    initialSHC = cSHC2rSHC(initialSHC);
+        initialSHC = cSHC2rSHC(initialSHC);
+    else
+        nearOptimalTries = nearOptimalTries + 1;
+        direction = randn(size(invertedSHC));
+        direction = direction/norm(direction);
+        initialSHC = invertedSHC + 2*output.stepsize*direction;
+        nearOptimal = false;
+    end
     
     [invertedSHC, squaredResidual, ~, ~, output] = lsqnonlin(@inversionObjectiveFunc, initialSHC, [], [], opts);
+    if output.firstorderopt<=10^-4 && squaredResidual <=10^-4
+        nearOptimal = true;
+    end
     rootedResidual = sqrt(squaredResidual);
 end
 invertedSHC = rSHC2cSHC(invertedSHC);
