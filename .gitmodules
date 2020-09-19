@@ -9,3 +9,6 @@
 [submodule "extern/ALegendreEval"]
 	path = extern/ALegendreEval
 	url = https://github.com/JamesCBremerJr/ALegendreEval
+[submodule "extern/2DhMRA"]
+	path = extern/2DhMRA
+	url = https://github.com/chaom1026/2DhMRA
