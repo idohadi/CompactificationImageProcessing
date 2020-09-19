@@ -31,6 +31,8 @@ size_t previous_bandlimit = 0;
 mxComplexDouble *UUH;
 mxComplexDouble *UUT;
 
+mxDouble *K;
+
 c_blt c_build_bispectrum_lookup_table(size_t bandlimit)
 {
     size_t index = 0; 
@@ -74,8 +76,8 @@ void c_destroy_bispectrum_lookup_table(c_blt table, size_t bandlimit)
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
     // Get input variables
-    shc = mxGetComplexDoubles(prhs[0]);
-    shc_conjugated = mxGetComplexDoubles(prhs[1]);
+    UUH = mxGetComplexDoubles(prhs[0]);
+    UUT = mxGetComplexDoubles(prhs[1]);
     bandlimit = (size_t) mxGetScalar(prhs[2]);
 
     // Handle first run
@@ -108,5 +110,86 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         mexPrintf("Reinitialization completed.\n");
     }
 
-    // TODO: actual code
+    // Generate output
+    // TODO: improve sz,sz2 convention and use below, so as to make code clearer
+    long sz = 2*(bandlimit+1)*(bandlimit+1);
+    long sz2 = (bandlimit+1)*(bandlimit+1);
+    plhs[0] = mxCreateDoubleMatrix(sz, lookup[bandlimit][bandlimit][bandlimit][1]+1, mxREAL);
+    K = mxGetDoubles(plhs[0]);
+
+    // Build K
+    double rp, ip; // real part and imaginary part
+    for (long l1 = 0; l1<=bandlimit; ++l1)
+    {
+        for (long l2 = 0; l2<=l1; ++l2)
+        {
+            for (long l = l1-l2; l<=bandlimit && l<=l1+l2; ++l)
+            {
+                // K1
+                for (long m1 = -l1; m1<=l1; ++m1)
+                {
+                    rp = 0;
+                    ip = 0;
+
+                    for (long m = (-l>=m1-l2) ? -l : m1-l2; m<=l && m<=m1+l2; ++m)
+                    {
+                        rp += get_cg(&cgs, l1, l2, l, m, m1)*UUH[sz2*(l2*(l2+1) + (m-m1)) + (l*(l+1) + m)].real;
+                        ip += get_cg(&cgs, l1, l2, l, m, m1)*UUH[sz2*(l2*(l2+1) + (m-m1)) + (l*(l+1) + m)].imag;
+                    }
+
+                    // Real part bisp invariant
+                    K[sz*lookup[l1][l2][l - (l1-l2)][REAL_PART] + 2*(l1*(l1+1) + m1)] += rp;    // Real part SHC
+                    K[sz*lookup[l1][l2][l - (l1-l2)][REAL_PART] + 2*(l1*(l1+1) + m1)+1] += ip;  // Imag part SHC
+                    
+                    // Imag part bisp invariant
+                    K[sz*lookup[l1][l2][l - (l1-l2)][IMAG_PART] + 2*(l1*(l1+1) + m1)] += ip;    // Real part SHC
+                    K[sz*lookup[l1][l2][l - (l1-l2)][IMAG_PART] + 2*(l1*(l1+1) + m1)+1] -= rp;   // Imag part SHC
+                }
+
+                // K2
+                for (long m2 = -l2; m2<=l2; ++m2)
+                {
+                    rp = 0;
+                    ip = 0;
+
+                    for (long m = (-l>=m2-l1) ? -l : m2-l1; m<=l && m<=m2+l1; ++m)
+                    {
+                        rp += get_cg(&cgs, l1, l2, l, m, m-m2)*UUH[sz2*(l1*(l1+1) + (m-m2)) + (l*(l+1) + m)].real;
+                        ip += get_cg(&cgs, l1, l2, l, m, m-m2)*UUH[sz2*(l1*(l1+1) + (m-m2)) + (l*(l+1) + m)].imag;
+                    }
+
+                    // Real part bisp invariant
+                    K[sz*lookup[l1][l2][l - (l1-l2)][REAL_PART] + 2*(l2*(l2+1) + m2)] += rp;    // Real part SHC
+                    K[sz*lookup[l1][l2][l - (l1-l2)][REAL_PART] + 2*(l2*(l2+1) + m2)+1] += ip;  // Imag part SHC
+                    
+                    // Imag part bisp invariant
+                    K[sz*lookup[l1][l2][l - (l1-l2)][IMAG_PART] + 2*(l2*(l2+1) + m2)] += ip;    // Real part SHC
+                    K[sz*lookup[l1][l2][l - (l1-l2)][IMAG_PART] + 2*(l2*(l2+1) + m2)+1] -= rp;   // Imag part SHC
+                }
+
+                // K3
+                for (long m = -l; m<=l; ++m)
+                {
+                    rp = 0;
+                    ip = 0;
+
+                    for (long m1 = (-l1>=m-l2) ? -l1 : m-l2; m1<=l1 && m1<=m+l2; ++m1)
+                    {
+                        rp += get_cg(&cgs, l1, l2, l, m, m1)*UUT[sz2*(l2*(l2+1) + (m-m1)) + (l1*(l1+1) + m1)].real;
+                        ip -= get_cg(&cgs, l1, l2, l, m, m1)*UUT[sz2*(l2*(l2+1) + (m-m1)) + (l1*(l1+1) + m1)].imag;
+                    }
+
+                    // Real part bisp invariant
+                    K[sz*lookup[l1][l2][l - (l1-l2)][REAL_PART] + 2*(l*(l+1) + m)] += rp;    // Real part SHC
+                    K[sz*lookup[l1][l2][l - (l1-l2)][REAL_PART] + 2*(l*(l+1) + m)+1] -= ip;  // Imag part SHC
+                    
+                    // Imag part bisp invariant
+                    K[sz*lookup[l1][l2][l - (l1-l2)][IMAG_PART] + 2*(l*(l+1) + m)] += ip;    // Real part SHC
+                    K[sz*lookup[l1][l2][l - (l1-l2)][IMAG_PART] + 2*(l*(l+1) + m)+1] += rp;   // Imag part SHC
+                }
+
+            }
+        }
+    }
+
 }

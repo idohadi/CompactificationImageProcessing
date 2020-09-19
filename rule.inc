@@ -305,6 +305,12 @@ tdesign_tester : create_testers_folder
 	mkdir -p bin/data
 	cp $(TDESIGNDir)/data/* bin/data
 	
+	
+buildK_mex : 
+	$(MEX) $(MATLABFAGS) -outdir estimation/ $(INCLUDEPATH) estimation/buildK_mex.c $(CGDir)/c/clebsch_gordan_coefficients.c
+
+buildV_mex : 
+	$(MEX) $(MATLABFAGS) -outdir estimation/ $(INCLUDEPATH) estimation/buildV_mex.c 
 .PHONY : clean
 clean :
 	rm -r bin

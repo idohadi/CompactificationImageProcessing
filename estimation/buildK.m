@@ -6,3 +6,5 @@ UUH = full(U*U');
 UUT = full(U*U.');
 
 K = buildK_mex(UUH, UUT, L);
+
+K = sparse(K.');
