@@ -1,8 +1,10 @@
 function P = interp2linop(td, xsupp, ysupp, im_w, im_h, back_proj)
+% TODO: docs
+
 % Returns a linear interpolation operator P satisfying
 %   im_td = P I
 % where 
-%   I       -   a column vector; the original image, column-concatenate form
+%   I       -   a column vector; the original image, column-major form
 %   im_td   -   the interpolated values of the image at the t-design points
 %               inside [xsupp(1), xsupp(2)] x [ysupp(1), ysupp(2)] .
 % 
@@ -14,7 +16,7 @@ function P = interp2linop(td, xsupp, ysupp, im_w, im_h, back_proj)
 %   im_w            -   image width; number of pixels
 %   back_proj       -   function handle to a projection of points on the 
 %                       sphere onto R^2.
-%                       Must be expressed in spherical coordinates.
+%                       Must be expressed in sphe`rical coordinates.
 %                       Must support vector input/output:
 %                           [r_R2, phi_R2] = back_proj(theta, phi)
 %                       Angle convention: 
