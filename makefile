@@ -37,7 +37,8 @@ powerSpectrum_mex :
 
 bispectrum_mex : 
 	$(MEX) $(MATLABFLAGSBISP) spherical_spectra/bispectrum_mex.c -outdir spherical_spectra/
-	
+
+#TODO: add the estimation code
 
 # Cleaning rules
 .PHONY : clean
