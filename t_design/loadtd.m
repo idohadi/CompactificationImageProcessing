@@ -1,16 +1,37 @@
-function td = loadtd(fn)
-% TODO: update this function so that its only input will be the bandlimit
-% (as a number) and add properly formated docs
+function td = loadtd(t)
+%%
+% Call format
+%   td = loadtd(t)
 % 
-% td = obtd(t, N)   obtains t design from a prexisting file. 
-%                   Assumes the file name is 
-%                   TD{t=#1,N=#2}.mat and that it 
-%                   is saved in the folder TD_files.
+% Load a t-design.
 % 
+% Input arguments
+%   t       double      the t-design.
+% 
+% Output arguments
+%   td      double      n x 3 array, the loaded t-design.
+% 
+% Notes
+%   (1) The t-designs were downloaded from 
+%           https://web.maths.unsw.edu.au/~rsw/Sphere/EffSphDes/sf.html
+%       Their properties and numerical computation is exlained in [1].
+% 
+% Reference
+%   [1] Womersley, R. S. (2017). Efficient Spherical Designs with Good 
+%       Geometric Properties. 
+%       https://arxiv.org/abs/1709.01624
+% ***********************************************************
+% Author    Ido Hadi
+% Email     idohadi@mail.tau.ac.il
+% Year      2020
+% ***********************************************************
 
-path = fullfile(fileparts(which('loadtd.m')), 'tDesigns', fn);
-td = importdata(path);
-
-if any(any(isnan(td)))==true
-    error('Errors in loading t-designs.');
+dirpath = fullfile(fileparts(which('loadtd.m')), 'tDesigns');
+filepath = dir(fullfile(dirpath, ['sf', num2str(t, '%03u'), '.*']));
+if isempty(filepath)
+    error('No t-design for the given t.');
+elseif length(filepath)>1
+    error('Multiple t-designs for the given t.');
+else
+    td = importdata(fullfile(filepath.folder, filepath.name));
 end
