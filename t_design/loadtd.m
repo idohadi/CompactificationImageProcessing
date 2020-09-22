@@ -26,6 +26,7 @@ function td = loadtd(t)
 % Year      2020
 % ***********************************************************
 
+%% Load t-design
 dirpath = fullfile(fileparts(which('loadtd.m')), 'tDesigns');
 filepath = dir(fullfile(dirpath, ['sf', num2str(t, '%03u'), '.*']));
 if isempty(filepath)
