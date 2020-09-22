@@ -1,20 +1,23 @@
-function rotatedSHC = rotateSHCInterp(shc, N, rotation, assocLegMat, omega, theta, phi)
+function rotatedSHC = rotateSHC(shc, N, rotation, assocLegMat, omega, theta, phi)
+% TODO: update this to use the old code base
+
 %%
 % Call format
-%   rotatedSHC = rotateSHCInterp(shc, N, rotation, assocLegMat, omega, theta, phi)
+%   rotatedSHC = rotateSHCEval(shc, N, rotation, assocLegMat, omega, theta, phi)
 % 
 % Calculate the spherical harmonics coefficients of the composition of a
-% sphericla function with a rotation.
+% spherical function with a rotation.
 % 
 % This function rotated the spherical harmonics coefficients using
 % the following procedure:
 %   1. Apply rotation to the meshgrid defined by theta and phi.
-%   2. Evaluate the spherical function on the original grid. These are 
-%      treated as its values on the rotated meshgrid.
-%   3. Interpolate these values to the meshgrid defined by theta and phi.
-%   4. Calculate the spherical harmonics expansion of the rotated spherical 
-%      function by applying the inverse spherical harmonics transform to 
-%      the interpolated values.
+%   2. Apply the forward spherical harmonics transform to compute the values
+%      of the spherical function on the rotated grid.
+%      These values are the values of the rotated spherical function on the
+%      original grid.
+%   3. Calculate the spherical harmonics expansion of the rotated spherical 
+%      function by applying the inverse spherical harmonics transform to the
+%      computed values.
 % 
 % Input arguments
 %   shc             double      (2*N)^2 x 1 array, 
@@ -56,24 +59,20 @@ function rotatedSHC = rotateSHCInterp(shc, N, rotation, assocLegMat, omega, thet
 %% Rotate SHC
 % Step 1
 [phiMesh, thetaMesh] = meshgrid(phi, theta);
-[x, y, z] = sph2cart2(thetaMesh(:), phiMesh(:), 1);
-rotatedPoints = applyRotation(rotation, [x'; y'; z']);
-[rotatedThetaMesh, rotatedPhiMesh, ~] = cart2sph2(rotatedPoints(1, :), ...
+[x, y, z] = sph2cart2(thetaMesh, phiMesh, 1);
+rotatedPoints = applyRotation(rotation, [x(:)'; y(:)'; z(:)']);
+[rotatedTheta, rotatedPhi, ~] = cart2sph2(rotatedPoints(1, :), ...
                             rotatedPoints(2, :), ...
                             rotatedPoints(3, :));
-rotatedThetaMesh = reshape(rotatedThetaMesh, [length(theta), length(phi)]);
-rotatedPhiMesh = reshape(rotatedPhiMesh, [length(theta), length(phi)]);
 
 % Step 2
-values = fsht(shc, N, assocLegMat, phi);
+assocLegMatRotGrid = assocLegendreMatrices(N, rotatedTheta);
+values = zeros(numel(theta), numel(phi));
+for t=1:length(rotatedTheta)
+    assocLegMatTmp = cellfun(@(A) A(t, :), assocLegMatRotGrid, ...
+        'UniformOutput', false);
+    values(t) = fsht(shc, N, assocLegMatTmp, rotatedPhi(t));
+end
 
 % Step 3
-% TODO: Spherical interpolation doesn't work in the poles. I should have
-% expected that. To use De Rossi, 2010's interpolation.
-% values = griddata(rotatedPhiMesh(:), rotatedThetaMesh(:), values(:), phiMesh, thetaMesh);
-
-% values = scatteredInterpolant(rotatedPhiMesh(:), rotatedThetaMesh(:), values(:));
-% values = values(rotatedPhiMesh, rotatedThetaMesh);
-
-% Step 4
 rotatedSHC = isht(values, N, assocLegMat, omega, phi);
