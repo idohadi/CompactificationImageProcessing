@@ -1,7 +1,7 @@
 function sh = sphericalHarmonics(theta, phi, bandlimit)
 %%
 % Call format
-%   sh = sphericalHarmonics(theta, phi, t)
+%   sh = sphericalHarmonics(theta, phi, bandlimit)
 % 
 % Evaluate at (theta, phi) the spherical harmonics of order 0 to bandlimit 
 % and all degress.
