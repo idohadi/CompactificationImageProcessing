@@ -1,4 +1,6 @@
 function [invertedSHC, rootedResidual, output] = ibispectrum(b, bandlimit)
+% TODO: update the opts
+
 %%
 % Call format
 %   invertedSHC = ibispectrum(b, bandlimit)
