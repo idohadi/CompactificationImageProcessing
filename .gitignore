@@ -2,13 +2,8 @@
 *.mexw64
 *.o
 *.exe
-bin/
 *.mod
 *.a
 *.pdf
 *.mat
-docs/*
-!/docs/*.tex
-!docs/*.bib
 *.asv
-clebsch_gordan/ClebschGordanCoeffs/*
