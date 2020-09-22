@@ -1,4 +1,5 @@
 function CGvec = ClebschGordanCoeffs(l1, l2, l, m)
+% TODO: update docs
 %%
 % Call format
 %   shc = randSHC(bandlimit)
