@@ -1,5 +1,5 @@
 function [invertedSHC, rootedResidual, output] = ibispectrum(b, bandlimit)
-% TODO: update the opts
+% TODO: update the opts and perhaps remove the while loop mechanism
 
 %%
 % Call format
