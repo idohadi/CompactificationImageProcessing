@@ -650,7 +650,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         CGs = mexGetVariablePtr("global", "CGs");
 
         destory_bisp_lookup_table();
-        destroy_CGTable(&cgt, bandlimit);
+        destroy_CGTable(&cgt, previous_bandlimit);
 
         previous_bandlimit = bandlimit;
 
