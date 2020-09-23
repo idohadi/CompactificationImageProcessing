@@ -12,7 +12,7 @@ function im = imageByUpsampling(lowBandlimit, highBandlimit, imageSize, paddingS
 %       lowBandlimit. 
 %   2.  Back-project a region around the north pole to R^2, forming an 
 %       image of size imageSize x imageSize. 
-%   3.  Pad the image with black pixels in all four directions.
+%   3.  Create a margin of black pixels of width paddingSize.
 %   4.  Smooth this image using a Gaussian filter.
 %   5.  Project this image onto the sphere and estimate its spehrical
 %       harmonics coefficients up to bandlimit highBandlimit.
@@ -22,18 +22,18 @@ function im = imageByUpsampling(lowBandlimit, highBandlimit, imageSize, paddingS
 %   lowBandlimit    double      positive integer
 %   highBandlimit   double      positive integer
 %   imageSize       double      positive integer
-%   paddingSize     double      positive integer, the number of black
-%                               pixels to add to each dimension
+%   paddingSize     double      positive integer, the width of the black
+%                               margin.
 % 
 % Defaults
-%   imageSize       150
-%   paddingSize     50
+%   imageSize       101
+%   paddingSize     round(0.2*imageSize)
 %   
 % Output arguments
 %   im              double      the final image
 % 
 % Notes
-%   This function relies heavily on my old code base.
+%   None
 % 
 % Reference
 %   None
@@ -51,10 +51,10 @@ assert(round(lowBandlimit)==lowBandlimit ...
     'Bandlimit must be a positive integer.');
 
 if nargin==2
-    imageSize = 150;
-    paddingSize = 50;
+    imageSize = 101;
+    paddingSize = round(0.2*imageSize);
 elseif nargin==3
-    paddingSize = 50;
+    paddingSize = round(0.2*imageSize);
 end
 assert(round(imageSize)==imageSize ...
     && imageSize>0 ...
@@ -67,13 +67,12 @@ assert(round(paddingSize)==paddingSize ...
 
 %% Image generation
 % Step 1
-shc = randomNormalizedSHC(lowBandlimit, 0);
-shc = r2c(shc, lowBandlimit);
+shc = randSHCReal(lowBandlimit);
 
 % Step 2
 interval = [-0.5, 0.5];
-a = 1.5;
-im = shc2image(shc, lowBandlimit, imageSize, KondorProj(a), interval, interval);
+scalingParam = 1.5;
+im = shc2image(shc, lowBandlimit, imageSize, interval, scalingParam);
 
 % Step 3
 im(1:paddingSize, :) = 0;
@@ -86,9 +85,9 @@ sigma = 5;
 im = imgaussfilt(real(im), sigma);
 
 % Step 5
-td = loadtd('sf050.01302');
-shc = image2shc(im, highBandlimit, td, KondorBackProj(a), interval, interval);
+td = loadtd(2*highBandlimit+2);
+shc = image2shc(im, highBandlimit, td, interval, scalingParam);
 
 % Step 6
-im = shc2image(shc, highBandlimit, imageSize, KondorProj(a), interval, interval);
+im = shc2image(shc, highBandlimit, imageSize, interval, scalingParam);
 im = real(im);
