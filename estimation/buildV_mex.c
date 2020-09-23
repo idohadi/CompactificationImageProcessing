@@ -1,11 +1,10 @@
 /** 
- * TODO: 
- *      (1) Update it to use the new code base for Clbesch-Gordan coeffs
- *      (2) Write better docs
+ * This is a utility function, computing a vector involved in the 
+ * debiasing the power spectrum.
  * 
  * MATLAB call form:
  *      V = buildV_mex(UUH, bandlimit)
- *  UUH = U*(U^*)
+ * where UUH = U*(U^*), where U is defined in the docs of buildU.
  * 
  * NOTE:
  *  Code performs no input checks.
