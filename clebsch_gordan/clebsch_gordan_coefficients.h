@@ -1,5 +1,3 @@
-// TODO: make sure it's correct
-
 #include <stdint.h>
 
 /* Typedef */
