@@ -34,7 +34,6 @@ mxDouble *K;
 
 /* Utility variables */
 blt lookup;
-CGTable cgs;
 size_t previous_bandlimit = 0;
 bool first_run = true;
 
@@ -129,7 +128,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     // Generate output
     plhs[0] = mxCreateDoubleMatrix(szR, lookup[bandlimit][bandlimit][bandlimit][1]+1, mxREAL);
     K = mxGetDoubles(plhs[0]);
-
+    
     // Build K
     double rp, ip; // real part and imaginary part
     for (long l1 = 0; l1<=bandlimit; ++l1)
@@ -146,8 +145,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
                     for (long m = (-l>=m1-l2) ? -l : m1-l2; m<=l && m<=m1+l2; ++m)
                     {
-                        rp += get_cg(&cgs, l1, l2, l, m, m1)*UUH[szC*(l2*(l2+1) + (m-m1)) + (l*(l+1) + m)].real;
-                        ip += get_cg(&cgs, l1, l2, l, m, m1)*UUH[szC*(l2*(l2+1) + (m-m1)) + (l*(l+1) + m)].imag;
+                        rp += get_cg(&cgt, l1, l2, l, m, m1)*UUH[szC*(l2*(l2+1) + (m-m1)) + (l*(l+1) + m)].real;
+                        ip += get_cg(&cgt, l1, l2, l, m, m1)*UUH[szC*(l2*(l2+1) + (m-m1)) + (l*(l+1) + m)].imag;
                     }
 
                     // Real part bisp invariant
@@ -167,8 +166,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
                     for (long m = (-l>=m2-l1) ? -l : m2-l1; m<=l && m<=m2+l1; ++m)
                     {
-                        rp += get_cg(&cgs, l1, l2, l, m, m-m2)*UUH[szC*(l1*(l1+1) + (m-m2)) + (l*(l+1) + m)].real;
-                        ip += get_cg(&cgs, l1, l2, l, m, m-m2)*UUH[szC*(l1*(l1+1) + (m-m2)) + (l*(l+1) + m)].imag;
+                        rp += get_cg(&cgt, l1, l2, l, m, m-m2)*UUH[szC*(l1*(l1+1) + (m-m2)) + (l*(l+1) + m)].real;
+                        ip += get_cg(&cgt, l1, l2, l, m, m-m2)*UUH[szC*(l1*(l1+1) + (m-m2)) + (l*(l+1) + m)].imag;
                     }
 
                     // Real part bisp invariant
@@ -188,8 +187,8 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
                     for (long m1 = (-l1>=m-l2) ? -l1 : m-l2; m1<=l1 && m1<=m+l2; ++m1)
                     {
-                        rp += get_cg(&cgs, l1, l2, l, m, m1)*UUT[szC*(l2*(l2+1) + (m-m1)) + (l1*(l1+1) + m1)].real;
-                        ip -= get_cg(&cgs, l1, l2, l, m, m1)*UUT[szC*(l2*(l2+1) + (m-m1)) + (l1*(l1+1) + m1)].imag;
+                        rp += get_cg(&cgt, l1, l2, l, m, m1)*UUT[szC*(l2*(l2+1) + (m-m1)) + (l1*(l1+1) + m1)].real;
+                        ip -= get_cg(&cgt, l1, l2, l, m, m1)*UUT[szC*(l2*(l2+1) + (m-m1)) + (l1*(l1+1) + m1)].imag;
                     }
 
                     // Real part bisp invariant
