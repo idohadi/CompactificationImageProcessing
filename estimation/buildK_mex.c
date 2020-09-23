@@ -102,7 +102,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         previous_bandlimit = bandlimit;
         first_run = false;
     }
-
+    
     // Handle chagne in bandlimit between runs
     if (previous_bandlimit!=bandlimit)
     {
