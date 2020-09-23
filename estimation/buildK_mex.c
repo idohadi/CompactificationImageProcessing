@@ -28,7 +28,7 @@ mxComplexDouble *UUH;
 mxComplexDouble *UUT;
 
 CGTable cgt;
-mxArray *CGs;
+const mxArray *CGs;
 
 /* Output variables */
 mxDouble *K;
