@@ -1,12 +1,10 @@
 function CGvec = ClebschGordanCoeffs(l1, l2, l, m)
-% TODO: update docs
 %%
 % Call format
-%   shc = randSHC(bandlimit)
-%   shc = randSHC(bandlimit, N)
+%   CGvec = ClebschGordanCoeffs(l1, l2, l, m)
 % 
 % Calculate the Clebsch-Gordan coefficeints of order (l1, l2, l, m), where
-%   l1>=0, l2>=, abs(l1-l2)<=l<=l1+l2, abs(m)<=l.
+%   l1>=0, l2>=0, abs(l1-l2)<=l<=l1+l2, abs(m)<=l.
 % 
 % Input arguments
 %   l1, l2, l, m        double      integers, representing the order of the
@@ -36,6 +34,7 @@ function CGvec = ClebschGordanCoeffs(l1, l2, l, m)
 % Email     idohadi@mail.tau.ac.il
 % Year      2020
 % ***********************************************************
+
 %% Input validation
 assert(l1>=0 && l2>=0, 'l1 and l2 must be non-negative.');
 assert(abs(l1-l2)<=l && l<=l1+l2, ...
