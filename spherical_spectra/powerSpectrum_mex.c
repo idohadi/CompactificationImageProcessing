@@ -1,5 +1,3 @@
-// TODO: plan the new version
-
 /** 
  * Calculate the bispectrum and its gradient.
  * 
