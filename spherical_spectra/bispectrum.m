@@ -1,8 +1,8 @@
 function [b, grad] = bispectrum(shc, bandlimit)
 %%
 % Call format
-%   b = bispectrum(shc, bandlimit, CGTable)
-%   [b, grad] = bispectrum(shc, bandlimit, CGTable)
+%   b = bispectrum(shc, bandlimit)
+%   [b, grad] = bispectrum(shc, bandlimit)
 % 
 % Calculate the bispectrum and the gradient of the spherical harmonice
 % coefficients.
