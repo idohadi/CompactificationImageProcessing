@@ -1,6 +1,6 @@
 include make.inc
 
-EXTERNAL = 	SmallRotationToolbox
+EXTERNAL = 	SmallRotationToolbox 
 
 MEXFILES = 	normSHC_mex \
 			ClebschGordanCoeffs_mex \
@@ -9,11 +9,11 @@ MEXFILES = 	normSHC_mex \
 			powerSpectrum_mex
 #TODO: add the estimation mex funcs once I update their Clebsch-Gordan code base
 			
-all : EXTERNAL MEXFILES
+all : $(EXTERNAL) $(MEXFILES)
 
 # External repos	
 SmallRotationToolbox :
-	$(make) -C extern/SmallRotationToolbox
+	$(MAKE) -C $(CURDIR)/extern/SmallRotationToolbox
 	
 
 # MEX files
