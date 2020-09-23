@@ -1,11 +1,10 @@
 /** 
- * TODO: 
- *      (1) Update it to use the new code base for Clbesch-Gordan coeffs
- *      (2) Write better docs
+ * Compute K. See buildK docs for better description of it.
  * 
  * MATLAB call form:
- *      K1 = buildK_mex(UUH, UUT, bandlimit)
- *  UUH = U*(U^*) and UUT = U*(U^T)
+ *      K = buildK_mex(UUH, UUT, bandlimit)
+ * where UUH = U*(U^*) and UUT = U*(U^T). U is described in
+ * the docs of buildU.
  * 
  * NOTE:
  *  Code performs no input checks.

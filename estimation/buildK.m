@@ -3,7 +3,7 @@ function K = buildK(bandlimit, U)
 % Call format
 %   K = buildK(bandlimit, U)
 % 
-% Compute the matrix V for which
+% Compute the matrix K for which
 %           1    N  (                                                                         )
 %   psEst = - * sum ( bispectrum(n-th sample SHC) - sigma^2 * K * (realified n-th sample SHC) )
 %           N   n=1 (                                                                         )
