@@ -46,8 +46,8 @@ R2x = R2x(tDesignInCube);
 R2y = R2y(tDesignInCube);
 
 % Creating a grid
-X = linspace(interval{:}, imageSize); 
-Y = linspace(interval{:}, imageSize);
+X = linspace(interval(1), interval(2), imageSize); 
+Y = linspace(interval(1), interval(2), imageSize);
 [X, Y] = meshgrid(X, Y);
 
 % Value for extrapulation outside interval^2
