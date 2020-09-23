@@ -1,19 +1,58 @@
-function U = buildU(L, td, xsupp, ysupp, im_w, im_h, back_proj)
-% TODO: docs and update the variable names to my current convention and
-% also update the notations
+function U = buildU(bandlimit, imageSize, tDesign, interval, scalingParam)
+%%
+% Call format
+%   U = buildU(bandlimit, imageSize, tDesign, interval, scalingParam)
+% 
+% Compute the vector U which satisfies
+%                           4*pi                          ( t-design points      )
+%   U = SHC(image) = ---------------- * sphericalHarmonics( back-projected to    ) * P
+%                    size(tDesign, 2)                     ( the cube interval^2  )
+% where P is the interpolation operator computed by interp2linop.
+% That is, U is the operator sending an image of size imageSize x imageSize
+% to its spherical harmonics coefficients of order up to bandlimit.
+% 
+% Input arguments
+%   bandlimit       double      positive integer, the bandlimit of the 
+%                               sampled SHCs.
+%   imageSize       double      positive integer, the image is of size 
+%                                   imageSize x imageSize.
+%   tDesign         double      N x 3 array, a spherical design (a 
+%                               t-design) in Cartesian coordiantes.
+%   interval        double      1 x 2 array, interval(1) is the lower bound
+%                               of the interval and interval(2).
+%   scalingParam    double      positive number, scaling parameter for 
+%                               the projection.
+%   
+% Output arguments
+%   U               double      (bandlimit+1)^2 x (imageSize^2) sparse 
+%                               array, the matrix described above.
+% 
+% Notes
+%   This function performs no input checks.
+% 
+% Reference
+%   None
+% ***********************************************************
+% Author    Ido Hadi
+% Email     idohadi@mail.tau.ac.il
+% Year      2020
+% ***********************************************************
 
-% Back-project t-design onto R^2
-[theta_sp_td, phi_sp_td] = sphcart2sph(td(:, 1), td(:, 2), td(:, 3));
-[r_R2_td, phi_R2_td] = back_proj(theta_sp_td, phi_sp_td);
-[x_R2_td, y_R2_td] = pol2cartm(r_R2_td, phi_R2_td);
+%% Compute U
+% t-design in spherical coordinates
+[tDesignTheta, tDesignPhi, ~] ...
+    = cart2sph2(tDesign(:, 1), tDesign(:, 2), tDesign(:, 3));
+[R2phi, R2rho] = KondorBackProj(tDesignTheta, tDesignPhi, scalingParam);
+[R2x, R2y] = pol2cart2(R2phi, R2rho);
 
-% Isolating t-design points falling within the support, defined by xsupp and ysupp
-td_g = x_R2_td>=xsupp(1) & x_R2_td<=xsupp(2) & y_R2_td>=ysupp(1) & y_R2_td<=ysupp(2);
-theta_sp_td = theta_sp_td(td_g);
-phi_sp_td = phi_sp_td(td_g);
+% Isolating t-design points falling within interval^2
+tDesignInCube = R2x>=interval(1) & R2x<=interval(2) ...
+    & R2y>=interval(1) & R2y<=interval(2);
 
-Yt = evalYt(theta_sp_td, phi_sp_td, L);
+% Compute the spherical harmonics matrix
+sh = sphericalHarmonics(tDesignTheta(tDesignInCube), ...
+    tDesignPhi(tDesignInCube), ...
+    bandlimit);
 
-U = 4*pi*conj(Yt)*interp2linop(td, xsupp, ysupp, im_w, im_h, back_proj)/size(td, 1);
-
+U = (4*pi/size(tDesign, 1))*conj(sh)*interp2linop(imageSize, tDesign, interval, scalingParam);
 U = sparse(U);
