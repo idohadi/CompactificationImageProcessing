@@ -54,5 +54,6 @@ sh = sphericalHarmonics(tDesignTheta(tDesignInCube), ...
     tDesignPhi(tDesignInCube), ...
     bandlimit);
 
+% Compute U itself
 U = (4*pi/size(tDesign, 1))*conj(sh)*interp2linop(imageSize, tDesign, interval, scalingParam);
 U = sparse(U);
