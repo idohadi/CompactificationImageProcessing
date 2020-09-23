@@ -13,65 +13,73 @@
 
 
 #include <stdint.h>
-#include "mex.h"
-#include "clebsch_gordan_coefficients.h"
+#include "clebsch_gordan_mex.h"
 
+/* Typedefs */
 typedef enum PART {REAL_PART, IMAG_PART} PART;
-typedef size_t **** c_bispectrum_lookout_table;
-typedef c_bispectrum_lookout_table c_blt;
 
-bool first_run = true;
+typedef size_t **** bispectrum_lookup_table;
+typedef bispectrum_lookup_table blt;
 
-c_blt lookup;
-cg_table cgs;
 
-size_t bandlimit = 0;
-size_t previous_bandlimit = 0;
-
+/* Input variables */
+size_t bandlimit;
 mxComplexDouble *UUH;
 mxComplexDouble *UUT;
 
+CGTable cgt;
+mxArray *CGs;
+
+/* Output variables */
 mxDouble *K;
 
-c_blt c_build_bispectrum_lookup_table(size_t bandlimit)
-{
-    size_t index = 0; 
+/* Utility variables */
+blt lookup;
+CGTable cgs;
+size_t previous_bandlimit = 0;
+bool first_run = true;
 
-    size_t ****lookup_table = malloc((bandlimit+1)*sizeof(size_t ***));
+
+/* utility functions */
+void build_bisp_lookup_table()
+{
+    size_t index = 0;
+
+    lookup = malloc((bandlimit+1)*sizeof(size_t ***));
+
     for (long l1 = 0; l1<=bandlimit; ++l1)
     {
-        lookup_table[l1] = malloc((l1+1)*sizeof(size_t **));
-        for (long l2=0; l2<=l1; ++l2)
+        lookup[l1] = malloc((l1+1)*sizeof(size_t **));
+        for (long l2 = 0; l2<=l1; ++l2)
         {
-            lookup_table[l1][l2] = malloc((((l1+l2)>=bandlimit ? bandlimit : l1+l2)  - (l1>=l2 ? l1-l2 : l2-l1) + 1)*sizeof(size_t *));
-            for (long l = (l1>=l2 ? l1-l2 : l2-l1); l<=l1+l2 && l<=bandlimit; ++l)
+            lookup[l1][l2] = malloc((((l1+l2)>=bandlimit ? bandlimit : l1+l2)  - (l1-l2) + 1)*sizeof(size_t *));
+            for (long l = l1-l2; l<=l1+l2 && l<=bandlimit; ++l)
             {
-                lookup_table[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)] = malloc(2*sizeof(size_t));
-                lookup_table[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)][0] = index++;
-                lookup_table[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)][1] = index++;
+                lookup[l1][l2][l - (l1-l2)] = malloc(2*sizeof(size_t));
+                lookup[l1][l2][l - (l1-l2)][0] = index++;
+                lookup[l1][l2][l - (l1-l2)][1] = index++;
             }
         }
     }
-    return lookup_table;
 }
 
-void c_destroy_bispectrum_lookup_table(c_blt table, size_t bandlimit)
+
+void destory_bisp_lookup_table()
 {
-    for (long l1 = 0; l1<=bandlimit; ++l1)
+    for (long l1 = 0; l1<=previous_bandlimit; ++l1)
     {
-        for (long l2=0; l2<=l1; ++l2)
+        for (long l2 = 0; l2<=l1; ++l2)
         {
-            for (long l = (l1>=l2 ? l1-l2 : l2-l1); l<=l1+l2 && l<=bandlimit; ++l)
+            for (long l = l1-l2; l<=l1+l2 && l<=previous_bandlimit; ++l)
             {
-                free(table[l1][l2][l - (l1>=l2 ? l1-l2 : l2-l1)]);
+                free(lookup[l1][l2][l - (l1-l2)]);
             }
-            free(table[l1][l2]);
+            free(lookup[l1][l2]);
         }
-        free(table[l1]);
+        free(lookup[l1]);
     }
-    free(table);
+    free(lookup);
 }
-
 
 void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 {
@@ -83,38 +91,44 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     // Handle first run
     if (first_run == true)
     {
-        mexPrintf("First run. Initializing Clebsch-Gordan coefficients and bispectrum lookup table.\n");
+        build_bisp_lookup_table();
+
+        mxArray *inputMxArray[1];
+        inputMxArray[0] = mxCreateDoubleScalar(bandlimit);
+        mexCallMATLAB(0, NULL, 1, inputMxArray, "loadCGTable");
+
+        CGs = mexGetVariablePtr("global", "CGs");
+        create_CGTable(&cgt, CGs, bandlimit);
+
         previous_bandlimit = bandlimit;
-        cgs = allocate_cg_table(bandlimit);
-        calculate_cg_table(bandlimit, &cgs);
-        lookup = c_build_bispectrum_lookup_table(bandlimit);
-        mexPrintf("Initialization completed.\n");
         first_run = false;
     }
 
     // Handle chagne in bandlimit between runs
     if (previous_bandlimit!=bandlimit)
     {
-        mexPrintf("Bandlimit chagned. Reinitializing Clebsch-Gordan coefficients and bispectrum lookup table.\n");
-        // Destroying the lookup tables and Clebsch-Gordan table
-        destroy_cg_table(&cgs);
-        c_destroy_bispectrum_lookup_table(lookup, previous_bandlimit);
+        mxArray *inputMxArray[1];
+        inputMxArray[0] = mxCreateDoubleScalar(bandlimit);
+        mexCallMATLAB(0, NULL, 1, inputMxArray, "loadCGTable");
 
-        // Generate new tables
+        CGs = mexGetVariablePtr("global", "CGs");
+
+        destory_bisp_lookup_table();
+        destroy_CGTable(&cgt, bandlimit);
+
         previous_bandlimit = bandlimit;
-        cgs = allocate_cg_table(bandlimit);
 
-        calculate_cg_table(bandlimit, &cgs);
-        lookup = c_build_bispectrum_lookup_table(bandlimit);
-
-        mexPrintf("Reinitialization completed.\n");
+        build_bisp_lookup_table();
+        create_CGTable(&cgt, CGs, bandlimit);
     }
 
+    // Size of list of spehrical harmonics coefficeints (complex) of bandlimit bandlimit
+    long szC = (bandlimit+1)*(bandlimit+1);
+    // Size of list of spehrical harmonics coefficeints (realified) of bandlimit bandlimit
+    long szR = 2*(bandlimit+1)*(bandlimit+1); 
+
     // Generate output
-    // TODO: improve sz,sz2 convention and use below, so as to make code clearer
-    long sz = 2*(bandlimit+1)*(bandlimit+1);
-    long sz2 = (bandlimit+1)*(bandlimit+1);
-    plhs[0] = mxCreateDoubleMatrix(sz, lookup[bandlimit][bandlimit][bandlimit][1]+1, mxREAL);
+    plhs[0] = mxCreateDoubleMatrix(szR, lookup[bandlimit][bandlimit][bandlimit][1]+1, mxREAL);
     K = mxGetDoubles(plhs[0]);
 
     // Build K
@@ -133,17 +147,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
                     for (long m = (-l>=m1-l2) ? -l : m1-l2; m<=l && m<=m1+l2; ++m)
                     {
-                        rp += get_cg(&cgs, l1, l2, l, m, m1)*UUH[sz2*(l2*(l2+1) + (m-m1)) + (l*(l+1) + m)].real;
-                        ip += get_cg(&cgs, l1, l2, l, m, m1)*UUH[sz2*(l2*(l2+1) + (m-m1)) + (l*(l+1) + m)].imag;
+                        rp += get_cg(&cgs, l1, l2, l, m, m1)*UUH[szC*(l2*(l2+1) + (m-m1)) + (l*(l+1) + m)].real;
+                        ip += get_cg(&cgs, l1, l2, l, m, m1)*UUH[szC*(l2*(l2+1) + (m-m1)) + (l*(l+1) + m)].imag;
                     }
 
                     // Real part bisp invariant
-                    K[sz*lookup[l1][l2][l - (l1-l2)][REAL_PART] + 2*(l1*(l1+1) + m1)] += rp;    // Real part SHC
-                    K[sz*lookup[l1][l2][l - (l1-l2)][REAL_PART] + 2*(l1*(l1+1) + m1)+1] += ip;  // Imag part SHC
+                    K[szR*lookup[l1][l2][l - (l1-l2)][REAL_PART] + 2*(l1*(l1+1) + m1)] += rp;    // Real part SHC
+                    K[szR*lookup[l1][l2][l - (l1-l2)][REAL_PART] + 2*(l1*(l1+1) + m1)+1] += ip;  // Imag part SHC
                     
                     // Imag part bisp invariant
-                    K[sz*lookup[l1][l2][l - (l1-l2)][IMAG_PART] + 2*(l1*(l1+1) + m1)] += ip;    // Real part SHC
-                    K[sz*lookup[l1][l2][l - (l1-l2)][IMAG_PART] + 2*(l1*(l1+1) + m1)+1] -= rp;   // Imag part SHC
+                    K[szR*lookup[l1][l2][l - (l1-l2)][IMAG_PART] + 2*(l1*(l1+1) + m1)] += ip;    // Real part SHC
+                    K[szR*lookup[l1][l2][l - (l1-l2)][IMAG_PART] + 2*(l1*(l1+1) + m1)+1] -= rp;   // Imag part SHC
                 }
 
                 // K2
@@ -154,17 +168,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
                     for (long m = (-l>=m2-l1) ? -l : m2-l1; m<=l && m<=m2+l1; ++m)
                     {
-                        rp += get_cg(&cgs, l1, l2, l, m, m-m2)*UUH[sz2*(l1*(l1+1) + (m-m2)) + (l*(l+1) + m)].real;
-                        ip += get_cg(&cgs, l1, l2, l, m, m-m2)*UUH[sz2*(l1*(l1+1) + (m-m2)) + (l*(l+1) + m)].imag;
+                        rp += get_cg(&cgs, l1, l2, l, m, m-m2)*UUH[szC*(l1*(l1+1) + (m-m2)) + (l*(l+1) + m)].real;
+                        ip += get_cg(&cgs, l1, l2, l, m, m-m2)*UUH[szC*(l1*(l1+1) + (m-m2)) + (l*(l+1) + m)].imag;
                     }
 
                     // Real part bisp invariant
-                    K[sz*lookup[l1][l2][l - (l1-l2)][REAL_PART] + 2*(l2*(l2+1) + m2)] += rp;    // Real part SHC
-                    K[sz*lookup[l1][l2][l - (l1-l2)][REAL_PART] + 2*(l2*(l2+1) + m2)+1] += ip;  // Imag part SHC
+                    K[szR*lookup[l1][l2][l - (l1-l2)][REAL_PART] + 2*(l2*(l2+1) + m2)] += rp;    // Real part SHC
+                    K[szR*lookup[l1][l2][l - (l1-l2)][REAL_PART] + 2*(l2*(l2+1) + m2)+1] += ip;  // Imag part SHC
                     
                     // Imag part bisp invariant
-                    K[sz*lookup[l1][l2][l - (l1-l2)][IMAG_PART] + 2*(l2*(l2+1) + m2)] += ip;    // Real part SHC
-                    K[sz*lookup[l1][l2][l - (l1-l2)][IMAG_PART] + 2*(l2*(l2+1) + m2)+1] -= rp;   // Imag part SHC
+                    K[szR*lookup[l1][l2][l - (l1-l2)][IMAG_PART] + 2*(l2*(l2+1) + m2)] += ip;    // Real part SHC
+                    K[szR*lookup[l1][l2][l - (l1-l2)][IMAG_PART] + 2*(l2*(l2+1) + m2)+1] -= rp;   // Imag part SHC
                 }
 
                 // K3
@@ -175,17 +189,17 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 
                     for (long m1 = (-l1>=m-l2) ? -l1 : m-l2; m1<=l1 && m1<=m+l2; ++m1)
                     {
-                        rp += get_cg(&cgs, l1, l2, l, m, m1)*UUT[sz2*(l2*(l2+1) + (m-m1)) + (l1*(l1+1) + m1)].real;
-                        ip -= get_cg(&cgs, l1, l2, l, m, m1)*UUT[sz2*(l2*(l2+1) + (m-m1)) + (l1*(l1+1) + m1)].imag;
+                        rp += get_cg(&cgs, l1, l2, l, m, m1)*UUT[szC*(l2*(l2+1) + (m-m1)) + (l1*(l1+1) + m1)].real;
+                        ip -= get_cg(&cgs, l1, l2, l, m, m1)*UUT[szC*(l2*(l2+1) + (m-m1)) + (l1*(l1+1) + m1)].imag;
                     }
 
                     // Real part bisp invariant
-                    K[sz*lookup[l1][l2][l - (l1-l2)][REAL_PART] + 2*(l*(l+1) + m)] += rp;    // Real part SHC
-                    K[sz*lookup[l1][l2][l - (l1-l2)][REAL_PART] + 2*(l*(l+1) + m)+1] -= ip;  // Imag part SHC
+                    K[szR*lookup[l1][l2][l - (l1-l2)][REAL_PART] + 2*(l*(l+1) + m)] += rp;    // Real part SHC
+                    K[szR*lookup[l1][l2][l - (l1-l2)][REAL_PART] + 2*(l*(l+1) + m)+1] -= ip;  // Imag part SHC
                     
                     // Imag part bisp invariant
-                    K[sz*lookup[l1][l2][l - (l1-l2)][IMAG_PART] + 2*(l*(l+1) + m)] += ip;    // Real part SHC
-                    K[sz*lookup[l1][l2][l - (l1-l2)][IMAG_PART] + 2*(l*(l+1) + m)+1] += rp;   // Imag part SHC
+                    K[szR*lookup[l1][l2][l - (l1-l2)][IMAG_PART] + 2*(l*(l+1) + m)] += ip;    // Real part SHC
+                    K[szR*lookup[l1][l2][l - (l1-l2)][IMAG_PART] + 2*(l*(l+1) + m)+1] += rp;   // Imag part SHC
                 }
 
             }
