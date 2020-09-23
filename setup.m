@@ -5,14 +5,19 @@
 cd(p1);
 
 %% Run external setup files
-run(fullfile(p1, 'extern', 'FastSphericalHarmonicsTransform', 'setup.m'));
 run(fullfile(p1, 'extern', 'SmallRotationToolbox', 'setup.m'));
 
 %% Adds the necessary folders to path
 addpath(p1);
-addpath(genpath(fullfile(p1, 'alignment')));
-addpath(genpath(fullfile(p1, 'clebsch_gordan')));
-addpath(genpath(fullfile(p1, 'spherical_harmonics')));
-addpath(genpath(fullfile(p1, 'spherical_spectra')));
-addpath(genpath(fullfile(p1, 'inversion')));
-addpath(genpath(fullfile(p1, 'compactification')));
+dirs = {'alignment', ...
+    'clebsch_gordan', ...
+    'compactification', ...
+    'estimation', ...
+    'image_generation', ...
+    'inversion', ...
+    'spherical_harmonics', ...
+    'spherical_spectra', ...
+    't_design'};
+for J=1:length(dirs)
+    addpath(genpath(fullfile(p1, dirs{J})));
+end
