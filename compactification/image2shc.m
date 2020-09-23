@@ -1,4 +1,4 @@
-function shc = im2shc(im, evalPoints, N, assocLegMat, omega, phi)
+function shc = image2shc(im, evalPoints, N, assocLegMat, omega, phi)
 % TODO: update docs, remove dependency on fast fourier transform, change
 % name to image2shc.
 
