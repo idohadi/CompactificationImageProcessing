@@ -40,8 +40,8 @@ function P = interp2linop(imageSize, tDesign, interval, scalingParam)
 [R2x, R2y] = pol2cart2(R2phi, R2rho);
 
 % Isolating t-design points falling within interval^2
-tDesignInCube = R2x>=interval(1) && R2x<=interval(2) ...
-    && R2y>=interval(1) && R2y<=interval(2);
+tDesignInCube = R2x>=interval(1) & R2x<=interval(2) ...
+    & R2y>=interval(1) & R2y<=interval(2);
 R2x = R2x(tDesignInCube);
 R2y = R2y(tDesignInCube);
 
