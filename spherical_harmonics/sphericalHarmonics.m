@@ -19,17 +19,12 @@ function sh = sphericalHarmonics(theta, phi, bandlimit)
 % 
 %   Spherical harmonics of order l (0<=l<=bandlimit) and degree m (-l<=m<=l):
 %   
-%                                   ( 2l+1   (l-m)! )^(1/2)
-%       Y_{l}^{m} (theta, phi) =    ( ---- * ------ )       * exp(i*m*phi) * P_{l}^{m} (cos(theta))
-%                                   ( 4*pi   (l+m)! )
+%                                         ( 2l+1   (l-m)! )^(1/2)
+%       Y_{l}^{m} (theta, phi) = (-1)^m * ( ---- * ------ )       * exp(i*m*phi) * P_{l}^{m} (cos(theta))
+%                                         ( 4*pi   (l+m)! )
 %   
 %   where P_{l}^{m} (x) is the associated Legendre polynomial of order l
 %   and degree m.
-%       
-%   TODO: make sure the code below actually computes this. There is a
-%   chance I could save up on computing some of the factorials if I adopt
-%   this (Varshalovic's) convention.
-% 
 % 
 % Input arguments
 %   theta       double      N-element array
@@ -42,8 +37,8 @@ function sh = sphericalHarmonics(theta, phi, bandlimit)
 % 
 % Notes
 %   (1) The code performs no input checks.
-%   (2) TODO: refer to the book by Varshalovich about the convention of
-%   spherical harmonics I used.
+%   (2) The convention I used is almost the convention used in [1] (Chp. 5,
+%       section 5.2, eq. (1), p. 133). I added the (-1)^m.
 % 
 % Reference
 %   [1] Varshalovich, D. A., Moskalev, A. N., & Khersonskii, V. K. (1988). 
