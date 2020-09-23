@@ -50,10 +50,10 @@ buildK_mex :
 clean : clean_o clean_mex clean_external
 	
 clean_o :
-	rm -f *.o
+	find . -name "*.o" -type f -delete
 	
 clean_mex :
-	rm -f *.mexw64
+	find . -name "*.mex*" -type f -delete
 	
 clean_external :
 	$(MAKE) clean -C $(CURDIR)/extern/SmallRotationToolbox
