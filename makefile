@@ -1,17 +1,17 @@
 include make.inc
 
-EXTERNAL = 	FastSphericalHarmonicsTransform \
-			SmallRotationToolbox
+EXTERNAL = 	SmallRotationToolbox
 
 MEXFILES = 	normSHC_mex \
-			ClebschGordanCoeffs_mex
-
+			ClebschGordanCoeffs_mex \
+			buildCGTable_mex \
+			bispectrum_mex \
+			powerSpectrum_mex
+#TODO: add the estimation mex funcs once I update their Clebsch-Gordan code base
+			
 all : EXTERNAL MEXFILES
 
-# External repos
-FastSphericalHarmonicsTransform :
-	$(make) -C extern/FastSphericalHarmonicsTransform
-	
+# External repos	
 SmallRotationToolbox :
 	$(make) -C extern/SmallRotationToolbox
 	
@@ -38,15 +38,23 @@ powerSpectrum_mex :
 bispectrum_mex : 
 	$(MEX) $(MATLABFLAGSBISP) spherical_spectra/bispectrum_mex.c -outdir spherical_spectra/
 
-#TODO: add the estimation code
+buildV_mex : 
+	$(MEX) $(MATLABFLAGS) estimation/buildV_mex.c -outdir estimation/
+	
+buildK_mex : 
+	$(MEX) $(MATLABFLAGS) estimation/buildK_mex.c -outdir estimation/
+	
 
 # Cleaning rules
 .PHONY : clean
-clean : clean_mex clean_external
+clean : clean_o clean_mex clean_external
+	
+clean_o :
+	rm -f *.o
 	
 clean_mex :
 	rm -f *.mexw64
 	
 clean_external :
 	$(MAKE) clean -C $(CURDIR)/extern/SmallRotationToolbox
-	$(MAKE) clean -C $(CURDIR)/extern/FastSphericalHarmonicsTransform
+	
