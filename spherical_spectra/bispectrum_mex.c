@@ -31,7 +31,7 @@
   */
 
 #include <stdint.h>
-#include "mex.h"
+#include "clebsch_gordan_mex.h"
 
 
 /* Typedefs */
@@ -40,8 +40,6 @@ typedef enum PART {REAL_PART, IMAG_PART} PART;
 typedef size_t **** bispectrum_lookup_table;
 typedef bispectrum_lookup_table blt;
 
-typedef double ***** CGTable;
-
 
 /* Input variables */
 mxComplexDouble *shc;
@@ -49,7 +47,7 @@ size_t bandlimit;
 size_t nthreads;
 
 CGTable cgt;
-const mxArray *CGs;
+mxArray *CGs;
 
 /* Output variables */
 double *b;
@@ -137,59 +135,6 @@ void destory_bisp_lookup_table()
     free(lookup);
 }
 
-
-void create_CGTable()
-{
-    mxArray *temp[3];
-
-    cgt = malloc((bandlimit+1)*sizeof(double ****));
-
-    for (long l1 = 0; l1<=bandlimit; ++l1)
-    {
-        temp[0] = mxGetCell(CGs, l1);
-        cgt[l1] = malloc((l1+1)*sizeof(double ***));
-
-        for (long l2 = 0; l2<=l1; ++l2)
-        {
-            temp[1] = mxGetCell(temp[0], l2);
-            cgt[l1][l2] = malloc(((l1+l2>=bandlimit ? bandlimit : l1+l2) - (l1-l2) + 1)*sizeof(double **));
-
-            for (long l = l1-l2; l<=l1+l2 && l<=bandlimit; ++l)
-            {
-                temp[2] = mxGetCell(temp[1], l-(l1-l2));
-                cgt[l1][l2][l-(l1-l2)] = malloc((2*l+1)*sizeof(double *));
-
-                for (long m = -l; m<=l; ++m)
-                {
-                    cgt[l1][l2][l-(l1-l2)][m+l] = mxGetDoubles(mxGetCell(temp[2], m+l));
-                }
-            }
-        }
-    }
-}
-
-void destroy_CGTable()
-{
-    for (long l1 = 0; l1<=previous_bandlimit; ++l1)
-    {
-        for (long l2 = 0; l2<=l1; ++l2)
-        {
-            for (long l = l1-l2; l<=l1+l2 && l<=previous_bandlimit; ++l)
-            {
-                free(cgt[l1][l2][l-(l1-l2)]);
-            }
-            free(cgt[l1][l2]);
-        }
-        free(cgt[l1]);
-    }
-    free(cgt);
-}
-
-double get_cg(const long l1, const long l2, const long l, const long m, const long m1)
-{
-    return cgt[l1][l2][l-(l1>=l2 ? l1-l2 : l2-l1)][m+l][m1-((m-l2<=-l1) ? -l1 : m-l2)];
-}
-
 mxComplexDouble get_shc(const long l, const long m)
 {
     return shc[l*(l+1)+m];
@@ -233,10 +178,10 @@ void bisp()
                     
                     for (long m1 = maximum(-l1, m-l2); m1<=minimum(l1, m+l2); ++m1)
                     {
-                        b_real += get_cg(l1, l2, l, m, m1) 
+                        b_real += get_cg(&cgt, l1, l2, l, m, m1) 
                                     * (get_shc(l1, m1).real * get_shc(l2, m-m1).real 
                                         - get_shc(l1, m1).imag * get_shc(l2, m-m1).imag);
-                        b_imag += - get_cg(l1, l2, l, m, m1) 
+                        b_imag += - get_cg(&cgt, l1, l2, l, m, m1) 
                                     * (get_shc(l1, m1).real * get_shc(l2, m-m1).imag 
                                         + get_shc(l1, m1).imag * get_shc(l2, m-m1).real);
                     }
@@ -254,10 +199,10 @@ void calc_l_sum(const long l1, const long l2, const long l, const long n, double
 {
     for (long m1 = maximum(-l1, n-l2); m1<=minimum(l1, n+l2); ++m1)
     {
-        *l_sum_real += get_cg(l1, l2, l, n, m1) *
+        *l_sum_real += get_cg(&cgt, l1, l2, l, n, m1) *
                         (get_shc(l1, m1).real * get_shc(l2, n-m1).real 
                         - get_shc(l1, m1).imag * get_shc(l2, n-m1).imag);
-        *l_sum_imag += -get_cg(l1, l2, l, n, m1) *
+        *l_sum_imag += -get_cg(&cgt, l1, l2, l, n, m1) *
                         (get_shc(l1, m1).imag * get_shc(l2, n-m1).real
                         + get_shc(l1, m1).real * get_shc(l2, n-m1).imag);
     }
@@ -268,10 +213,10 @@ void calc_l1_sum(const long l1, const long l2, const long l, const long n, doubl
 {
     for (long m = maximum(-l, n-l2); m<=minimum(l, n+l2); ++m)
     {
-        *l1_sum_real += get_cg(l1, l2, l, m, n) *
+        *l1_sum_real += get_cg(&cgt, l1, l2, l, m, n) *
                         (get_shc(l, m).real * get_shc(l2, m-n).real 
                         + get_shc(l, m).imag * get_shc(l2, m-n).imag);
-        *l1_sum_imag += get_cg(l1, l2, l, m, n) *
+        *l1_sum_imag += get_cg(&cgt, l1, l2, l, m, n) *
                         (get_shc(l, m).imag * get_shc(l2, m-n).real
                         - get_shc(l, m).real * get_shc(l2, m-n).imag);
     }
@@ -282,10 +227,10 @@ void calc_l2_sum(const long l1, const long l2, const long l, const long n, doubl
 {
     for (long m = maximum(-l, n-l1); m<=minimum(l, n+l1); ++m)
     {
-        *l2_sum_real += get_cg(l1, l2, l, m, m-n) *
+        *l2_sum_real += get_cg(&cgt, l1, l2, l, m, m-n) *
                         (get_shc(l, m).real * get_shc(l1, m-n).real 
                         + get_shc(l, m).imag * get_shc(l1, m-n).imag);
-        *l2_sum_imag += get_cg(l1, l2, l, m, m-n) *
+        *l2_sum_imag += get_cg(&cgt, l1, l2, l, m, m-n) *
                         (get_shc(l, m).imag * get_shc(l1, m-n).real
                         - get_shc(l, m).real * get_shc(l1, m-n).imag);
     }
@@ -689,7 +634,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         mexCallMATLAB(0, NULL, 1, inputMxArray, "loadCGTable");
 
         CGs = mexGetVariablePtr("global", "CGs");
-        create_CGTable();
+        create_CGTable(&cgt, CGs, bandlimit);
 
         previous_bandlimit = bandlimit;
         first_run = false;
@@ -705,12 +650,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         CGs = mexGetVariablePtr("global", "CGs");
 
         destory_bisp_lookup_table();
-        destroy_CGTable();
+        destroy_CGTable(&cgt, bandlimit);
 
         previous_bandlimit = bandlimit;
 
         build_bisp_lookup_table();
-        create_CGTable();
+        create_CGTable(&cgt, CGs, bandlimit);
     }
 
     // Create output
