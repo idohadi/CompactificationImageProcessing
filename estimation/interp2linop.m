@@ -1,17 +1,17 @@
-function P = interp2linop(tDesign, imageSize, interval, scalingParam)
+function P = interp2linop(imageSize, tDesign, interval, scalingParam)
 %%
 % Call format
-%   P = interp2linop(tDesign, imageSize, interval, scalingParam)
+%   P = interp2linop(imageSize, tDesign, interval, scalingParam)
 % 
 % Compute the linear operator P satisfying 
 %   P I = 2dInterpolation(KondorBackProjection(tDesign) points in the cube inerval^2)
 % where I is an image.
 % 
 % Input arguments
-%   tDesign         double      N x 3 array, a spherical design (a 
-%                               t-design) in Cartesian coordiantes.
 %   imagesize       double      positive integer, the image is of size 
 %                                   imageSize x imageSize.
+%   tDesign         double      N x 3 array, a spherical design (a 
+%                               t-design) in Cartesian coordiantes.
 %   interval        double      1 x 2 array, interval(1) is the lower bound
 %                                of the interval and interval(2).
 %   scalingParam    double      positive number, scaling parameter for 
