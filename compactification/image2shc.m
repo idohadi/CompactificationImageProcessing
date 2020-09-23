@@ -44,8 +44,8 @@ function shc = image2shc(im, bandlimit, tDesign, interval, scalingParam)
 [R2x, R2y] = pol2cart2(R2phi, R2rho);
 
 % Isolating t-design points falling within interval^2
-tDesignInCube = R2x>=interval(1) && R2x<=interval(2) ...
-    && R2y>=interval(1) && R2y<=interval(2);
+tDesignInCube = R2x>=interval(1) & R2x<=interval(2) ...
+    & R2y>=interval(1) & R2y<=interval(2);
 R2x = R2x(tDesignInCube);
 R2y = R2y(tDesignInCube);
 
@@ -62,7 +62,9 @@ extval = 0;
 vals = interp2(X, Y, im, R2x, R2y, 'cubic', extval);
 
 % Compute the spherical harmonics matrix
-sh = sphericalHarmonics(theta, phi, bandlimit);
+sh = sphericalHarmonics(tDesignTheta(tDesignInCube), ...
+    tDesignPhi(tDesignInCube), ...
+    bandlimit);
 
 % Estimate the spherical harmonics coefficients
 shc = (4*pi/size(tDesign, 1)) * (conj(sh) * vals);
