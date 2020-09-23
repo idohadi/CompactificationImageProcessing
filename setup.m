@@ -1,5 +1,3 @@
-% TODO: update this file
-
 %% Setup file
 [p1, ~, ~] = fileparts(mfilename('fullpath'));
 cd(p1);
