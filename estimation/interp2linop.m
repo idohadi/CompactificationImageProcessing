@@ -8,7 +8,7 @@ function P = interp2linop(imageSize, tDesign, interval, scalingParam)
 % where I is an image.
 % 
 % Input arguments
-%   imagesize       double      positive integer, the image is of size 
+%   imageSize       double      positive integer, the image is of size 
 %                                   imageSize x imageSize.
 %   tDesign         double      N x 3 array, a spherical design (a 
 %                               t-design) in Cartesian coordiantes.
