@@ -6,7 +6,9 @@ MEXFILES = 	normSHC_mex \
 			ClebschGordanCoeffs_mex \
 			buildCGTable_mex \
 			bispectrum_mex \
-			powerSpectrum_mex
+			powerSpectrum_mex \
+			buildV_mex \
+			buildK_mex
 #TODO: add the estimation mex funcs once I update their Clebsch-Gordan code base
 			
 all : $(EXTERNAL) $(MEXFILES)
@@ -35,14 +37,15 @@ buildCGTable_mex :
 powerSpectrum_mex : 
 	$(MEX) $(MATLABFLAGS) spherical_spectra/powerSpectrum_mex.c -outdir spherical_spectra/
 
+CBMEX = clebsch_gordan/clebsch_gordan_mex.c -Iclebsch_gordan
 bispectrum_mex : 
-	$(MEX) $(MATLABFLAGSBISP) spherical_spectra/bispectrum_mex.c -outdir spherical_spectra/
+	$(MEX) $(MATLABFLAGSBISP) spherical_spectra/bispectrum_mex.c $(CBMEX) -outdir spherical_spectra/
 
 buildV_mex : 
 	$(MEX) $(MATLABFLAGS) estimation/buildV_mex.c -outdir estimation/
 	
 buildK_mex : 
-	$(MEX) $(MATLABFLAGS) estimation/buildK_mex.c -outdir estimation/
+	$(MEX) $(MATLABFLAGS) estimation/buildK_mex.c $(CBMEX) -outdir estimation/
 	
 
 # Cleaning rules
