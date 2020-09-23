@@ -678,7 +678,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     }
 
     // Compute output
-    bisp();
+    // bisp();
 
     if (nlhs>1)
     {

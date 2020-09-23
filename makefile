@@ -9,7 +9,6 @@ MEXFILES = 	normSHC_mex \
 			powerSpectrum_mex \
 			buildV_mex \
 			buildK_mex
-#TODO: add the estimation mex funcs once I update their Clebsch-Gordan code base
 			
 all : $(EXTERNAL) $(MEXFILES)
 
