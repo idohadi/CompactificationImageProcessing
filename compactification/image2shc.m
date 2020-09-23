@@ -50,8 +50,8 @@ R2x = R2x(tDesignInCube);
 R2y = R2y(tDesignInCube);
 
 % Create a grid in the cube interval^2
-X = linspace(interval{:}, size(im, 1));
-Y = linspace(interval{:}, size(im, 1));
+X = linspace(interval(1), interval(2), size(im, 1));
+Y = linspace(interval(1), interval(2), size(im, 1));
 [X, Y] = meshgrid(X, Y);
 
 % Value for extrapulation outside interval^2

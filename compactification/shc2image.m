@@ -35,7 +35,7 @@ function im = shc2image(shc, bandlimit, imageSize, interval, scalingParam)
 
 %% Compute the image
 % Generate a grid that the image is evaluated at
-X = linspace(interval{:}, imageSize);
+X = linspace(interval(1), interval(2), imageSize);
 [X, Y] = meshgrid(X, X);
 X = X(:);
 Y = Y(:);
