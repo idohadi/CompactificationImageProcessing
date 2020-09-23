@@ -47,7 +47,7 @@ size_t bandlimit;
 size_t nthreads;
 
 CGTable cgt;
-mxArray *CGs;
+const mxArray *CGs;
 
 /* Output variables */
 double *b;
