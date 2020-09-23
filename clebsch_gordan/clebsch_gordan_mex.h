@@ -4,7 +4,7 @@
 typedef double ***** CGTable;
 
 
-void create_CGTable(CGTable * const cgt, const mxArray *CGs, const size_t bl);
+void create_CGTable(CGTable * const cgt, const mxArray ** CGs, const size_t bl);
 
 void destroy_CGTable(CGTable * const cgt, const size_t bl);
 

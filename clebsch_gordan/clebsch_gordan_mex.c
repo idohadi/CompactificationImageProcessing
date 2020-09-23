@@ -1,7 +1,7 @@
 #include "clebsch_gordan_mex.h"
 
 
-void create_CGTable(CGTable * const cgt, const mxArray *CGs, const size_t bl)
+void create_CGTable(CGTable * const cgt, const mxArray ** CGs, const size_t bl)
 {
     mxArray *temp[3];
 
@@ -9,7 +9,7 @@ void create_CGTable(CGTable * const cgt, const mxArray *CGs, const size_t bl)
 
     for (long l1 = 0; l1<=bl; ++l1)
     {
-        temp[0] = mxGetCell(CGs, l1);
+        temp[0] = mxGetCell(*CGs, l1);
         *cgt[l1] = malloc((l1+1)*sizeof(double ***));
 
         for (long l2 = 0; l2<=l1; ++l2)
