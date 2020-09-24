@@ -1,8 +1,11 @@
-function [invertedSHC, rootedResidual, output] = ibispectrum(b, bandlimit)
+function [invertedSHC, rootedResidual, output] = ibispectrum(b, bandlimit, x0)
 %%
 % Call format
-%   invertedSHC = ibispectrum(b, bandlimit)
-%   [invertedSHC, rootedResidual, output] = ibispectrum(b, bandlimit)
+%   ibispectrum(b, bandlimit)
+%   ibispectrum(b, bandlimit, x0)
+%   invertedSHC = ibispectrum(__)
+%   [invertedSHC, rootedResidual] = ibispectrum(__)
+%   [invertedSHC, rootedResidual, output] = ibispectrum(__)
 % 
 % Find a spherical harmonics coefficients vector approximately satisfying 
 %   bispectrum(shc) = b.
@@ -11,6 +14,8 @@ function [invertedSHC, rootedResidual, output] = ibispectrum(b, bandlimit)
 %   b               double      bispectrum f spherical function
 %                               represented by shc.
 %   bandlimit       double      positive integer, the bandlimit of shc.
+%   x0              double      (bandlimit+1)^2 complex array, an inital
+%                               guess.
 % 
 % Output arguments
 %   invertedSHC     double      complex vector array approximately 
@@ -48,7 +53,12 @@ opts = optimoptions(@lsqnonlin, ...
     'Display', 'off'); 
 
 %% Invert the bispectrum
-initialSHC = cSHC2rSHC(randSHC(bandlimit));
+if nargin<3
+    initialSHC = cSHC2rSHC(randSHC(bandlimit));
+else
+    initialSHC = cSHC2rSHC(x0);
+end
+
 [invertedSHC, squaredResidual, ~, ~, output] ...
     = lsqnonlin(@inversionObjectiveFunc, initialSHC, [], [], opts);
 rootedResidual = sqrt(squaredResidual);
