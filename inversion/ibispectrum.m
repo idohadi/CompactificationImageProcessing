@@ -39,6 +39,7 @@ function [invertedSHC, rootedResidual, output] = ibispectrum(b, bandlimit, x0)
 % Email     idohadi@mail.tau.ac.il
 % Year      2020
 % ***********************************************************
+
 %% Input validation
 assert(bandlimit==round(bandlimit) && bandlimit>0, ...
     'bandlimit must be a positive integer.');

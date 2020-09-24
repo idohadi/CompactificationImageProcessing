@@ -50,6 +50,7 @@ function [b, grad] = bispectrum(shc, bandlimit)
 % Email     idohadi@mail.tau.ac.il
 % Year      2020
 % ***********************************************************
+
 %% Calculate the bispectrum
 if nargout==1
     b = bispectrum_mex(shc, bandlimit);
