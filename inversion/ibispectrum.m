@@ -1,4 +1,5 @@
-function [invertedSHC, rootedResidual, output] = ibispectrum(b, bandlimit, x0)
+function [invertedSHC, rootedResidual, output] = ibispectrum(b, ps, bandlimit, w, x0)
+% TODO: docs
 %%
 % Call format
 %   ibispectrum(b, bandlimit)
@@ -43,6 +44,8 @@ function [invertedSHC, rootedResidual, output] = ibispectrum(b, bandlimit, x0)
 %% Input validation
 assert(bandlimit==round(bandlimit) && bandlimit>0, ...
     'bandlimit must be a positive integer.');
+psWeights = ps/sum(ps);
+psWeights = psWeights(:);
 
 %% Setup options
 pow = -8;
@@ -67,8 +70,29 @@ invertedSHC = rSHC2cSHC(invertedSHC);
 
 %% The objective function
 function [F, grad] = inversionObjectiveFunc(shc)
+% Bispectrum part
 [F, grad] = bispectrum(rSHC2cSHC(shc), bandlimit);
 F = F - b;
+
+% Power spectrum part
+% Objective function
+F1 = powerSpectrum(shc, bandlimit) - ps;
+% Gradient
+% The values
+vals = 2*[real(shc), imag(shc)].';
+vals = vals(:);
+% Row indices
+elemsPerRow = 2*(2*(0:bandlimit)+1);
+rowInds = repelem(1:(bandlimit+1), elemsPerRow);
+% Column indices
+colInds = 1:(2*(bandlimit+1)^2);
+% Constructing the gradient
+grad1 = sparse(rowInds, colInds ,vals, bandlimit+1, 2*(bandlimit+1)^2, numel(vals));
+
+% Putting both parts together
+F = [w(1)*F; w(2)*psWeights.*F1];
+grad = [w(1)*grad; w(2)*psWeights.*grad1];
+
 end
 
 end
