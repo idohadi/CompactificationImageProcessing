@@ -70,8 +70,9 @@ invertedSHC = rSHC2cSHC(invertedSHC);
 
 %% The objective function
 function [F, grad] = inversionObjectiveFunc(shc)
+shc = rSHC2cSHC(shc);
 % Bispectrum part
-[F, grad] = bispectrum(rSHC2cSHC(shc), bandlimit);
+[F, grad] = bispectrum(shc, bandlimit);
 F = F - b;
 
 % Power spectrum part
