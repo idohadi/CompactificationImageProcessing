@@ -45,7 +45,7 @@ function [invertedSHC, rootedResidual, output] = ibispectrum(b, ps, bandlimit, w
 assert(bandlimit==round(bandlimit) && bandlimit>0, ...
     'bandlimit must be a positive integer.');
 psWeights = ps/sum(ps);
-psWeights = psWeights(:);
+psWeights = 2*psWeights(:);
 
 %% Setup options
 pow = -8;
