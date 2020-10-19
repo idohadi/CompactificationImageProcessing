@@ -28,7 +28,7 @@ function [sampledImages, sampleVariances, basicViewOut] ...
 % Output arguments
 %   sampledImages       double      imageSize x imageSize x n array, the
 %                                   resulting image array.
-%   sampleVariances     double      1 x n array, the variance of the
+%   sampleVariances     double      n x 1 array, the variance of the
 %                                   correspodning images.
 %   basicViewOut        double      3 x 3 array, a rotation matrix.
 % 
