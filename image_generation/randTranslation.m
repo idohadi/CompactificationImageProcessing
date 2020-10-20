@@ -3,6 +3,7 @@ function [translation, translationAngle, translationSize] ...
 %%
 % Call format
 %   randTranslation()
+%   randTranslation(sampleSize)
 %   randTranslation(sampleSize, maxPixels)
 %   randTranslation(sampleSize, maxPixels, lambda)
 %   translation = randTranslation(__)
@@ -63,7 +64,7 @@ end
 %% Generate a random translation
 translationAngle = 2*pi*rand(1, sampleSize);
 
-translationSize = exprnd(lambda);
+translationSize = exprnd(lambda, 1, sampleSize);
 indicator = translationSize>maxPixels;
 while any(indicator)
     translationSize(indicator) = exprnd(lambda);
