@@ -83,9 +83,10 @@ rotations(1, 2, :) = sin(rotationAngles);
 rotations = reshape(rotations, [3, 3*n]);
 rotations = basicView*rotations;
 rotations = reshape(rotations, [3, 3, n]);
+rotations = permute(rotations, [2, 1, 3]);
 
 % Generate the sampled images
-sampledImages = cryo_project(map, rotations, imageSize, 'double');
+sampledImages = cryo_project(map, rotations, imageSize);
 sampledImages = cryo_addshifts(sampledImages, translations');
 
 % Calculate the variances
