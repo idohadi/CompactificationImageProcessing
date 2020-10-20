@@ -1,5 +1,6 @@
 .vscode/
 *.mexw64
+*.mexa64
 *.o
 *.exe
 *.mod
