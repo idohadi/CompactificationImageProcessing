@@ -629,9 +629,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     {
         build_bisp_lookup_table();
 
-        mxArray *inputMxArray[1];
-        inputMxArray[0] = mxCreateDoubleScalar(bandlimit);
-        mexCallMATLAB(0, NULL, 1, inputMxArray, "loadCGTable");
+        // mxArray *inputMxArray[1];
+        // inputMxArray[0] = mxCreateDoubleScalar(bandlimit);
+        // mexCallMATLAB(0, NULL, 1, inputMxArray, "loadCGTable");
 
         CGs = mexGetVariablePtr("global", "CGs");
         create_CGTable(&cgt, &CGs, bandlimit);
