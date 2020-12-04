@@ -1,7 +1,6 @@
 function [dataset, classRepresentatives, classMembership, ...
     denoisedDataset, translations, rotations] ...
-        = mixedDataset(sampleSize, classesNo, filename, imageGenFunc, ...
-            classProp, transMaxPixels, transLambda, sigma)
+        = mixedDataset(sampleSize, classesNo, filename, varargin)
 %%
 % Call format
 %   mixedDataset(sampleSize, classesNo, filename)
@@ -19,7 +18,7 @@ function [dataset, classRepresentatives, classMembership, ...
 %      generation function in imageGenFunc.
 %   2. Dataset generation. Generate the dataset using the following steps:
 %       a. Sample k in {1, 2, ..., classesNo} from the probability 
-%          distribution defined by classProp. Repeat this sampleSize times.
+%          distribution defined by classProb. Repeat this sampleSize times.
 %          Save the result in classMembership.
 %       b. For every n in {1, 2, ..., sampleSize}, take class
 %          representative classMembership(k), rotate it and translate it by
@@ -44,25 +43,25 @@ function [dataset, classRepresentatives, classMembership, ...
 %   rotations               double      
 % 
 % Optional arguments
-%   classProp       classNo x 1 double vector of positive numbers summing
+%   classProb       classNo x 1 double vector of positive numbers summing
 %                   up to 1. A probability distribution for class images.
-%                   classProp(j) is the probability of j.
+%                   classProb(j) is the probability of j.
 %   imageGenFunc    a structure containing two fields:
 %                   func    a function handle for a function returning an
 %                           image, given constant arguments.
 %                   args    the constant arguments.
 %   sigma           the standard deviation of the added noise components.
-%   transLambda     parameter for the function randTranslation.
-%   transMaxPixels  parameter for the function randTranslation.
+%   lambda     parameter for the function randTranslation.
+%   maxPixels  parameter for the function randTranslation.
 % 
 % Default optional arguments
-%   classProp               classesNo x 1 double array, 
-%                               classProp(k) = 1/classesNo
+%   classProb               classesNo x 1 double array, 
+%                               classProb(k) = 1/classesNo
 %   imageGenFunc            imageGenFunc.func = imageByUpsampling, 
 %                           imageGenFunc.args = {14, 16, 101, round(0.2*101)}
 %   sigma                   1
-%   transLambda             1.5
-%   transMaxPixels          5
+%   lambda             1.5
+%   maxPixels          5
 % 
 % Notes
 %   None
@@ -77,10 +76,32 @@ function [dataset, classRepresentatives, classMembership, ...
 
 %% Input handling
 % Input checks
-% TODO
+assert(sampleSize>=1 & round(sampleSize)==sampleSize, ...
+    'Sample size must be a positive integer.');
+assert(classesNo>=1 & round(classesNo)==classesNo, ...
+    'Number of classes must be a positive integer.');
+assert(ischar(filename) & exist(filename, 'file')==0, ...
+    'File name must be a char array and must point to a non-existent folder.');
 
 % Setting up optional input handling (name, value pairs)
-% TODO
+p = inputParser;
+addParameter(p, 'classProb', ones(classesNo, 1)/classesNo, ...
+    @(x) sum(x)==1 & all(x>=0));
+addParameter(p, 'imageGenFunc', ...
+    struct('func', @imageByUpsampling, 'args', {14, 16, 101, round(0.2*101)}), ...
+    @(x) isfield(x, 'func') & isfield(x, 'args'));
+addParameter(p, 'sigma', 1, @(x) isscalar(x) & x>=0);
+addParameter(p, 'lambda', 1.5);
+addParameter(p, 'maxPixels', 5);
+
+% Process the optional input
+parse(p, varargin);
+classProb = p.Results.classProb;
+imageGenFunc = p.Results.imageGenFunc;
+sigma = p.Results.sigma;
+lambda = p.Results.lambda;
+maxPixels = p.Results.maxPixels;
 
 %% Generate dataset
+
 % TODO
