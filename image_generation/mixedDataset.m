@@ -50,6 +50,8 @@ function [dataset, classRepresentatives, classMembership, ...
 %                   func    a function handle for a function returning an
 %                           image, given constant arguments.
 %                   args    the constant arguments.
+%                   This is a function generating an image of size
+%                   imageSize x imageSize.
 %   sigma           the standard deviation of the added noise components.
 %   lambda     parameter for the function randTranslation.
 %   maxPixels  parameter for the function randTranslation.
@@ -103,5 +105,19 @@ lambda = p.Results.lambda;
 maxPixels = p.Results.maxPixels;
 
 %% Generate dataset
+% Generate one class representative and extract image size
+genFunc = @() imageGenFunc.func(imageGenFunc.args{:});
+im = genFunc();
+imageSize = size(im, 1);
+assert(size(im, 1)==size(im, 2), ...
+    'Image generation function does not create rectangular image.');
 
-% TODO
+% Generate class representatives
+classRepresentatives = zeros([imageSize, imageSize, classesNo]);
+classRepresentatives(:, :, 1) = im;
+clear im;
+for J=2:classesNo
+    classRepresentatives(:, :, J) = genFunc();
+end
+
+% 
