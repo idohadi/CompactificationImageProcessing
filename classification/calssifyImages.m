@@ -2,7 +2,7 @@ function [avgedData, nearestNeighbors] = calssifyImages(data, bandlimit, varargi
 %%
 % Call format
 %   [avgedData, nearestNeighbors] = calssifyImages(data, bandlimit)
-%   [avgedData, nearestNeighbors] = calssifyImages(data, bandlimit, Nneighbors)
+%   [avgedData, nearestNeighbors] = calssifyImages(data, bandlimit, __)
 % 
 % Identify close neighbors of images in data and denoise each image, using
 % its neighbors.
