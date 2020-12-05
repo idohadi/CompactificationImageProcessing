@@ -112,7 +112,7 @@ Wdenoised = W.*(W.'); % An edge a->b is kept only if there is an edge b->a
 Wdenoised(JacInd<JaccardThreshold) = 0;
 
 % Save the denoised similarity graph
-nearestNeighbors = struct('W', W, 'Wdenoised', Wdenoised);
+nearestNeighbors = struct('W', W, 'D', D, 'Wdenoised', Wdenoised);
 
 % Denoise data using the averaging
 avgedData = zeros(size(data));
