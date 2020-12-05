@@ -91,6 +91,9 @@ end
 [idx, D] = knnsearch(b, b, 'K', Nneighbors);
 nearestNeighbors = struct('idx', idx, 'D', D);
 
+% Use Jaccard index to denoise the nearest neighbors graph
+% TODO
+
 % Denoise data using the averaging
 avgedData = zeros(size(data));
 % TODO
