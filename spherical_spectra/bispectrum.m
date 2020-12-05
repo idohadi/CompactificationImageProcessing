@@ -52,10 +52,11 @@ function [b, grad] = bispectrum(shc, bandlimit)
 % ***********************************************************
 
 %% Calculate the bispectrum
+global CGs;
 if nargout==1
-    b = bispectrum_mex(shc, bandlimit);
+    b = bispectrum_mex(shc, bandlimit, CGs);
 elseif nargout==2
     [b, gradI, gradJ, gradVals, gradNNZ, gradRowsNo, gradColsNo] ...
-        = bispectrum_mex(shc, bandlimit);
+        = bispectrum_mex(shc, bandlimit, CGs);
     grad = sparse(gradI, gradJ, gradVals, gradRowsNo, gradColsNo, gradNNZ);
 end

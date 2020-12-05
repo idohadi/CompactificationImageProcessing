@@ -2,15 +2,15 @@
  * Calculate the bispectrum and its gradient.
  * 
  * MATLAB call form:
- *      b = bispectrum_mex(shc, bandlimit)
- *      [b, grad_i, grad_j, grad_vals, grad_nnz, grad_rows_no, grad_cols_no] = bispectrum_mex(shc, bandlimit)
- *      [b, grad_i, grad_j, grad_vals, grad_nnz, grad_rows_no, grad_cols_no] = bispectrum_mex(shc, bandlimit, nthreads)
+ *      b = bispectrum_mex(shc, bandlimit, CGs)
+ *      [b, grad_i, grad_j, grad_vals, grad_nnz, grad_rows_no, grad_cols_no] = bispectrum_mex(shc, bandlimit, CGs)
+ *      [b, grad_i, grad_j, grad_vals, grad_nnz, grad_rows_no, grad_cols_no] = bispectrum_mex(shc, bandlimit, CGs)
  *  where
  *      shc                           column or row complex array of length 
  *                                    (bandlimit+1)^2 of spherical harmonics coefficients
  *      bandlimit                     scalar, the bandlimit of the function represented 
  *                                    by shc
- *      nthreads                      scalar, number of OpenMP threads to open in the gradient computation.
+ *      CGs                           Clebsch-Gordan coefficients. Format documented in bispectrum MATLAB function.
  *      b                             bispectrum column vector, containing the bispectrum 
  *                                    invariants b_{l1,l2,l} for 
  *                                         0<=l1<=bandlimit, 0<=l2<=l1, abs(l1-l2)<=l<=min(bandlmit, l1+l2)
@@ -44,10 +44,8 @@ typedef bispectrum_lookup_table blt;
 /* Input variables */
 mxComplexDouble *shc;
 size_t bandlimit;
-size_t nthreads;
 
 CGTable cgt;
-const mxArray *CGs;
 
 /* Output variables */
 double *b;
@@ -614,32 +612,23 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
     // Obtain input
     shc = mxGetComplexDoubles(prhs[0]);
     bandlimit = mxGetScalar(prhs[1]);
-    if (nrhs==3)
-    {
-        nthreads = mxGetScalar(prhs[2]);
-    }
-    else
-    {
-        nthreads = 1;
-    }
-    
-    
+
     // Handle first run
     if (first_run==true)
     {
         build_bisp_lookup_table();
-
+        
         // mxArray *inputMxArray[1];
         // inputMxArray[0] = mxCreateDoubleScalar(bandlimit);
         // mexCallMATLAB(0, NULL, 1, inputMxArray, "loadCGTable");
-
-        CGs = mexGetVariablePtr("global", "CGs");
-        if (CGs == NULL)
-        {
-            mexErrMsgIdAndTxt("Bispectrum:CGsMissing", "Clebsch-Gordan coefficients need to be preloaded.");
-        }
-
-        create_CGTable(&cgt, &CGs, bandlimit);
+        // 
+        // CGs = mexGetVariablePtr("global", "CGs");
+        // if (CGs == NULL)
+        // {
+        //     mexErrMsgIdAndTxt("Bispectrum:CGsMissing", "Clebsch-Gordan coefficients need to be preloaded.");
+        // }
+        // 
+        create_CGTable(&cgt, &prhs[2], bandlimit);
 
         previous_bandlimit = bandlimit;
         first_run = false;
@@ -651,12 +640,12 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         // mxArray *inputMxArray[1];
         // inputMxArray[0] = mxCreateDoubleScalar(bandlimit);
         // mexCallMATLAB(0, NULL, 1, inputMxArray, "loadCGTable");
-
-        CGs = mexGetVariablePtr("global", "CGs");
-        if (CGs == NULL)
-        {
-            mexErrMsgIdAndTxt("Bispectrum:CGsMissing", "Clebsch-Gordan coefficients need to be preloaded.");
-        }
+        // 
+        // CGs = mexGetVariablePtr("global", "CGs");
+        // if (CGs == NULL)
+        // {
+        //     mexErrMsgIdAndTxt("Bispectrum:CGsMissing", "Clebsch-Gordan coefficients need to be preloaded.");
+        // }
 
         destory_bisp_lookup_table();
         destroy_CGTable(&cgt, previous_bandlimit);
@@ -664,7 +653,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         previous_bandlimit = bandlimit;
 
         build_bisp_lookup_table();
-        create_CGTable(&cgt, &CGs, bandlimit);
+        create_CGTable(&cgt, &prhs[2], bandlimit);
     }
 
     // Create output
