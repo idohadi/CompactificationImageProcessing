@@ -107,14 +107,14 @@ p = inputParser;
 addParameter(p, 'classProb', ones(classesNo, 1)/classesNo, ...
     @(x) sum(x)==1 & all(x>=0));
 addParameter(p, 'imageGenFunc', ...
-    struct('func', @imageByUpsampling, 'args', {14, 16, 101, round(0.2*101)}), ...
+    struct('func', @imageByUpsampling, 'args', {{14, 16, 101, round(0.2*101)}}), ...
     @(x) isfield(x, 'func') & isfield(x, 'args'));
 addParameter(p, 'sigma', 1, @(x) isscalar(x) & x>=0);
 addParameter(p, 'lambda', 1.5);
 addParameter(p, 'maxPixels', 5);
 
 % Process the optional input
-parse(p, varargin);
+parse(p, varargin{:});
 classProb = p.Results.classProb;
 imageGenFunc = p.Results.imageGenFunc;
 sigma = p.Results.sigma;
