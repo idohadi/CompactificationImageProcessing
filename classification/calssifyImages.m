@@ -24,12 +24,15 @@ function [avgedData, nearestNeighbors] = calssifyImages(data, bandlimit, varargi
 %                       similarity matrix.
 %   Nneighbors          Number of nearest neighbors to find.
 %   scalingParam        Projection scaling parameter to use in image2shc.
+%   wpass               MATLAB's lowpass function parameter.
+%                       If wpass=0, no low-pass filter is used.
 % 
 % Default optional arguments
 %   interval            [-0.5, 0.5]
 %   JaccardThreshold    0.5
 %   Nneighbors          20
 %   scalingParam        1.5
+%   wpass               0.05
 % 
 % Notes
 %   None
@@ -52,10 +55,11 @@ assert(isscalar(bandlimit) & bandlimit>=1 & round(bandlimit)==bandlimit, ...
 % Setting up optional input handling (name, value pairs)
 p = inputParser;
 addParameter(p, 'interval', [-0.5, 0.5], @(x) numel(x)==2 & x(1)<x(2));
-addParameter(p, 'JaccardThreshold', 0.5, @(x) isscalar(x) & x>=0);
+addParameter(p, 'JaccardThreshold', 0.2, @(x) isscalar(x) & x>=0);
 addParameter(p, 'Nneighbors', 50, @(x) isscalar(x) & x>=1);
 addParameter(p, 'scalingParam', 1.5, @(x) isscalar(x) & x>0);
 addParameter(p, 'sigma2', 1, @(x) isscalar(x) & x>0);
+addParameter(p, 'wpass', 0.05, @(x) isscalar(x) & x>=0 & x<1);
 
 % Process the optional input
 parse(p, varargin{:});
@@ -64,6 +68,7 @@ JaccardThreshold = p.Results.JaccardThreshold;
 Nneighbors = p.Results.Nneighbors;
 scalingParam = p.Results.scalingParam;
 sigma2 = p.Results.sigma2;
+wpass = p.Results.wpass;
 
 %% Classify images
 % Load t-design
@@ -87,16 +92,25 @@ clear b;
 b = zeros(sampleSize, bLen);
 clear bispectrum;
 clear bispectrum_mex;
-parfor n=1:sampleSize
-    shc = image2shc(data(:, :, n), bandlimit, td, interval, scalingParam);
-    b(n, :) = bispectrum(shc, bandlimit, CGs) - sigma2*K*cSHC2rSHC(shc);
+
+if wpass==0
+    % Don't use a low-pass filter
+    parfor n=1:sampleSize
+        shc = image2shc(data(:, :, n), bandlimit, td, interval, scalingParam);
+        b(n, :) = bispectrum(shc, bandlimit, CGs) - sigma2*K*cSHC2rSHC(shc);
+    end
+else
+    % Use a low-pass filter
+    parfor n=1:sampleSize
+        shc = image2shc(lowpass(data(:, :, n), wpass), bandlimit, td, interval, scalingParam);
+        b(n, :) = bispectrum(shc, bandlimit, CGs) - sigma2*K*cSHC2rSHC(shc);
+    end
 end
 
 % Compute nearest neighbors
 [idx, D] = knnsearch(b, b, 'K', Nneighbors);
 
 % Construct similarity matrix
-
 W = sparse(repelem((1:sampleSize)', Nneighbors), ...
     reshape(idx', [numel(idx), 1]), 1, ...
     sampleSize, sampleSize, numel(idx));
