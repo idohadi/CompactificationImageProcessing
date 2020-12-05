@@ -1,4 +1,4 @@
-function [b, grad] = bispectrum(shc, bandlimit)
+function [b, grad] = bispectrum(shc, bandlimit, CGs)
 %%
 % Call format
 %   b = bispectrum(shc, bandlimit)
@@ -52,7 +52,7 @@ function [b, grad] = bispectrum(shc, bandlimit)
 % ***********************************************************
 
 %% Calculate the bispectrum
-global CGs;
+% global CGs;
 if nargout==1
     b = bispectrum_mex(shc, bandlimit, CGs);
 elseif nargout==2
