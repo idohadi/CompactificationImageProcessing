@@ -49,7 +49,7 @@ assert(isscalar(bandlimit) & bandlimit>=1 & round(bandlimit)==bandlimit, ...
 % Setting up optional input handling (name, value pairs)
 p = inputParser;
 addParameter(p, 'interval', [-0.5, 0.5], @(x) numel(x)==2 & x(1)<x(2));
-addParameter(p, 'Nneighbors', 20, @(x) isscalar(x) & x>=1);
+addParameter(p, 'Nneighbors', 50, @(x) isscalar(x) & x>=1);
 addParameter(p, 'scalingParam', 1.5, @(x) isscalar(x) & x>0);
 addParameter(p, 'sigma2', 1, @(x) isscalar(x) & x>0);
 
