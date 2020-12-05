@@ -636,7 +636,7 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         CGs = mexGetVariablePtr("global", "CGs");
         if (CGs == NULL)
         {
-            mexErrMsgIdAndTxt("No CGs", "Clebsch-Gordan coefficients need to be preloaded.");
+            mexErrMsgIdAndTxt("Bispectrum:CGsMissing", "Clebsch-Gordan coefficients need to be preloaded.");
         }
 
         create_CGTable(&cgt, &CGs, bandlimit);
@@ -655,9 +655,9 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         CGs = mexGetVariablePtr("global", "CGs");
         if (CGs == NULL)
         {
-            mexErrMsgIdAndTxt("No CGs", "Clebsch-Gordan coefficients need to be preloaded.");
+            mexErrMsgIdAndTxt("Bispectrum:CGsMissing", "Clebsch-Gordan coefficients need to be preloaded.");
         }
-        
+
         destory_bisp_lookup_table();
         destroy_CGTable(&cgt, previous_bandlimit);
 
