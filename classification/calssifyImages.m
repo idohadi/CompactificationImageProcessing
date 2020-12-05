@@ -19,14 +19,17 @@ function [avgedData, nearestNeighbors] = calssifyImages(data, bandlimit, varargi
 %   nearestNeighbors    double      
 % 
 % Optional arguments
-%   interval        Parameter for image2shc.
-%   Nneighbors      Number of nearest neighbors to find.
-%   scalingParam    Projection scaling parameter to use in image2shc.
+%   interval            Parameter for image2shc.
+%   JaccardThreshold    The threshold over which we maintain an edge in the
+%                       similarity matrix.
+%   Nneighbors          Number of nearest neighbors to find.
+%   scalingParam        Projection scaling parameter to use in image2shc.
 % 
 % Default optional arguments
-%   interval        [-0.5, 0.5]
-%   Nneighbors      20
-%   scalingParam    1.5
+%   interval            [-0.5, 0.5]
+%   JaccardThreshold    0.5
+%   Nneighbors          20
+%   scalingParam        1.5
 % 
 % Notes
 %   None
@@ -49,6 +52,7 @@ assert(isscalar(bandlimit) & bandlimit>=1 & round(bandlimit)==bandlimit, ...
 % Setting up optional input handling (name, value pairs)
 p = inputParser;
 addParameter(p, 'interval', [-0.5, 0.5], @(x) numel(x)==2 & x(1)<x(2));
+addParameter(p, 'JaccardThreshold', 0.5, @(x) isscalar(x) & x>=0);
 addParameter(p, 'Nneighbors', 50, @(x) isscalar(x) & x>=1);
 addParameter(p, 'scalingParam', 1.5, @(x) isscalar(x) & x>0);
 addParameter(p, 'sigma2', 1, @(x) isscalar(x) & x>0);
@@ -56,6 +60,7 @@ addParameter(p, 'sigma2', 1, @(x) isscalar(x) & x>0);
 % Process the optional input
 parse(p, varargin{:});
 interval = p.Results.interval;
+JaccardThreshold = p.Results.JaccardThreshold;
 Nneighbors = p.Results.Nneighbors;
 scalingParam = p.Results.scalingParam;
 sigma2 = p.Results.sigma2;
@@ -89,10 +94,25 @@ end
 
 % Compute nearest neighbors
 [idx, D] = knnsearch(b, b, 'K', Nneighbors);
-nearestNeighbors = struct('idx', idx, 'D', D);
 
-% Use Jaccard index to denoise the nearest neighbors graph
-% TODO
+% Construct similarity matrix
+
+W = sparse(repelem((1:sampleSize)', Nneighbors), ...
+    reshape(idx', [numel(idx), 1]), 1, ...
+    sampleSize, sampleSize, numel(idx));
+W = W - diag(diag(W));
+
+% Construct the Jaccard index to denoise the nearest neighbors graph
+E = ones(size(W, 1), 1);
+E = E*(E.');
+JacInd = W*(W.')./( W*E + E*(W.') - W*(W.') );
+
+% Denoise the similarity matrix
+Wdenoised = W.*(W.'); % An edge a->b is kept only if there is an edge b->a
+Wdenoised(JacInd<JaccardThreshold) = 0;
+
+% Save the denoised similarity graph
+nearestNeighbors = struct('W', W, 'Wdenoised', Wdenoised);
 
 % Denoise data using the averaging
 avgedData = zeros(size(data));
