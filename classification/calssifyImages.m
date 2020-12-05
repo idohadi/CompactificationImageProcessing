@@ -51,16 +51,22 @@ p = inputParser;
 addParameter(p, 'interval', [-0.5, 0.5], @(x) numel(x)==2 & x(1)<x(2));
 addParameter(p, 'Nneighbors', 30, @(x) isscalar(x) & x>=1);
 addParameter(p, 'scalingParam', 1.5, @(x) isscalar(x) & x>0);
+addParameter(p, 'sigma2', 1, @(x) isscalar(x) & x>0);
 
 % Process the optional input
 parse(p, varargin{:});
 interval = p.Results.interval;
 Nneighbors = p.Results.Nneighbors;
 scalingParam = p.Results.scalingParam;
+sigma2 = p.Results.sigma2;
 
 %% Classify images
 % Load t-design
 td = loadtd(2*bandlimit + 2);
+
+% Generating debiasing matrices
+U = buildU(bandlimit, imageSize, td, interval, scalingParam);
+K = buildK(bandlimit, U);
 
 % Compute the length of the bispectrum vector
 shc = image2shc(data(:, :, 1), bandlimit, td, interval, scalingParam);
@@ -71,9 +77,11 @@ clear b;
 
 % Compute bispectra of data
 b = zeros(sampleSize, bLen);
+clear bispectrum;
+clear bispectrum_mex;
 parfor n=1:sampleSize
     shc = image2shc(data(:, :, n), bandlimit, td, interval, scalingParam);
-    b(n, :) = bispectrum(shc, bandlimit);
+    b(n, :) = bispectrum(shc, bandlimit) - sigma2*K*cSHC2rSHC(shc);
 end
 
 % Compute nearest neighbors
