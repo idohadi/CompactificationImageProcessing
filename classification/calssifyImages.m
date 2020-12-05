@@ -49,7 +49,7 @@ assert(isscalar(bandlimit) & bandlimit>=1 & round(bandlimit)==bandlimit, ...
 % Setting up optional input handling (name, value pairs)
 p = inputParser;
 addParameter(p, 'interval', [-0.5, 0.5], @(x) numel(x)==2 & x(1)<x(2));
-addParameter(p, 'Nneighbors', 30, @(x) isscalar(x) & x>=1);
+addParameter(p, 'Nneighbors', 20, @(x) isscalar(x) & x>=1);
 addParameter(p, 'scalingParam', 1.5, @(x) isscalar(x) & x>0);
 addParameter(p, 'sigma2', 1, @(x) isscalar(x) & x>0);
 
@@ -64,24 +64,25 @@ sigma2 = p.Results.sigma2;
 % Load t-design
 td = loadtd(2*bandlimit + 2);
 
+% Declare global CGs variable
+global CGs;
+
 % Generating debiasing matrices
 U = buildU(bandlimit, imageSize, td, interval, scalingParam);
 K = buildK(bandlimit, U);
 
 % Compute the length of the bispectrum vector
 shc = image2shc(data(:, :, 1), bandlimit, td, interval, scalingParam);
-b = bispectrum(shc, bandlimit);
+b = bispectrum(shc, bandlimit, CGs);
 bLen = size(b, 1);
 clear shc;
 clear b;
 
 % Compute bispectra of data
 b = zeros(sampleSize, bLen);
-clear bispectrum;
-clear bispectrum_mex;
 parfor n=1:sampleSize
     shc = image2shc(data(:, :, n), bandlimit, td, interval, scalingParam);
-    b(n, :) = bispectrum(shc, bandlimit) - sigma2*K*cSHC2rSHC(shc);
+    b(n, :) = bispectrum(shc, bandlimit, CGs) - sigma2*K*cSHC2rSHC(shc);
 end
 
 % Compute nearest neighbors
