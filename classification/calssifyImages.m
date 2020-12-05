@@ -59,17 +59,27 @@ Nneighbors = p.Results.Nneighbors;
 scalingParam = p.Results.scalingParam;
 
 %% Classify images
-% Compute bispectrum
+% Load t-design
 td = loadtd(2*bandlimit + 2);
-shc = image2shc(data(:, :, 1), bandlimit, td, 
-for n=1:sampleSize
-    
+
+% Compute the length of the bispectrum vector
+shc = image2shc(data(:, :, 1), bandlimit, td, interval, scalingParam);
+b = bispectrum(shc, bandlimit);
+bLen = size(b, 1);
+clear shc;
+clear b;
+
+% Compute bispectra of data
+b = zeros(sampleSize, bLen);
+parfor n=1:sampleSize
+    shc = image2shc(data(:, :, n), bandlimit, td, interval, scalingParam);
+    b(n, :) = bispectrum(shc, bandlimit);
 end
 
-% TODO
-
 % Compute nearest neighbors
-% TODO
+[idx, D] = knnsearch(b, b, 'K', Nneighbors);
+nearestNeighbors = struct('idx', idx, 'D', D);
 
 % Denoise data using the averaging
+avgedData = zeros(size(data));
 % TODO
