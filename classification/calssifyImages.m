@@ -80,6 +80,8 @@ clear b;
 
 % Compute bispectra of data
 b = zeros(sampleSize, bLen);
+clear bispectrum;
+clear bispectrum_mex;
 parfor n=1:sampleSize
     shc = image2shc(data(:, :, n), bandlimit, td, interval, scalingParam);
     b(n, :) = bispectrum(shc, bandlimit, CGs) - sigma2*K*cSHC2rSHC(shc);
