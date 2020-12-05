@@ -21,12 +21,14 @@ function [dataset, classRepresentatives, classMembership, ...
 %          distribution defined by classProb. Repeat this sampleSize times.
 %          Save the result in classMembership.
 %       b. For every n in {1, 2, ..., sampleSize}, take class
-%          representative classMembership(k), rotate it and translate it by
-%          some random rotation and translation. Save the corresponding
-%          rotation and translation in rotations and translations,
-%          respectively. Save the result in denoisedDataset. Generate
-%          Gaussian noise with i.i.d. coordinates and standard deviation
-%          sigma and add it to the denoised image. Save the result in dataset.
+%          representative classMembership(k), rotate it and then translate 
+%          it by some random rotation and translation. Save the 
+%          corresponding rotation and translation in rotations and 
+%          translations, respectively. Save the result in denoisedDataset. 
+%          Generate Gaussian noise with i.i.d. coordinates and standard 
+%          deviation sigma and add it to the denoised image. Save the 
+%          result in dataset.
+% 
 % 
 % Input arguments
 %   sampleSize              double      positive integer, sample size. 
@@ -35,12 +37,27 @@ function [dataset, classRepresentatives, classMembership, ...
 %                                       dataset.
 % 
 % Output arguments
-%   dataset                 double      
-%   classRepresentatives    double      
-%   classMembership         double      
-%   denoisedDataset         double      
-%   ranslations             double      
-%   rotations               double      
+%   dataset                 double      imageSize x imageSize x sampleSize
+%                                       array, dataset of noisy images.
+%   classRepresentatives    double      imageSize x imageSize x classesNo
+%                                       array, class representatives.
+%   classMembership         double      sampleSize x 1 array,
+%                                       classMembersihp(j) in {1, ..., classesNo}
+%                                       means that the image dataset(:, :, j) 
+%                                       was generated from classRepresentatives(:, :, j).
+%   denoisedDataset         double      imageSize x imageSize x sampleSize
+%                                       array, data of dataset images
+%                                       without the noise.
+%   translations            double      sampleSize x 2 array,
+%                                       translations(j, :) is the
+%                                       translation applied to the class
+%                                       representative in order to generate
+%                                       the j-th dataset image.
+%   rotations               double      sampleSize x 1 array, 
+%                                       rotations(j, :) is the
+%                                       rotation applied to the class
+%                                       representative in order to generate
+%                                       the j-th dataset image.
 % 
 % Optional arguments
 %   classProb       classNo x 1 double vector of positive numbers summing
@@ -120,4 +137,31 @@ for J=2:classesNo
     classRepresentatives(:, :, J) = genFunc();
 end
 
-% 
+% Generate class membership vector
+classMembership = randsample(1:classesNo, sampleSize, true, classProb);
+classMembership = classMembership(:);
+
+% Generate dataset
+dataset = zeros(imageSize, imageSize, sampleSize);
+denoisedDataset = zeros(imageSize, imageSize, sampleSize);
+translations = zeros(sampleSize, 2);
+rotations = 2*pi*rand(sampleSize, 1);
+
+for J=1:sampleSize
+    m = classMembership(J);
+    t = randTranslation(maxPixels, lambda);
+    
+    denoisedIm = imrotate(classRepresentatives(:, :, m), ...
+        360*rotations(J)/(2*pi), 'bicubic', 'crop');
+    denoisedIm = imtranslate(denoisedIm, t, 'cubic', 'OutputView', 'same');
+    im = denoisedIm + sigma*randn(imageSize, imageSize);
+    
+    % Save results
+    translations(J, :) = t;
+    denoisedDataset(:, :, J) = denoisedIm;
+    dataset(:, :, J) = im;
+end
+
+% Save the result to file
+save(filename, 'dataset', 'classRepresentatives', 'classMembership', ...
+    'denoisedDataset', 'translations', 'rotations');
