@@ -634,6 +634,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         // mexCallMATLAB(0, NULL, 1, inputMxArray, "loadCGTable");
 
         CGs = mexGetVariablePtr("global", "CGs");
+        if (CGs == NULL)
+        {
+            mexErrMsgIdAndTxt("No CGs", "Clebsch-Gordan coefficients need to be preloaded.");
+        }
+
         create_CGTable(&cgt, &CGs, bandlimit);
 
         previous_bandlimit = bandlimit;
@@ -648,7 +653,11 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
         // mexCallMATLAB(0, NULL, 1, inputMxArray, "loadCGTable");
 
         CGs = mexGetVariablePtr("global", "CGs");
-
+        if (CGs == NULL)
+        {
+            mexErrMsgIdAndTxt("No CGs", "Clebsch-Gordan coefficients need to be preloaded.");
+        }
+        
         destory_bisp_lookup_table();
         destroy_CGTable(&cgt, previous_bandlimit);
 
