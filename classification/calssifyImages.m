@@ -6,4 +6,11 @@ function [avgedData, nearestNeighbors] = calssifyImages(data, bandlimit)
 % TODO
 
 %% Classify images
+% Compute bispectrum
+% TODO
+
+% Compute nearest neighbors
+% TODO
+
+% Denoise data using the averaging
 % TODO
