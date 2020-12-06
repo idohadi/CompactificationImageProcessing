@@ -22,6 +22,9 @@ function [avgedData, nearestNeighbors] = calssifyImages(data, bandlimit, varargi
 %   interval            Parameter for image2shc.
 %   JaccardThreshold    The threshold over which we maintain an edge in the
 %                       similarity matrix.
+%   K                   Bispectrum denoising matrix.
+%                       Default is false. In this case, the code computes
+%                       it below.
 %   Nneighbors          Number of nearest neighbors to find.
 %   scalingParam        Projection scaling parameter to use in image2shc.
 %   wpass               MATLAB's lowpass function parameter.
@@ -30,6 +33,7 @@ function [avgedData, nearestNeighbors] = calssifyImages(data, bandlimit, varargi
 % Default optional arguments
 %   interval            [-0.5, 0.5]
 %   JaccardThreshold    0.5
+%   K                   false
 %   Nneighbors          20
 %   scalingParam        1.5
 %   wpass               0.05
@@ -56,6 +60,7 @@ assert(isscalar(bandlimit) & bandlimit>=1 & round(bandlimit)==bandlimit, ...
 p = inputParser;
 addParameter(p, 'interval', [-0.5, 0.5], @(x) numel(x)==2 & x(1)<x(2));
 addParameter(p, 'JaccardThreshold', 0.2, @(x) isscalar(x) & x>=0);
+addParameter(p, 'K', false);
 addParameter(p, 'Nneighbors', 50, @(x) isscalar(x) & x>=1);
 addParameter(p, 'scalingParam', 1.5, @(x) isscalar(x) & x>0);
 addParameter(p, 'sigma2', 1, @(x) isscalar(x) & x>0);
@@ -65,6 +70,7 @@ addParameter(p, 'wpass', 0.05, @(x) isscalar(x) & x>=0 & x<1);
 parse(p, varargin{:});
 interval = p.Results.interval;
 JaccardThreshold = p.Results.JaccardThreshold;
+K = p.Results.K;
 Nneighbors = p.Results.Nneighbors;
 scalingParam = p.Results.scalingParam;
 sigma2 = p.Results.sigma2;
@@ -78,8 +84,10 @@ td = loadtd(2*bandlimit + 2);
 global CGs;
 
 % Generating debiasing matrices
-U = buildU(bandlimit, imageSize, td, interval, scalingParam);
-K = buildK(bandlimit, U);
+if K==false
+    U = buildU(bandlimit, imageSize, td, interval, scalingParam);
+    K = buildK(bandlimit, U);
+end
 
 % Compute the length of the bispectrum vector
 shc = image2shc(data(:, :, 1), bandlimit, td, interval, scalingParam);
