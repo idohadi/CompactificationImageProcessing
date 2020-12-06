@@ -34,7 +34,7 @@ function [avgedData, nearestNeighbors] = calssifyImages(data, bandlimit, varargi
 %   interval            [-0.5, 0.5]
 %   JaccardThreshold    0.5
 %   K                   false
-%   Nneighbors          20
+%   Nneighbors          50
 %   scalingParam        1.5
 %   wpass               0.05
 % 
