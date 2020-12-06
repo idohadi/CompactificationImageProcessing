@@ -3,6 +3,7 @@ function [dataset, classRepresentatives, classMembership, ...
         = mixedDataset(sampleSize, classesNo, filename, varargin)
 %%
 % Call format
+%   mixedDataset(sampleSize, classesNo, [])
 %   mixedDataset(sampleSize, classesNo, filename)
 %   mixedDataset(sampleSize, classesNo, filename, __)
 %   [dataset, classRepresentatives, classMembership] = mixedDataset(__)
@@ -27,7 +28,7 @@ function [dataset, classRepresentatives, classMembership, ...
 %          translations, respectively. Save the result in denoisedDataset. 
 %          Generate Gaussian noise with i.i.d. coordinates and standard 
 %          deviation sigma and add it to the denoised image. Save the 
-%          result in dataset.
+%          result in dataset to disk, if filename is non-empty.
 % 
 % 
 % Input arguments
@@ -35,6 +36,8 @@ function [dataset, classRepresentatives, classMembership, ...
 %   classesNo               double      positive integer, number of classes.
 %   filename                char        charecter vector, path to save the
 %                                       dataset.
+%                                       If it is an empty array, the 
+%                                       dataset is not written to disk.
 % 
 % Output arguments
 %   dataset                 double      imageSize x imageSize x sampleSize
