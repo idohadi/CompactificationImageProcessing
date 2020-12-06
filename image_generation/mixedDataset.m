@@ -99,8 +99,10 @@ assert(sampleSize>=1 & round(sampleSize)==sampleSize, ...
     'Sample size must be a positive integer.');
 assert(classesNo>=1 & round(classesNo)==classesNo, ...
     'Number of classes must be a positive integer.');
-assert(ischar(filename) & exist(filename, 'file')==0, ...
-    'File name must be a char array and must point to a non-existent folder.');
+if ~isempty(filename)
+    assert(ischar(filename) & exist(filename, 'file')==0, ...
+        'File name must be a char array and must point to a non-existent folder.');
+end
 
 % Setting up optional input handling (name, value pairs)
 p = inputParser;
@@ -163,5 +165,7 @@ for J=1:sampleSize
 end
 
 % Save the result to file
-save(filename, 'dataset', 'classRepresentatives', 'classMembership', ...
-    'denoisedDataset', 'translations', 'rotations');
+if ~isempty(filename)
+    save(filename, 'dataset', 'classRepresentatives', 'classMembership', ...
+        'denoisedDataset', 'translations', 'rotations');
+end
