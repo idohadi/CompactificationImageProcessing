@@ -55,6 +55,7 @@ extval = 0;
 
 % Compute the interpolation operator
 P = zeros(length(R2x), imageSize^2);
+progressStr = '';
 for w=1:imageSize
     S = zeros(length(R2x), imageSize);
     parfor h=1:imageSize
@@ -63,5 +64,11 @@ for w=1:imageSize
         S(:, h) = interp2(X, Y, imageDelta, R2x, R2y, 'cubic', extval);
     end
     P(:, (w-1)*imageSize+1:w*imageSize) = S;
-    disp(['Completed column ', num2str(w), ' of ', num2str(imageSize), '.']);
+    
+    bStr = repmat('\b', 1, length(progressStr));
+    progressStr = ['Completed column ', num2str(w), ' of ', num2str(imageSize), '.'];
+    fprintf([bStr, progressStr]);
 end
+
+bStr = repmat('\b', 1, length(progressStr));
+fprintf(bStr);
