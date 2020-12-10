@@ -98,12 +98,13 @@ if wpass==0
 else
     % Use a low-pass filter
     parfor n=1:sampleSize
-        coeff = basis.expand(data(:, :, n));
+        coeff = basis.expand(lowpass(data(:, :, n), wpass));
         b(n, :) = rotationInvariantBispectrum(coeff, truncation, angularLimits, bLen)
     end
 end
 
 % Compute nearest neighbors
+b = [real(b), imag(b)];
 [idx, D] = knnsearch(b, b, 'K', Nneighbors);
 
 % Construct similarity matrix
