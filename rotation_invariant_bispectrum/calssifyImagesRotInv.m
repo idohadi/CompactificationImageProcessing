@@ -43,7 +43,10 @@ function [avgedData, nearestNeighbors] = calssifyImagesRotInv(data, truncation, 
 %   None
 % 
 % Reference
-%   None
+%   [1] Halko, N., Martinsson, P.-G., Shkolnisky, Y., & Tygert, M. (2011). 
+%       An Algorithm for the Principal Component Analysis of Large Data 
+%       Sets. SIAM Journal on Scientific Computing, 33(5), 2580–2594. 
+%       https://doi.org/10.1137/100804139
 % ***********************************************************
 % Author    Ido Hadi
 % Email     idohadi@mail.tau.ac.il
@@ -59,22 +62,14 @@ assert(isscalar(truncation) & truncation>=1 & round(truncation)==truncation, ...
 
 % Setting up optional input handling (name, value pairs)
 p = inputParser;
-addParameter(p, 'interval', [-0.5, 0.5], @(x) numel(x)==2 & x(1)<x(2));
 addParameter(p, 'JaccardThreshold', 0.2, @(x) isscalar(x) & x>=0);
-addParameter(p, 'K', false);
 addParameter(p, 'Nneighbors', 50, @(x) isscalar(x) & x>=1);
-addParameter(p, 'scalingParam', 1.5, @(x) isscalar(x) & x>0);
-addParameter(p, 'sigma2', 1, @(x) isscalar(x) & x>0);
 addParameter(p, 'wpass', 0.05, @(x) isscalar(x) & x>=0 & x<1);
 
 % Process the optional input
 parse(p, varargin{:});
-interval = p.Results.interval;
 JaccardThreshold = p.Results.JaccardThreshold;
-K = p.Results.K;
 Nneighbors = p.Results.Nneighbors;
-scalingParam = p.Results.scalingParam;
-sigma2 = p.Results.sigma2;
 wpass = p.Results.wpass;
 
 %% Classify images
