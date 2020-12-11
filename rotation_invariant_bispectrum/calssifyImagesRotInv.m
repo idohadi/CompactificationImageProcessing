@@ -59,12 +59,14 @@ assert(isscalar(truncation) & truncation>=1 & round(truncation)==truncation, ...
 
 % Setting up optional input handling (name, value pairs)
 p = inputParser;
+addParameter(p, 'batchSize', 100, @(x) isscalar(x) & x>=1);
 addParameter(p, 'JaccardThreshold', 0.2, @(x) isscalar(x) & x>=0);
 addParameter(p, 'Nneighbors', 50, @(x) isscalar(x) & x>=1);
 addParameter(p, 'wpass', 0.05, @(x) isscalar(x) & x>=0 & x<1);
 
 % Process the optional input
 parse(p, varargin{:});
+batchSize = p.Results.batchSize;
 JaccardThreshold = p.Results.JaccardThreshold;
 Nneighbors = p.Results.Nneighbors;
 wpass = p.Results.wpass;
@@ -81,8 +83,27 @@ b = zeros(sampleSize, bLen+angularLimits(1));
 clear bispectrum;
 clear bispectrum_mex;
 
-if wpass==0
-    % Don't use a low-pass filter
+% Prepare batches
+sampleSize = size(data, 3);
+batchNo = ceil(sampleSize/batchSize);
+batchBounds = 0:batchSize:sampleSize;
+if batchBounds(end)<sampleSize
+    batchBounds(end+1) = sampleSize;
+end
+
+if wpass==0     % Don't use a low-pass filter
+    % Prepare for randomized SVD
+    G = randn(1, 1); % TODO
+    
+    for J=1:batchNo
+        % Compute the bispectrum
+        parfor n=batchBounds(J)+1:batchBounds(J+1)
+            % TODO
+        end
+        
+        % TODO continue to apply the randomized SVD algorithm
+        
+    end
     parfor n=1:sampleSize
         coeff = basis.expand(data(:, :, n));
         b(n, :) = rotationInvariantBispectrum(coeff, truncation, angularLimits, bLen)
