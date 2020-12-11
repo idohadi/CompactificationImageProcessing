@@ -32,11 +32,8 @@ function [avgedData, nearestNeighbors] = calssifyImagesRotInv(data, truncation, 
 %                       If wpass=0, no low-pass filter is used.
 % 
 % Default optional arguments
-%   interval            [-0.5, 0.5]
 %   JaccardThreshold    0.5
-%   K                   false
 %   Nneighbors          50
-%   scalingParam        1.5
 %   wpass               0.05
 % 
 % Notes
