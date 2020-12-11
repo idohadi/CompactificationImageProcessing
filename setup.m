@@ -21,3 +21,8 @@ dirs = {'alignment', ...
 for J=1:length(dirs)
     addpath(genpath(fullfile(p1, dirs{J})));
 end
+
+%% Adding ASPIRE's path
+cd('../aspire/');
+initpath;
+cd('../SphericalInvariantAnalysis/');
