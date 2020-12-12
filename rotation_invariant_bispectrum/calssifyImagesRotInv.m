@@ -92,32 +92,18 @@ if batchBounds(end)<sampleSize
 end
 
 if wpass==0     % Don't use a low-pass filter
-    % Prepare for randomized SVD
-    G = randn(1, 1); % TODO
-    
-    for J=1:batchNo
-        % Compute the bispectrum
-        parfor n=batchBounds(J)+1:batchBounds(J+1)
-            % TODO
-        end
-        
-        % TODO continue to apply the randomized SVD algorithm
-        
-    end
-    parfor n=1:sampleSize
-        coeff = basis.expand(data(:, :, n));
-        b(n, :) = rotationInvariantBispectrum(coeff, truncation, angularLimits, bLen)
-    end
-else
-    % Use a low-pass filter
-    parfor n=1:sampleSize
-        coeff = basis.expand(lowpass(data(:, :, n), wpass));
-        b(n, :) = rotationInvariantBispectrum(coeff, truncation, angularLimits, bLen)
-    end
+    rowFunc = struct('func', @rowFuncWODenoising, ...
+            'args', {data, basis, truncation, angularLimits, bLen});
+    [U, S, ~] = outOfCoreRandomizedSVD(rowFunc, sampleSize, bLen+angularLimits(1), k);
+    b = U*S;
+else            % Use a low-pass filter
+    rowFunc = struct('func', @rowFuncWDenoising, ...
+            'args', {data, basis, truncation, angularLimits, bLen, wpass});
+    [U, S, ~] = outOfCoreRandomizedSVD(rowFunc, sampleSize, bLen+angularLimits(1), k);
+    b = U*S;
 end
 
 % Compute nearest neighbors
-b = [real(b), imag(b)];
 [idx, D] = knnsearch(b, b, 'K', Nneighbors);
 
 % Construct similarity matrix
@@ -141,3 +127,18 @@ nearestNeighbors = struct('W', W, 'D', D, 'Wdenoised', Wdenoised);
 % Denoise data using the averaging
 avgedData = zeros(size(data));
 % TODO
+
+end
+
+%% Utility functions
+function row = rowFuncWDenoising(N, data, basis, truncation, angularLimits, bLen, wpass)
+% With denoising
+coeff = basis.expand(lowpass(data(:, :, N), wpass));
+row = rotationInvariantBispectrum(coeff, truncation, angularLimits, bLen);
+end
+
+function row = rowFuncWODenoising(N, data, basis, truncation, angularLimits, bLen)
+% Without denoising
+coeff = basis.expand(data(:, :, N));
+row = rotationInvariantBispectrum(coeff, truncation, angularLimits, bLen);
+end
