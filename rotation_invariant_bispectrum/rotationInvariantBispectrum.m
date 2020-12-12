@@ -63,7 +63,7 @@ end
 coeffComp = coeffComp./(abs(coeffComp).^(2/3));
 
 % Compute the bispectrum
-b = zeros(bLen + angularLimits(1), 1);
+b = zeros(2*bLen + angularLimits(1), 1);
 b(1:angularLimits(1)) = coeff(1:angularLimits(1));
 
 m = angularLimits(1)+1;
@@ -78,7 +78,9 @@ for k1=1:truncation
         M = M .* c;
         M = M(:);
         
-        b(m:m+length(M)-1) = M;
+        b(m:m+length(M)-1) = real(M);
+        m = m + length(M);
+        b(m:m+length(M)-1) = imag(M);
         m = m + length(M);
     end
 end
