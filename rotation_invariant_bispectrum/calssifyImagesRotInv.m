@@ -93,7 +93,7 @@ if wpass==0     % Don't use a low-pass filter
     clear S;
 else            % Use a low-pass filter
     rowFunc = struct('func', @rowFuncWDenoising, ...
-            'args', {data, basis, truncation, angularLimits, bLen, wpass});
+            'args', {{data, basis, truncation, angularLimits, bLen, wpass}});
     [U, S, ~] = outOfCoreRandomizedSVD(rowFunc, sampleSize, 2*bLen+angularLimits(1), k);
     b = U*S;
     clear U;
