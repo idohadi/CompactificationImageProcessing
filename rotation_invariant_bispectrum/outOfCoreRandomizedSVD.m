@@ -58,7 +58,7 @@ l = k + 2;
 i = 2;
 batchSize = 100;
 
-func = @(x) rowFunc.fucn(x, rowFunc.args{:});
+func = @(x) rowFunc.func(x, rowFunc.args{:});
 
 %% Compute the randomized SVD
 % Generate batch limits
