@@ -78,7 +78,7 @@ H(:, 1:l) = AprodB(G);
 
 % Compute H^s for  s=1, ..., i
 for I=1:i
-    H(:, l*(I-1)+1:l*I) = AprodB(AtprodB(H(:, l*(I-2)+1:l*(I-1))));
+    H(:, l*(I-1)+1:l*I) = AprodB(AtprodB(H(:, l*(I-1)+1:l*I)));
 end
 
 % Alg: step 2
@@ -111,7 +111,7 @@ for b=1:length(batches)-1
     A = zeros(batches(b+1) - batches(b), n);
     batchLowLim = batches(b);
     parfor J=batches(b)+1:batches(b+1)
-        A(J - batchLowLim, :) = func(J);
+        A(J - batchLowLim, :) = feval(func, J);
     end
     P(batches(b)+1:batches(b+1), :) = A*B;
 end
@@ -128,7 +128,7 @@ for b=1:length(batches)-1
     At = zeros(n, batches(b+1) - batches(b));
     batchLowLim = batches(b);
     parfor J=batches(b)+1:batches(b+1)
-        At(:, J - batchLowLim) = func(J);
+        At(:, J - batchLowLim) = feval(func, J);
     end
     P = P + At .* B(batches(b)+1:batches(b+1), :);
 end
