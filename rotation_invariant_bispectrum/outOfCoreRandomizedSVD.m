@@ -130,7 +130,7 @@ for b=1:length(batches)-1
     parfor J=batches(b)+1:batches(b+1)
         At(:, J - batchLowLim) = feval(func, J);
     end
-    P = P + At .* B(batches(b)+1:batches(b+1), :);
+    P = P + At * B(batches(b)+1:batches(b+1), :);
 end
 end
 
