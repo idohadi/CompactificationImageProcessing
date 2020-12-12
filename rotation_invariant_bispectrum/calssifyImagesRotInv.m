@@ -71,6 +71,8 @@ JaccardThreshold = p.Results.JaccardThreshold;
 Nneighbors = p.Results.Nneighbors;
 wpass = p.Results.wpass;
 
+k = 400;
+
 %% Classify images
 basis = ffb_basis(imageSize*ones(1, 2), truncation);
 angularLimits = basis.k_max;
@@ -79,28 +81,23 @@ angularLimits = basis.k_max;
 bLen = rotationInvariantBispectrumLength(truncation, angularLimits);
 
 % Compute bispectra of data
-b = zeros(sampleSize, bLen+angularLimits(1));
 clear bispectrum;
 clear bispectrum_mex;
-
-% Prepare batches
-sampleSize = size(data, 3);
-batchNo = ceil(sampleSize/batchSize);
-batchBounds = 0:batchSize:sampleSize;
-if batchBounds(end)<sampleSize
-    batchBounds(end+1) = sampleSize;
-end
 
 if wpass==0     % Don't use a low-pass filter
     rowFunc = struct('func', @rowFuncWODenoising, ...
             'args', {data, basis, truncation, angularLimits, bLen});
-    [U, S, ~] = outOfCoreRandomizedSVD(rowFunc, sampleSize, bLen+angularLimits(1), k);
+    [U, S, ~] = outOfCoreRandomizedSVD(rowFunc, sampleSize, 2*bLen+angularLimits(1), k);
     b = U*S;
+    clear U;
+    clear S;
 else            % Use a low-pass filter
     rowFunc = struct('func', @rowFuncWDenoising, ...
             'args', {data, basis, truncation, angularLimits, bLen, wpass});
-    [U, S, ~] = outOfCoreRandomizedSVD(rowFunc, sampleSize, bLen+angularLimits(1), k);
+    [U, S, ~] = outOfCoreRandomizedSVD(rowFunc, sampleSize, 2*bLen+angularLimits(1), k);
     b = U*S;
+    clear U;
+    clear S;
 end
 
 % Compute nearest neighbors
