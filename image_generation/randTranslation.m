@@ -56,9 +56,9 @@ end
 
 %% Generate a random translation
 translationAngle = 2*pi*rand();
-translationSize = Inf;
-while translationSize>maxPixels
-    translationSize = exprnd(lambda);
-end
+translationSize = maxPixels*rand();
+% while translationSize>maxPixels
+%     translationSize = exprnd(lambda);
+% end
 translation ...
     = translationSize*[cos(translationAngle), sin(translationAngle)];
