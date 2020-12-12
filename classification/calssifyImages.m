@@ -122,7 +122,7 @@ end
 W = sparse(repelem((1:sampleSize)', Nneighbors), ...
     reshape(idx', [numel(idx), 1]), 1, ...
     sampleSize, sampleSize, numel(idx));
-W = W - diag(diag(W));
+W = spdiags(zeros(sampleSize, 1), 0, W);
 
 % Construct the Jaccard index to denoise the nearest neighbors graph
 E = ones(size(W, 1), 1);
