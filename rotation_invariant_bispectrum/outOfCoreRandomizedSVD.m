@@ -82,7 +82,7 @@ for I=1:i
 end
 
 % Alg: step 2
-[Q, ~, ~] = qr(H);
+[Q, ~, ~] = qr(H, 0);
 
 % Alg: step 3
 T = AtprodB(Q);
