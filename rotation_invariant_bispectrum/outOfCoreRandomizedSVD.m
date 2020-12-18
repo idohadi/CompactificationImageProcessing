@@ -138,7 +138,7 @@ if ismatrix(A)
 
     % Compute H^s for  s=1, ..., i
     for I=1:i
-        H(:, l*(I-1)+1:l*I) = A*(A.'*B);
+        H(:, l*(I-1)+1:l*I) = A*(A.'*H(:, l*(I-1)+1:l*I));
     end
 
     % Alg: step 2
