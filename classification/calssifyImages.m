@@ -25,7 +25,8 @@ function [avgedData, nearestNeighbors] = calssifyImages(data, bandlimit, varargi
 %   K                   Bispectrum denoising matrix.
 %                       Default is false. In this case, the code computes
 %                       it below.
-%   lowRank             true if a low-rank approximation is used. false
+%   lowRank             false if a low-rank approximation is not to be used.
+%                       Otherwise, the rank of the lonk rank to be used.
 %                       otherwise.
 %   Nneighbors          Number of nearest neighbors to find.
 %   scalingParam        Projection scaling parameter to use in image2shc.
@@ -64,7 +65,7 @@ p = inputParser;
 addParameter(p, 'interval', [-0.5, 0.5], @(x) numel(x)==2 & x(1)<x(2));
 addParameter(p, 'JaccardThreshold', 0.2, @(x) isscalar(x) & x>=0);
 addParameter(p, 'K', false);
-addParameter(p, 'lowRank', false, @(x) isscalar(x) & x>=0 & x<1);
+addParameter(p, 'lowRank', false, @(x) x==false | (isscalar(x) & x>=1 & round(x)==x));
 addParameter(p, 'Nneighbors', 50, @(x) isscalar(x) & x>=1);
 addParameter(p, 'scalingParam', 1.5, @(x) isscalar(x) & x>0);
 addParameter(p, 'sigma2', 1, @(x) isscalar(x) & x>0);
