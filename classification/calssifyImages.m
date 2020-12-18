@@ -25,6 +25,8 @@ function [avgedData, nearestNeighbors] = calssifyImages(data, bandlimit, varargi
 %   K                   Bispectrum denoising matrix.
 %                       Default is false. In this case, the code computes
 %                       it below.
+%   lowRank             true if a low-rank approximation is used. false
+%                       otherwise.
 %   Nneighbors          Number of nearest neighbors to find.
 %   scalingParam        Projection scaling parameter to use in image2shc.
 %   wpass               MATLAB's lowpass function parameter.
@@ -34,6 +36,7 @@ function [avgedData, nearestNeighbors] = calssifyImages(data, bandlimit, varargi
 %   interval            [-0.5, 0.5]
 %   JaccardThreshold    0.5
 %   K                   false
+%   lowRank             false
 %   Nneighbors          50
 %   scalingParam        1.5
 %   wpass               0.05
@@ -61,16 +64,19 @@ p = inputParser;
 addParameter(p, 'interval', [-0.5, 0.5], @(x) numel(x)==2 & x(1)<x(2));
 addParameter(p, 'JaccardThreshold', 0.2, @(x) isscalar(x) & x>=0);
 addParameter(p, 'K', false);
+addParameter(p, 'lowRank', false, @(x) isscalar(x) & x>=0 & x<1);
 addParameter(p, 'Nneighbors', 50, @(x) isscalar(x) & x>=1);
 addParameter(p, 'scalingParam', 1.5, @(x) isscalar(x) & x>0);
 addParameter(p, 'sigma2', 1, @(x) isscalar(x) & x>0);
 addParameter(p, 'wpass', 0.05, @(x) isscalar(x) & x>=0 & x<1);
+
 
 % Process the optional input
 parse(p, varargin{:});
 interval = p.Results.interval;
 JaccardThreshold = p.Results.JaccardThreshold;
 K = p.Results.K;
+lowRank = p.Results.lowRank;
 Nneighbors = p.Results.Nneighbors;
 scalingParam = p.Results.scalingParam;
 sigma2 = p.Results.sigma2;
@@ -116,7 +122,7 @@ else
 end
 
 % Compute rakn 400 approximation of b
-if size(b, 2)>1000
+if lowRank
     [U, S, ~] = outOfCoreRandomizedSVD(b, 400);
     b = U*S;
 end
