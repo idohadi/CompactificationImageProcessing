@@ -121,9 +121,9 @@ else
     end
 end
 
-% Compute rakn 400 approximation of b
-if lowRank
-    [U, S, ~] = outOfCoreRandomizedSVD(b, 400);
+% Compute rank approximation of b
+if ~islogical(lowRank)
+    [U, S, ~] = outOfCoreRandomizedSVD(b, lowRank);
     b = U*S;
 end
 
