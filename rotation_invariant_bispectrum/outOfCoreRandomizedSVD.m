@@ -1,45 +1,49 @@
-function [U, S, V] = outOfCoreRandomizedSVD(rowFunc, m, n, k, varagin)
+function [U, S, V] = outOfCoreRandomizedSVD(A, k, varargin)
 %% TODO
 % Call format
+%   [U, S, V] = outOfCoreRandomizedSVD(A, k)
+%   [U, S, V] = outOfCoreRandomizedSVD(A, k, __)
 %   [U, S, V] = outOfCoreRandomizedSVD(rowFunc, k)
-%   [U, S, V] = outOfCoreRandomizedSVD(rowFunc, k, __)
+%   [U, S, V] = outOfCoreRandomizedSVD(rowFunc, k __)
 % 
-% Identify close neighbors of images in data and denoise each image, using
-% its neighbors.
+% Compute a rank k approximation of a matrix using a randomized SVD 
+% algorithm. U*S*V' is a k rank matrix appproximating the input matrix.
 % 
+% A can either be an m x n array or a structure. If it is a structure, it must
+% have the following fields:
+%   m       -   the number of rows of the matrix.
+%   n       -   the number of columns of the matrix.
+%   rowFunc -   a function handle such that rowFunc(J, args{:}) returns the
+%               J-th row of the matrix.
+%   args    -   auxilary arguments for rowFunc.
 % 
-% TODO edit docs below
 % 
 % Input arguments
-%   data                double      imageSize x imageSize x sampleSize
-%                                   array, 
-%   truncation          double      scalar, positive integer, bandlimit for
-%                                   projection.
-%   angularLimits       double 
+%   A       double      an input matrix, specified in one of the two
+%                       formats presented above.
+%   k       double      the output is to be a rank k approximation of A.
 % 
 % Output arguments
-%   avgedData           double      
-%   nearestNeighbors    double      
+%   U, S, V double      matrices such that 
+%                           U*S*V' is approximately a rank k approximation
+%                       of the input matrix A.
 % 
 % Optional arguments
-%   interval            Parameter for image2shc.
-%   JaccardThreshold    The threshold over which we maintain an edge in the
-%                       similarity matrix.
-%   K                   Bispectrum denoising matrix.
-%                       Default is false. In this case, the code computes
-%                       it below.
-%   Nneighbors          Number of nearest neighbors to find.
-%   scalingParam        Projection scaling parameter to use in image2shc.
-%   wpass               MATLAB's lowpass function parameter.
-%                       If wpass=0, no low-pass filter is used.
+%   l, i        Utility parameters. See [1].
+%   batchSize   Batch sizes for parallel computation. Relevant only when
+%               the input matrix is given as a row-generating function.
 % 
 % Default optional arguments
-%   JaccardThreshold    0.5
-%   Nneighbors          50
-%   wpass               0.05
+%   l           k + 2
+%   i           2
+%   batchSize   100
 % 
 % Notes
-%   (1) Notations follow [1].
+%   (1) This is an implementation of the algorithm presented in [1]. This
+%       implementation assumes the input matrix is given in one of two
+%       forms: either the matrix itself is given, or a row-generating
+%       function is given.
+%   (2)  Notations follow [1].
 % 
 % Reference
 %   [1] Halko, N., Martinsson, P.-G., Shkolnisky, Y., & Tygert, M. (2011). 
@@ -53,51 +57,107 @@ function [U, S, V] = outOfCoreRandomizedSVD(rowFunc, m, n, k, varagin)
 % ***********************************************************
 
 %% Input handling
-% TODO
-l = k + 2;
-i = 2;
-batchSize = 100;
+p = inputParser;
 
-func = @(x) rowFunc.func(x, rowFunc.args{:});
+if ismatrix(A) && isnumeric(A)
+    m = size(A, 1);
+    n = size(A, 2);
+elseif isstruct(A)
+    assert(isfield(A, 'm'), 'm (number of rows) must be a field.');
+    assert(isfield(A, 'n'), 'n (number of columns) must be a field.');
+    assert(isfield(A, 'rowFunc'), 'rowFunc (row-generating function) must be a field.');
+    assert(isfield(A, 'args'), 'args (row-generating function auxilary arguments) must be a field.');
+    
+    m = A.m;
+    n = A.n;
+    func = @(x) A.rowFunc(x, A.args{:});
+else
+    error('Unidentified input matrix format.');
+end
+
+% Process the optional input
+addParameter(p, 'batchSize', 100, @(x) isscalar(x) & x>=1);
+addParameter(p, 'l', k+2, @(x) isscalar(x) & x>=k);
+addParameter(p, 'i', 2, @(x) isscalar(x) & x>=0);
+
+parse(p, varargin{:});
+batchSize = p.Results.batchSize;
+i = p.Results.i;
+l = p.Results.l;
+
 
 %% Compute the randomized SVD
-% Generate batch limits
-batches = [0, batchSize:batchSize:m];
-if batches(end)<m
-    batches(end+1) = m;
+if isstruct(A)
+    % Generate batch limits
+    batches = [0, batchSize:batchSize:m];
+    if batches(end)<m
+        batches(end+1) = m;
+    end
+
+    % Alg: step 1
+    G = randn(n, l);
+
+    % Initialize H
+    H = zeros(m, (i+1)*l);
+
+    % Compute H^0
+    H(:, 1:l) = AprodB(G);
+
+    % Compute H^s for  s=1, ..., i
+    for I=1:i
+        H(:, l*(I-1)+1:l*I) = AprodB(AtprodB(H(:, l*(I-1)+1:l*I)));
+    end
+
+    % Alg: step 2
+    [Q, ~, ~] = qr(H, 0);
+
+    % Alg: step 3
+    T = AtprodB(Q);
+
+    % Alg: step 4
+    [Vtilde, Stilde, W] = svd(T, 'econ');
+
+    % Alg: step 5
+    Utilde = Q*W;
+
+    % Step 6
+    U = Utilde(:, 1:k);
+    V = Vtilde(:, 1:k);
+    S = Stilde(1:k, 1:k);
 end
 
-% Alg: step 1
-G = randn(n, l);
+if ismatrix(A)
+    % Alg: step 1
+    G = randn(n, l);
 
-% Initialize H
-H = zeros(m, (i+1)*l);
+    % Initialize H
+    H = zeros(m, (i+1)*l);
 
-% Compute H^0
-H(:, 1:l) = AprodB(G);
+    % Compute H^0
+    H(:, 1:l) = A*G;
 
-% Compute H^s for  s=1, ..., i
-for I=1:i
-    H(:, l*(I-1)+1:l*I) = AprodB(AtprodB(H(:, l*(I-1)+1:l*I)));
+    % Compute H^s for  s=1, ..., i
+    for I=1:i
+        H(:, l*(I-1)+1:l*I) = A*(A.'*B);
+    end
+
+    % Alg: step 2
+    [Q, ~, ~] = qr(H, 0);
+
+    % Alg: step 3
+    T = A.'*Q;
+
+    % Alg: step 4
+    [Vtilde, Stilde, W] = svd(T, 'econ');
+
+    % Alg: step 5
+    Utilde = Q*W;
+
+    % Step 6
+    U = Utilde(:, 1:k);
+    V = Vtilde(:, 1:k);
+    S = Stilde(1:k, 1:k);
 end
-
-% Alg: step 2
-[Q, ~, ~] = qr(H, 0);
-
-% Alg: step 3
-T = AtprodB(Q);
-
-% Alg: step 4
-[Vtilde, Stilde, W] = svd(T, 'econ');
-
-% Alg: step 5
-Utilde = Q*W;
-
-% Step 6
-U = Utilde(:, 1:k);
-V = Vtilde(:, 1:k);
-S = Stilde(1:k, 1:k);
-
 
 %% Utility functions
 function P = AprodB(B)
@@ -108,12 +168,12 @@ assert(size(B, 1)==n, ...
 P = zeros(m, size(B, 2));
 
 for b=1:length(batches)-1
-    A = zeros(batches(b+1) - batches(b), n);
+    Arows = zeros(batches(b+1) - batches(b), n);
     batchLowLim = batches(b);
     parfor J=batches(b)+1:batches(b+1)
-        A(J - batchLowLim, :) = feval(func, J);
+        Arows(J - batchLowLim, :) = feval(func, J);
     end
-    P(batches(b)+1:batches(b+1), :) = A*B;
+    P(batches(b)+1:batches(b+1), :) = Arows*B;
 end
 end
 
@@ -125,12 +185,12 @@ assert(size(B, 1)==m, ...
 P = zeros(n, size(B, 2));
 
 for b=1:length(batches)-1
-    At = zeros(n, batches(b+1) - batches(b));
+    Arowst = zeros(n, batches(b+1) - batches(b));
     batchLowLim = batches(b);
     parfor J=batches(b)+1:batches(b+1)
-        At(:, J - batchLowLim) = feval(func, J);
+        Arowst(:, J - batchLowLim) = feval(func, J);
     end
-    P = P + At * B(batches(b)+1:batches(b+1), :);
+    P = P + Arowst * B(batches(b)+1:batches(b+1), :);
 end
 end
 
