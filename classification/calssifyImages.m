@@ -116,8 +116,10 @@ else
 end
 
 % Compute rakn 400 approximation of b
-[U, S, ~] = outOfCoreRandomizedSVD(b, 400);
-b = U*S;
+if size(b, 2)>1000
+    [U, S, ~] = outOfCoreRandomizedSVD(b, 400);
+    b = U*S;
+end
 
 % Compute nearest neighbors
 [idx, D] = knnsearch(b, b, 'K', Nneighbors);
