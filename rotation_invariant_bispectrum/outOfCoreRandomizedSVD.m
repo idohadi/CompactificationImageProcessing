@@ -62,6 +62,8 @@ p = inputParser;
 if ismatrix(A) && isnumeric(A)
     m = size(A, 1);
     n = size(A, 2);
+    
+    structFlag = false;
 elseif isstruct(A)
     assert(isfield(A, 'm'), 'm (number of rows) must be a field.');
     assert(isfield(A, 'n'), 'n (number of columns) must be a field.');
@@ -71,6 +73,8 @@ elseif isstruct(A)
     m = A.m;
     n = A.n;
     func = @(x) A.rowFunc(x, A.args{:});
+    
+    structFlag = true;
 else
     error('Unidentified input matrix format.');
 end
@@ -87,7 +91,7 @@ l = p.Results.l;
 
 
 %% Compute the randomized SVD
-if isstruct(A)
+if structFlag
     % Generate batch limits
     batches = [0, batchSize:batchSize:m];
     if batches(end)<m
@@ -124,9 +128,7 @@ if isstruct(A)
     U = Utilde(:, 1:k);
     V = Vtilde(:, 1:k);
     S = Stilde(1:k, 1:k);
-end
-
-if ismatrix(A)
+else
     % Alg: step 1
     G = randn(n, l);
 
