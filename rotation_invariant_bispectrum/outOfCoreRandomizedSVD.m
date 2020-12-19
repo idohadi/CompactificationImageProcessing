@@ -72,7 +72,6 @@ elseif isstruct(A)
     
     m = A.m;
     n = A.n;
-    func = @(x) A.rowFunc(x, A.args{:});
     
     structFlag = true;
 else
@@ -173,7 +172,7 @@ for b=1:length(batches)-1
     Arows = zeros(batches(b+1) - batches(b), n);
     batchLowLim = batches(b);
     parfor J=batches(b)+1:batches(b+1)
-        Arows(J - batchLowLim, :) = feval(func, J);
+        Arows(J - batchLowLim, :) = A.rowFunc(J, A.args{:});
     end
     P(batches(b)+1:batches(b+1), :) = Arows*B;
 end
@@ -190,7 +189,7 @@ for b=1:length(batches)-1
     Arowst = zeros(n, batches(b+1) - batches(b));
     batchLowLim = batches(b);
     parfor J=batches(b)+1:batches(b+1)
-        Arowst(:, J - batchLowLim) = feval(func, J);
+        Arowst(:, J - batchLowLim) = A.rowFunc(J, A.args{:});
     end
     P = P + Arowst * B(batches(b)+1:batches(b+1), :);
 end
