@@ -86,15 +86,19 @@ clear bispectrum_mex;
 
 if wpass==0     % Don't use a low-pass filter
     rowFunc = struct('func', @rowFuncWODenoising, ...
-            'args', {{data, basis, truncation, angularLimits, bLen}});
-    [U, S, ~] = outOfCoreRandomizedSVD(rowFunc, sampleSize, 2*bLen+angularLimits(1), k);
+            'args', {{data, basis, truncation, angularLimits, bLen}}, ...
+            'm', sampleSize, ...
+            'n', 2*bLen+angularLimits(1));
+    [U, S, ~] = outOfCoreRandomizedSVD(rowFunc, k);
     b = U*S;
     clear U;
     clear S;
 else            % Use a low-pass filter
     rowFunc = struct('func', @rowFuncWDenoising, ...
-            'args', {{data, basis, truncation, angularLimits, bLen, wpass}});
-    [U, S, ~] = outOfCoreRandomizedSVD(rowFunc, sampleSize, 2*bLen+angularLimits(1), k);
+            'args', {{data, basis, truncation, angularLimits, bLen, wpass}}, ...
+            'm', sampleSize, ...
+            'n', 2*bLen+angularLimits(1));
+    [U, S, ~] = outOfCoreRandomizedSVD(rowFunc, k);
     b = U*S;
     clear U;
     clear S;
