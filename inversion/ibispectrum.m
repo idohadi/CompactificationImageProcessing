@@ -54,6 +54,7 @@ opts = optimoptions(@lsqnonlin, ...
     'Display', 'off'); 
 
 %% Invert the bispectrum
+global CGs;
 if nargin<3
     initialSHC = cSHC2rSHC(randSHC(bandlimit));
 else
@@ -67,7 +68,7 @@ invertedSHC = rSHC2cSHC(invertedSHC);
 
 %% The objective function
 function [F, grad] = inversionObjectiveFunc(shc)
-[F, grad] = bispectrum(rSHC2cSHC(shc), bandlimit);
+[F, grad] = bispectrum(rSHC2cSHC(shc), bandlimit, CGs);
 F = F - b;
 end
 
