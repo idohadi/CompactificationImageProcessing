@@ -1,4 +1,4 @@
-#include <stdint.h>
+#include <stdlib.h>
 
 /* Typedef */
 typedef double***** clebsch_gordan_table;

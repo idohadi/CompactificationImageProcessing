@@ -7,7 +7,6 @@
  *  [1] Straub, W. O. (n.d.). Efficient Computation of Clebsch-Gordan Coefficients. Retrieved October 28, 2019, from http://vixra.org/abs/1403.0263
  */
 
-#include <stdint.h>
 #include <math.h>
 #include "clebsch_gordan_coefficients.h"
 
