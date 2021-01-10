@@ -1,0 +1,758 @@
+\documentclass[a4paper,11pt]{scrartcl}
+% Page formatting
+\usepackage[a4paper,
+	inner=2.3cm, 
+	outer=2.3cm,
+	top=2.8cm,
+	bottom=2.8cm]{geometry}
+\usepackage{indentfirst}
+\usepackage{enumitem}
+
+% Hyperlinking
+\usepackage{hyperref}
+\hypersetup{
+	colorlinks,
+	linkcolor={red!50!black},
+	citecolor={blue!50!black},
+	urlcolor={blue!80!black}
+}
+
+% Math packages
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{tikz-cd}
+\usepackage{dsfont}
+
+% Theorem environments
+\newcounter{dummy} 
+\numberwithin{dummy}{section}
+
+\usepackage[hyperref,amsmath,thmmarks]{ntheorem}
+
+\theoremstyle{plain}
+\theoremseparator{.}
+\theoremsymbol{\scalebox{0.7}{$ \square $}}
+\theorembodyfont{}
+\newtheorem{proposition}[dummy]{Proposition}
+
+\theoremstyle{plain}
+\theoremseparator{.}
+\theoremsymbol{\scalebox{0.7}{$ \square $}}
+\theorembodyfont{}
+\newtheorem{remark}[dummy]{Remark}
+
+\theoremstyle{plain}
+\theoremseparator{.}
+\theoremsymbol{\scalebox{0.7}{$ \square $}}
+\theorembodyfont{}
+\newtheorem{conjecture}[dummy]{Conjecture}
+
+\theoremstyle{plain}
+\theoremseparator{.}
+\theoremsymbol{\scalebox{0.7}{$ \square $}}
+\theorembodyfont{}
+\newtheorem{theorem}[dummy]{Theorem}
+
+\newtheorem{corollary}[dummy]{Corollary}
+
+\theoremstyle{nonumberplain}
+\theoremsymbol{$ \blacksquare $}
+\theoremheaderfont{\scshape}
+\newtheorem{proof}{Proof}
+
+\allowdisplaybreaks
+
+% Color handling
+\usepackage{xcolor}
+\definecolor{darkgreen}{rgb}{0.0,0.5,0.0}
+\newcommand{\rt}[1]{\textcolor{red}{#1}}
+\newcommand{\gt}[1]{\textcolor{darkgreen}{#1}}
+\newcommand{\bt}[1]{\textcolor{blue}{#1}}
+\newcommand{\ft}[1]{\textcolor{green}{#1}}
+
+% Subfigure
+%\usepackage{caption}
+\usepackage{subcaption}
+
+% Tikz setup
+\usepackage{tikz}
+
+% Commands
+\newcommand{\F}[1][R]{\mathbb{#1}} % Prints the field name in the appropriate format. Default is the field of real numbers.
+\newcommand{\setsep}{\ \middle|\ } % Set separator 
+\newcommand{\Eucprod}[2]{\left\langle #1,#2 \right\rangle} % Inner product sign <, >
+\newcommand{\Ltwonorm}[1]{\left\Vert #1 \right\Vert} % Norm sign || ||
+\renewcommand{\mod}{\ \mathrm{mod}\ }
+
+% Textual shortcuts
+\newcommand{\Id}{\mathrm{Id}}
+\newcommand{\Lie}{\mathrm{Lie}}
+\newcommand{\rk}{\mathop{\mathrm{rk}}}
+\newcommand{\SE}{\mathrm{SE}}
+\newcommand{\SO}{\mathrm{SO}}
+\newcommand{\Sp}{\mathop{\mathrm{Sp}}}
+
+
+% Bibliography setup
+\usepackage[backend=biber, style=apa, citestyle=authoryear]{biblatex}
+\addbibresource{Projection.bib} %Imports bibliography file
+
+% Loading cleveref
+\usepackage{cleveref}
+
+% Document metadata
+\title{Kondor's Projection is Induced by Dooley's Contraction Map}
+\subtitle{An Unpublishable Draft}
+\author{Ido Hadi}
+\date{\today}
+
+\begin{document}
+	
+	\maketitle
+	
+	\tableofcontents
+	
+	\section{Notations and Conventions}
+	Throughout this document, $ \Ltwonorm{\cdot} = \Ltwonorm{\cdot}_{2} $ is the finite-dimensional $ 2 $-norm or the $ L^{2} $-norm, depending on its argument. Define $ B_{s} \coloneqq \left\{ \mathbf{x} \in \F^{2} \setsep \Ltwonorm{\mathbf{x}} < s \right\} $ and $ \overline{B}_{s} \coloneqq \left\{ \mathbf{x} \in \F^{2} \setsep \Ltwonorm{\mathbf{x}} \le s \right\} $. Also, $ S^{n} \coloneqq \left\{ \mathbf{x}\in\F^{n+1} \setsep \Ltwonorm{\mathbf{x}} = 1 \right\} $ and $ \mathbf{n} = \left( 0, 0, 1 \right) $ is the north pole of $ S^{2} $. $ (\theta, \phi) $ are spherical coordinates for $ S^{2} $. $ \theta = \theta (\mathbf{x}) \in [0, \pi] $  is the angle between $ \mathbf{x} $ the north pole and $ \mathbf{x} $ and $ \phi = \phi (\mathbf{x}) $ is the angle between $ (1, 0, 0) $ and the projection of $ \mathbf{x} $ onto the $ xy $-plane.
+	
+	$ \SO(n) $ is the group of orientation-preserving rotations of $ \F^{n} $ or $ S^{n-1} $. $ \SE(n) $ is the group of rigid motions of $ \F^{n} $; that is, the group distance- and orientation-preserving affine transformations of $ \F^{n} $ imbued the Euclidean distance metric. $ \SE(n) $ can be identified with $ \F^{n} \rtimes \SO(n) $. Every element of $ \SE(n) $ can be written as a pair $ \left(\mathbf{b}, R \right) \in \F^{n} \times \SO(n) $ and the group acts on $ \F^{n} $ by $ (\mathbf{b}, R) \bullet \mathbf{x} = R^{\top} \mathbf{x} + \mathbf{b} $. Accordingly, multiplication is defined as $ (\mathbf{b}_{1}, R_{1}) ( \mathbf{b}_{2}, R_{2} ) = (\mathbf{b}_{1} + R_{1}\mathbf{b}_{2}, R_{1} R_{2}) $.
+	
+	\section{Objective}
+	In our project, we use a family of projections from functions on $ \F^{2} $ onto spherical functions. Given a unit $ 2 $-sphere and $ r > 0 $, we project $ f : \F^{2} \to \F $ to $ \widetilde{\kappa}_{r} f : S^{2} \setminus \left\{ - \mathbf{n} \right\} \to \F $ by 
+	\begin{equation}
+	\label{projection}
+	\widetilde{\kappa}_{r} f (\theta, \phi)
+	= f \left( r \theta \cos \phi, r \theta \sin \phi\right),
+	\end{equation}
+	This projection was used in \textcite{Kondor2007}, a work which inspired our project.
+	
+	In his paper on synchronization with respect to $ \SE(n) $, Nir used a mapping from $ \SE (2) $ to $ \SO(3) $ (\cite{Sharon2018}). One can show, as Nir has in \textcite{Sharon2018}, that $ \F^{2} $ is isomorphic to a Lie subalgebra of $ \Lie (\SO(3))) $. 
+	Indeed, \textcite[214]{Sharon2018} identified 
+	\begin{equation}
+	\label{bIdentif}
+	\mathbf{b} 
+	\leftrightarrow 
+	\left[\begin{matrix}
+	\mathbf{0}_{2,2} 	& \mathbf{b} \\
+	-\mathbf{b}^{\top} 	& 0
+	\end{matrix}\right] \eqqcolon \mathbf{B},
+	\end{equation}
+	and so it makes sense to write 
+	\begin{equation}
+	\label{expbDef}
+	\exp_{\SO(3)} (\mathbf{b}) = \exp_{\SO(3)} (\mathbf{B})
+	\end{equation}
+	This enables one to define the following map
+	\begin{equation}
+	\label{contractionMap}
+	\Psi_{r} (\mathbf{b}, R)
+	= \exp_{\SO(3)} \left( \frac{\mathbf{b}}{r} \right) R,
+	\end{equation}
+	where $ R $ on the right-hand side belongs to the subgroup $ \SO(2) \le \SO(3) $ of $ \mathbf{n} $-preserving elements of $ \SO(3) $. Finally, note that \eqref{contractionMap} is a contraction map, a category of maps that was studied (and first rigorously defined?) by \textcite{Dooley1984}.
+	
+	My objective here is to show that the mapping \eqref{projection} is induced by \eqref{contractionMap}. This is important for two reasons. First, it connects a seemingly non-group-theoretic object to a group-theoretic object, thus expanding the mathematical toolbox one might potentially use to study its properties. Second, because Nir asked me to stop dawdling and start writing my proofs and he's goddamn right.
+	
+	\section{Proof}
+	The main claim I prove here is the following (see \autoref{ProofDiagramA} for a graphical representation):
+	\begin{theorem}
+	    Fix $ r > 0 $. 
+	    Let $ \pi : \F^{2} \rtimes \SO(2) \to \F^{2} $ and $ \eta : \SO(3) \to \F $ be surjective smooth submersions defined in \eqref{SubmersionsDef}, and let $ \Psi_{r} $ be the contraction map defined in \eqref{contractionMap}.
+	    Let $ f : \F^{2} \to \F $ be a smooth function with compact support within $ B_{2 \pi r} $. Then:
+	    \begin{enumerate}[label=(\roman*)]
+	        \item There is a unique smooth function $ \widetilde{f} : \F^{2} \to \F  $ that agrees with $ f $ on $ B_{2 \pi r} $ and satisfies $ \widetilde{f} \circ \pi $ is constant on fibers of $ \eta \circ \Psi_{r} $.
+	        
+	        \item There is a smooth function $ \kappa_{r} f : S^{2} \to \F $ such that the diagram in \autoref{ProofDiagramA} commutes. This function is unique; that is, $ \kappa_{r} $ is injective.
+	        
+	        \item $ \kappa_{r} f \big|_{S^{2} \setminus \{- \mathbf{n} \} } $ is $ \widetilde{\kappa}_{r} f $ defined in \eqref{projection}.
+	        \end{enumerate}
+	\end{theorem}
+	
+	Though these results are stated only for smooth $ f $ supported within $ B_{2 \pi r} $, I believe $ \kappa_{r} $ can be extended to all square-integrable functions with compact support within $ B_{2 \pi r} $. I haven't done that yet.
+	
+	\subsection{Outline of the Proof}
+	\autoref{ProofDiagram} presents the situation graphically. The proof proceeds in roughly the following steps:
+	\begin{enumerate}
+		\item Preliminaries:
+		\begin{enumerate}
+			\item \label{SubmersionStep} I prove the existence of two surjective smooth submersions $ \pi : \F^{2} \rtimes \SO(2) \to \F^{2} $ and $ \eta : \SO(3) \to S^{2} $.
+			
+			\item I prove $ \Psi_{r} $ is a smooth map.
+			
+			\item I prove $ \eta \circ \Psi_{r} $ is a surjective smooth submersion and characterize its fibers.
+			
+		\end{enumerate}
+		
+		\item I prove any smooth function $ f : \F^{2} \to \F $ with a compact support within $ B_{2 \pi r} $ can be extended to a smooth function $ \widetilde{f} : \F^{2} \to \F $ such that $ \pi \circ \widetilde{f} $ is constant on fibers of $ \eta \circ \Psi_{r} $ and $ f $ is recoverable from $ \widetilde{f} $.
+		
+		\item \label{LeeKeyStep} Since $ \eta \circ \Psi_{r} $ is a smooth submersion and $ \widetilde{f} \circ \pi $ is constant on its fibers, a unique smooth $ \kappa_{r} \widetilde{f} : S^{2} \to \F $ exists such that the diagram in \autoref{ProofDiagramB} commutes. Since $ f $ is recoverable from $ \widetilde{f} $, I define $ \kappa_{r} f = \kappa_{r} \widetilde{f} $, so \autoref{ProofDiagramA} commutes as well.
+		
+		\item I prove that $ \kappa_{r} f $ is exactly $ \widetilde{\kappa}_{r} f $ defined in \eqref{projection}.
+		
+	\end{enumerate}
+	After that, the rest of this document studies the properties of $ \kappa_{r} $ as a linear transformation and its use as a transformation from spaces of functions on $ \F^{2} $ to spaces of spherical functions.
+	
+	\begin{figure}
+		\begin{center}
+			\begin{subfigure}{0.4\textwidth}
+				\begin{tikzcd}
+				\F^{2} \rtimes \SO(2) \arrow[d, "\pi" blue] \arrow[rr, "\Psi_{r}"] & & \SO(3) \arrow[d, "\eta" blue] \\
+				\F^{2}\arrow[dr, "\widetilde{f} "] & & S^{2} \arrow[dl, dashed, red, "\kappa_{r} f "] \\
+				& \F &  
+				\end{tikzcd}
+				\caption{Original function}
+				\label{ProofDiagramA}
+			\end{subfigure}
+			\begin{subfigure}{0.4\textwidth}
+				\begin{tikzcd}
+				\F^{2} \rtimes \SO(2) \arrow[d, "\pi" blue] \arrow[rr, "\Psi_{r}"] & & \SO(3) \arrow[d, "\eta" blue] \\
+				\F^{2}\arrow[dr, "\widetilde{f} "] & & S^{2} \arrow[dl, dashed, red, "\kappa_{r} \widetilde{f} "] \\
+				& \F &  
+				\end{tikzcd}
+				\caption{Extended function}
+				\label{ProofDiagramB}
+			\end{subfigure}
+			\caption{Diagram of the various spaces and mappings between them. The key submersions are marked blue. The existence of the red function is proved and its properties studied.}
+			\label{ProofDiagram}
+		\end{center}
+	\end{figure}
+	
+	Two important things to note at the outset. First, in step \ref{SubmersionStep} the smooth submersion $ \pi $ is pretty standard fare and very well-known. The submersion $ \eta $ is perhaps less used. Proving either map is a surjective submersion is hardly an achievement. This is a technical step, verging on the trivial. Second, and more important, in step \ref{LeeKeyStep} the conclusion follows from a pretty standard theorem in manifold theory, herein cited in full from \textcite[90]{Lee2013}:
+	\begin{theorem}
+		\label{PassingThroughSubmersion}
+		Let $ M $ and $ N $ be two smooth manifolds and $ \pi : M \to N $ is a surjective smooth submersion. If $ P $ is a smooth manifold with or without boundary and $ F : M \to P $ is a smooth map that is constant on the fibers of $ \pi $, then there exists a unique smooth map $ \widetilde{F} : N \to P $ such that $ \widetilde{F} \circ \pi = F $.
+	\end{theorem}
+	
+	\subsection{The Two Key Submersions and Their Properties}
+	Define
+	\begin{equation}
+	\label{SubmersionsDef}
+	\begin{aligned}
+	&\pi : \F^{2} \rtimes \SO(2) \to \F^{2} \\
+	&\pi (\mathbf{b}, R) = (\mathbf{b}, R) \bullet \mathbf{0}_{2} =  \mathbf{b}
+	\end{aligned}
+	\qquad\mbox{and}\qquad
+	\begin{aligned}
+	&\eta : \SO(3) \to S^{2} \\
+	&\eta (R) = R \mathbf{n}
+	\end{aligned}
+	\end{equation}
+	It is obvious both maps are surjective. I now prove both are smooth submersions.
+	
+	\begin{proposition}
+		\label{AreSubmersions}
+		$ \pi $ and $ \eta $ are smooth submersion.
+	\end{proposition}
+	
+	\begin{proof}
+		Note that both maps are orbit maps. $ \pi $ is the orbit map of $ \mathbf{0}_{2} $ with respect to the action of $ \SE(2) $ on $ \F^{2} $ and $ \eta $ is the orbit map of $ \mathbf{n} $ with respect to the action of $ \SO(3) $ on $ S^{2} $. Therefore, both maps have a constant rank (cf. \cite[166]{Lee2013}, Proposition 7.26). Since they are surjective, they are submersions (\cite[83]{Lee2013}, Theorem 4.14, Global Rank Theorem).
+	\end{proof}
+	
+	The proposition above is almost trivial. The following is similarly easily proven:
+	\begin{proposition}
+		For every $ r > 0 $, the map $ \Psi_{r} : \F^{2} \rtimes \SO(2) \to \SO(3) $ defined in \eqref{contractionMap} is smooth.
+	\end{proposition}
+	
+	\begin{proof}
+		$ \Psi_{r}  $ is the composition of $ (\mathbf{b}, R) \mapsto \left(\exp_{\SO(3)} (\mathbf{b}), R  \right) $ with the multiplication map of $ \SO(3) $. The former is smooth because its first coordinate is the exponential map which is smooth and the second coordinate is an projection onto $ \SO(2) $ of the product $ \F^{2} \times \SO(2) $ (considered as a product manifold, not a direct group product). Thus, $ \Psi_{r} $ is a composition of smooth maps, and therefore it is smooth.
+	\end{proof}
+	
+	The following obtains, since the composition of smooth maps is smooth:
+	\begin{corollary}
+		$ \eta \circ \Psi_{r} $ is smooth.
+	\end{corollary}
+	
+	Recall that $ R $ on the right-hand side of \eqref{contractionMap} belongs to the $ \mathbf{n} $-preserving subgroup $ \SO(2) \le \SO(3) $. This implies:
+	\begin{proposition}
+		\label{etaPsiSimplified}
+		$ \eta \circ \Psi_{r}  (\mathbf{b}, R) 
+		= \exp_{\SO(3)} \left(\frac{\mathbf{b}}{r}\right) \mathbf{n} $.
+	\end{proposition}
+	
+	Finally, I compute an explicit formula for $ \eta \circ \Psi_{r} $:
+	
+	\begin{proposition}
+		\label{etaPsiFormula}
+		$ \eta \circ \Psi_{r}  (\mathbf{b}, R) 
+		= \left( \frac{\mathbf{b}^{\top}}{\Ltwonorm{\mathbf{b}}} \sin \Ltwonorm{\mathbf{b}}, \cos \Ltwonorm{\mathbf{b}} \right)^{\top} $.
+	\end{proposition}
+	
+	\begin{proof}
+		\Cref{etaPsiSimplified} ensures it's sufficient to compute $ \exp_{\SO(3)} (\mathbf{b}) \mathbf{n}  $.
+		Since $ \mathfrak{so}(3) $ is a subalgebra of $ \mathfrak{gl} (3) $ it follows that
+		\begin{equation}
+		\label{expb}
+		\exp_{\SO(3)} (\mathbf{b})
+		= \sum_{n=0}^{\infty} \frac{1}{n!} \mathbf{B}^{n}, 
+		\qquad \mbox{where $ \mathbf{B} $  was defined in \eqref{bIdentif}.}
+		\end{equation}
+		From this point, the proof relies primarily on the Taylor series of sine and cosine.
+		Note that
+		\begin{align*}
+		\mathbf{B} \mathbf{n} 
+		= \left(\begin{matrix}
+		\mathbf{b} \\ 0
+		\end{matrix}\right) 
+		\quad\mbox{and}\quad
+		\mathbf{B}^{2} \mathbf{n}
+		= \mathbf{B} 
+		\left(\begin{matrix}
+		\mathbf{b} \\ 0
+		\end{matrix}\right)
+		= - \Ltwonorm{\mathbf{b}}^{2} \mathbf{n}
+		\end{align*}
+		Therefore,
+		\begin{equation*}
+		\mathbf{B}^{2n} \mathbf{n} 
+		= (- 1)^{n} \Ltwonorm{\mathbf{b}}^{2n} \mathbf{n}
+		\quad \mbox{and} \quad
+		\mathbf{B}^{2n+1} \mathbf{n} 
+		= \left( - \Ltwonorm{\mathbf{b}}^{2}\right)^{n} \mathbf{B} \mathbf{n}
+		= (-1)^{n} \Ltwonorm{\mathbf{b}}^{2n}
+		\left(\begin{matrix}
+		\mathbf{b} \\ 0
+		\end{matrix}\right).
+		\end{equation*}
+		This implies the $ z $-coordinate of \eqref{expb} is
+		\begin{equation*}
+		\sum_{n=0}^{\infty} \frac{ (-1)^{n} \Ltwonorm{\mathbf{b}}^{2n} }{(2n)!}
+		= \cos \Ltwonorm{\mathbf{b}}
+		\end{equation*}
+		and the $ x $- and $ y $-coordiantes are of the form
+		\begin{equation*}
+		b \sum_{n=0}^{\infty} \frac{(-1)^{n} \Ltwonorm{\mathbf{b}}^{2n}}{(2n+1)!}
+		= \frac{b}{\Ltwonorm{\mathbf{b}}} \sum_{n=0}^{\infty} \frac{(-1)^{n} \Ltwonorm{\mathbf{b}}^{2n+1}}{(2n+1)!}
+		= \frac{b}{\Ltwonorm{\mathbf{b}}} \sin \Ltwonorm{\mathbf{b}},
+		\end{equation*}
+		where $ b $ is the $ x $-coordinate or the $ y $-coordinate of $ \mathbf{b} $, respectively.
+	\end{proof}
+	
+	Overall, I obtain the following explicit expression for $ \eta \circ \Psi_{r} $:
+	\begin{corollary}
+		\label{etaCompPsiFormula}
+		$ \eta \circ \Psi_{r} \left(\mathbf{b}, R\right) 
+		= \left( \frac{\mathbf{b}^{\top}}{\Ltwonorm{\mathbf{b}}} \sin \left(\frac{\Ltwonorm{\mathbf{b}}}{r}\right), \cos \left(\frac{\Ltwonorm{\mathbf{b}}}{r}\right) \right)^{\top} $.
+	\end{corollary}
+	
+	$ \eta \circ \Psi_{r} $ has the following nice properties:
+	\begin{proposition}
+		\label{ConstantOnFibers}
+		For every $ r > 0 $, $ \eta \circ \Psi_{r} $ is constant on fibers of $ \pi $.
+	\end{proposition}
+	
+	\begin{proof}
+		Fix $ \mathbf{b}_{0} \in \F^{2} $. By the definition of $ \pi $, $ \pi (\mathbf{b}_{0}, R) = \mathbf{b}_{0} $ iff $ \mathbf{b}_{0} = R \mathbf{0}_{2} + \mathbf{b} = \mathbf{b} $. Therefore, $ \pi^{-1} (\mathbf{b}_{0}) = \left\{ \left(\mathbf{b}_{0}, R\right) \setsep R \in \SO(2) \right\} $ is the fiber of $ \pi $ at $ \mathbf{b}_{0} $. By \cref{etaCompPsiFormula}, $ \eta \circ \Psi_{r} $ depends only on the $ \F^{2} $-component of an element of $ \SE(2) $, and so the conclusion follows.
+	\end{proof}
+	
+	\begin{proposition}
+		\label{etaCompPsiSubmersion}
+		$ \eta \circ \Psi_{r} $ is a smooth submersion.
+	\end{proposition}
+	
+	\begin{proof}
+		\textbf{TODO} I got stuck on formalizing it, so I left it for now. I'm sure it's true. The skinny, ffr: outside the poles it has a linear local representation and at the poles composing \cref{etaCompPsiFormula} with the standard smooth coordinate charts on the sphere yields a submersion.
+	\end{proof}
+	
+	The following characterization of the fibers of $ \eta \circ \Psi_{r} $ is an easy corollary of \cref{etaCompPsiFormula}:
+	\begin{proposition}
+		\label{etaCompPsiFibers}
+		\begin{enumerate}[label=(\roman*), ref=(\roman*)]
+			\item $ \eta \circ \Psi_{r} $ is invariant on $ SO(2) $; that is, $ \eta \circ \Psi_{r} (\mathbf{b}, R_{1}) = \eta \circ \Psi_{r} (\mathbf{b}, R_{2}) $ for all $ R_{1}, R_{2} \in \SO(2) $. I therefore occasionally write $ \eta \circ \Psi_{r} (\mathbf{b}) $ from now on.
+			
+			\item \label{etaCompPsiFibersRadiallyPeriodic} $ \eta \circ \Psi_{r} $ is $ 2 \pi r $-periodic along one-dimensional linear subspaces of $ \F^{2} $; that is, if $ \mathbf{b} \in \F^{2} $ is a unit vector, the map $ s \mapsto \eta \circ \Psi_{r} (s \mathbf{b}) $ from $ \F $ to $ S^{2} $ is $ 2 \pi r $-periodic.
+			
+			\item $ \eta \circ \Psi_{r} $ is constant on circles of radius $ 2 \pi r n $ for all $ 0 \le n \in \F[Z] $. In particular, $ \eta \circ \Psi_{r} (\mathbf{b}, R) = \mathbf{n} $ if $ \Ltwonorm{\mathbf{b}} = 2 \pi r n $ for some $ 0 \le n \in \F[Z] $.
+			
+			\item $ \eta \circ \Psi_{r} $ is constant on circles of radius $ \pi r (2n+1) $ for all $ 0 \le n \in \F[Z] $. In particular, $ \eta \circ \Psi_{r} (\mathbf{b}, R) = -\mathbf{n} $ if $ \Ltwonorm{\mathbf{b}} = \pi r (2n+1) $ for some $ 0 \le n \in \F[Z] $.
+			
+		\end{enumerate}
+	\end{proposition}
+	
+	From that, I conclude the following:
+	\begin{corollary}
+		\label{ConstOnFiber}
+		A function $ f : \F^{2} \rtimes \SO(2) \to \F $ is constant on fibers of $ \eta \circ \Psi_{r} $ iff it satisfies all the following conditions:
+		\begin{enumerate}
+			\item $ f $ invariant on $ \SO(2) $.
+			
+			\item $ f $ is $ 2 \pi r $-periodic along one-dimensional linear subspaces of $ \F^{2} $.
+			
+			\item $ f $ is constant on circles of radius $ 2 \pi r n $ for all $ 0 \le n \in \F[Z] $.
+			
+			\item $ f $ is constant on circles of radius $ \pi r (2n+1) $ for all $ 0 \le n \in \F[Z] $.
+			
+		\end{enumerate}
+	\end{corollary}
+	
+	\subsection{Extending a Compactly Supported Function}
+	Fix $ r > 0 $. Let $ f : \F^{2} \to \F $ be smooth and compactly supported within $ B_{2 \pi r} $. For every unit vector $ \mathbf{b} \in \F^{2} $, define
+	\begin{equation*}
+	\chi_{r} f (s \mathbf{b})
+	= f ((s - 2n) \mathbf{b}), \quad
+	\mbox{where }
+	s \in [(2n-1) \pi r, (2n+1)\pi r] \mbox{ for some } n \in \F[Z].
+	\end{equation*}
+	$ \chi_{r} f $ is $ f $ extended along each line through the origin to be $ 2 \pi r $-periodic on that line.
+	
+	\begin{proposition}
+		$ \chi_{r} f $ is smooth.
+	\end{proposition}
+	
+	\begin{proof}
+		\textbf{TODO}
+		The skinny, ffr: on $ (2n+1)\pi r $ circles it is zero in neighborhood, so differentiable. Outside, in small enough neighborhood of every point it is identical to values in small enough neighborhood of corresponding point in $ 2 \pi r $-circle.
+	\end{proof}
+	
+	\begin{proposition}
+		$ \chi_{r} f $ is constant on fibers of $ \eta \circ \Psi_{r} $.
+	\end{proposition}
+	
+	\begin{proof}
+		All four conditions in \cref{ConstOnFiber} hold.
+	\end{proof}
+	
+	Finally, the following is pretty trivial:
+	\begin{proposition}
+		$ f = \mathds{1}_{B_{2 \pi r}} \cdot \chi_{r} f $, where $ \mathds{1}_{B_{2 \pi r}} (\mathbf{b}) = 1 $ when $ \mathbf{b} \in B_{2\pi r} $ and $ 0 $ otherwise.
+	\end{proposition}
+	
+	Denote by $ \Sigma_{r}^{\infty} $ the set smooth functions on $ \F^{2} $ such that their composition with the submersion $ \pi $ is  constant on fibers of $ \eta \circ \Psi_{r} $. Also, denote by $ C_{c,r}^{\infty} $ the set of smooth functions with compact support within $ B_{2 \pi r} $. The above argument shows that $ \chi $ is an invertible map between from $ C_{c,r}^{\infty} $ to $ \Sigma_{r}^{\infty} $. Note that $ \Sigma_{r}^{\infty} $ and $ C_{c,r}^{\infty} $ are both linear spaces and that $ \chi $ and its inverse are linear transformations. Finally, I conjecture without proof (for now, because I'm pretty sure it's true):
+	\begin{conjecture}
+		$ \Sigma_{r}^{\infty} $ is a subspace of the square-integrable functions on $ \F^{2} $.
+	\end{conjecture}
+	
+	\subsection{$ \kappa_{r} $, $ \widetilde{\kappa}_{r} $ and their relationship}
+	Let $ \widetilde{f} \in \Sigma_{r}^{\infty} $. I prove the existence of $ \kappa_{r} \widetilde{f} $ from \autoref{ProofDiagramB}:
+	\begin{corollary}
+		\label{ExistAndUniqueKappa}
+		There is a smooth function $ \kappa_{r} \widetilde{f} : \F^{2} \to \F $ such that \autoref{ProofDiagramB} commutes and this $ \kappa_{r} \widetilde{f} $ is unique.
+	\end{corollary}
+	
+	\begin{proof}
+		By \cref{ConstantOnFibers}, $ \pi \circ \widetilde{f} $ is constant of fibers of $ \eta \circ \Psi_{r} $. The existence of uniqueness of $ \kappa_{r} \widetilde{f} $ follows from \cref{PassingThroughSubmersion} and \cref{etaCompPsiSubmersion}.
+	\end{proof}
+	
+	From this, I conclude:
+	\begin{proposition}
+		If $ f \in C_{c,r}^{\infty} $, then $ \kappa_{r} f \coloneqq (\kappa_{r} \circ \chi) f $ is a unique smooth spherical function such that diagram \autoref{ProofDiagramA} commute.
+	\end{proposition}
+	
+	\begin{proof}
+		Denoting $ \widetilde{f} = \chi f $, $ \kappa_{r} \widetilde{f} $ is a unique smooth spherical function such that diagram in \autoref{ProofDiagramB} commutes. In particular, $ \kappa_{r} f $, defined above,  is a spherical function such that the diagram in \autoref{ProofDiagramA} commutes. 
+		
+		Finally, the uniqueness of $ \kappa_{r} \widetilde{f} $ is equivalent to the claim $ \kappa_{r} $ is injective on $ \Sigma_{r}^{\infty} $ and therefore left-invertible. Therefore, $ \chi^{-1} \circ \kappa_{r}^{-1} \circ \kappa_{r} \widetilde{f} = f  $. Since $ \kappa_{r} $ is left-invertible on $ C_{c,r}^{\infty}$, it is injective. That is, $ \kappa_{r} f $ is unique.
+	\end{proof}
+	
+	I now relate the function $ \kappa_{r} f $ with the function resulting from \eqref{projection} the projection we use in our project. 
+	\begin{proposition}
+		Recall the definition of $ \widetilde{\kappa}_{r}  $ in \eqref{projection}. If $ f \in C_{c,r}^{\infty} $, then $ \widetilde{\kappa}_{r} f = \kappa_{r} f \big|_{S^{2} \setminus \{ - \mathbf{n} \}} $.
+	\end{proposition}
+	
+	\begin{proof}
+		Let $ \mathbf{x} \in S^{2} \setminus \{ - \mathbf{n} \} $ with spherical coordinate representation $ (\theta, \phi) $. Let $ \mathbf{b} \in \F^{2} $ be a vector satisfying $ \eta \circ \Psi_{r} (\mathbf{b}) = \mathbf{x} $. By \cref{etaCompPsiFibers}\ref{etaCompPsiFibersRadiallyPeriodic}, it can be chosen so that $ \mathbf{b} \in B_{2 \pi r} $.  
+		
+		By \cref{etaCompPsiFormula}, 
+		\begin{equation*}
+		\mathbf{x}
+		= \left( \frac{\mathbf{b}^{\top}}{\Ltwonorm{\mathbf{b}}} \sin \left(\frac{\Ltwonorm{\mathbf{b}}}{r}\right), \cos \left(\frac{\Ltwonorm{\mathbf{b}}}{r}\right) \right)^{\top}
+		\Leftrightarrow
+		\frac{\Ltwonorm{\mathbf{b}}}{r} = \theta
+			\enskip \mbox{and} \enskip
+			\phi = \mbox{ the angle of $ \mathbf{b} $ in polar coordinates.}
+		\end{equation*}
+		Now, by \eqref{projection}, 
+		\begin{equation*}
+		\widetilde{\kappa}_{r} f (\theta, \phi) 
+		= f \left( r \theta \cos \phi, r \theta \sin \phi \right)
+		= f \left( \Ltwonorm{\mathbf{b}} \cos \phi, \Ltwonorm{\mathbf{b}} \sin \phi \right)
+		= f \left( \mathbf{b} \right).
+		\end{equation*}
+		On the other hand, for an arbitrarily chosen $ R \in \SO(2) $,
+		\begin{equation*}
+		f ( \mathbf{b} )
+		= f \circ \pi (\mathbf{b}, R)
+		= (\kappa_{r} f) \circ \eta \circ \Psi_{r} (\mathbf{b}, R)
+		= \kappa_{r} f (\mathbf{x})
+		= \kappa_{r} f (\theta, \phi).
+		\end{equation*}
+		Therefore, $ \kappa_{r} f(\theta, \phi) = \widetilde{\kappa}_{r} f (\theta, \phi) $, as required.
+	\end{proof}
+	
+	\section{Group Action Approximation by $ \kappa_{r} $ (Not Yet Finished)}
+	The contraction map \eqref{contractionMap} is a mapping of groups which induces a mapping of function spaces, as shown above. $ \SE(2) $ and $ \SO(3) $  act on their corresponding action spaces. Therefore, it makes sense to capture the way the action of $ \SE(2) $ on its corresponding function space is approximated by the action of $ \SO(3) $ on its corresponding function space by how well the the mapping between function spaces commutes with the group action. Slightly more formally, we would like to prove something like
+	\begin{equation*}
+	\kappa_{\widetilde{r}} \left( (\mathbf{b}, R) \bullet f \right) \approx \Psi_{\widetilde{r}} ((\mathbf{b}, R)) \bullet \kappa_{\widetilde{r}} f 
+	\quad\mbox{ for all $ \mathbf{b} \in \F^{2} $}.
+	\end{equation*}
+	
+	The statement above is clearly too vague. The following proposition introduces a clear sense in which one could say the action of $ \SE(2) $ is approximated by the action of $ \SO(3) $:
+	\begin{proposition}
+		\label{GroupActionApprox}
+		Let $ \widetilde{r} \ge r \ge 1 $, $ (\mathbf{b}, R) \in \F^{2} \rtimes \SO(2) $ and $ f \in C_{c, r}^{\infty} $.
+		If $ (\mathbf{b}, R) $ is a purely rotational element of $ \SE(2) $ ($ \mathbf{b} = \mathbf{0} $), then 
+		\begin{equation}
+		\label{CummResult2}
+		\kappa_{\widetilde{r}} \left( (\mathbf{b}, R) \bullet f \right)
+		= \Psi_{\widetilde{r}} ((\mathbf{b}, R)) \bullet \kappa_{\widetilde{r}} f.
+		\end{equation}
+		Assume in addition that there is $ L \ge 0 $ satisfying
+		\begin{equation}
+		\label{LipschitzOfProj}
+		\left| \kappa_{\widetilde{r}} f(\mathbf{x}) - \kappa_{\widetilde{r}} f(\mathbf{y}) \right| \le L d_{S^{2}} ( \mathbf{x}, \mathbf{y} )
+		\enskip \mbox{for all } \mathbf{x}, \mathbf{y} \in S^{2},
+		\end{equation}
+		where $ d_{S^{2}} (\mathbf{x}, \mathbf{y}) $ is the standard metric on the sphere (great-circle distance). Then 
+		\begin{equation}
+			\label{CummResult1}
+			\Ltwonorm{\kappa_{\widetilde{r}} \left( (\mathbf{b}, R) \bullet f \right) - \Psi_{\widetilde{r}} ((\mathbf{b}, R)) \bullet \kappa_{\widetilde{r}} f }_{2}
+			\le \frac{4 L \pi e^{\Ltwonorm{\mathbf{b}} + \pi \widetilde{r}}}{\widetilde{r}^{2}}.
+		\end{equation}
+	\end{proposition}
+	
+	\begin{remark}
+		Though I do not prove it, I assume throughout that a $ \kappa_{\widetilde{r}} f $ is is a Lipschitz in the sense of \eqref{LipschitzOfProj}.
+	\end{remark}
+	
+	The proof of \cref{GroupActionApprox} proceeds as follows. First, a technical lemma involving the matrix exponential is proven (\cref{ApproximateCumm1}). This lemma provides a sense in which the matrix exponential approximately preserves the group multiplication map. Second, this result is particularized to our contraction map between $ \SE(2) $ and $ \SO(3) $ (\cref{ApproximateCumm2}). The final preliminary step is \cref{LipschitzStuff}, where the relationship between the great-circle distance metric on the sphere the chord distance in $ \F^{3} $ is explored. This proposition enables us to use the "Lipschitz" property in \eqref{LipschitzOfProj} in the final proof of \cref{GroupActionApprox}.
+	
+	\begin{proposition}
+		\label{ApproximateCumm1}
+		Let $ \Ltwonorm{\cdot}_{\dag} $ be a submultiplicative matrix norm. 
+		If $ X, Y \in M_{n\times n} (\F) $ and $ \lambda \in [0,1] $, then
+		\begin{equation}
+		\label{ApproximatelyCummutative}
+		\Ltwonorm{\exp ( \lambda X + \lambda Y) - \exp (\lambda X) \exp (\lambda Y)}_{\dag}
+		\le C \lambda^{2}
+		\end{equation}
+		where 
+		\begin{equation}
+		\label{ApproximatelyCummutativeConstant}
+		C
+		\coloneqq 2 e^{\Ltwonorm{X}_{\dag} + \Ltwonorm{Y}_{\dag}} - e^{\Ltwonorm{X}_{\dag}} - e^{\Ltwonorm{Y}_{\dag}} - \Ltwonorm{X}_{\dag} - \Ltwonorm{Y}_{\dag}.
+		\end{equation}
+	\end{proposition}
+	
+	\begin{proof}
+		For every $ A, B \in M_{n \times n} (\F) $, it follows from the definition of the exponential map on matrix groups 
+		\begin{align*}
+		T 
+		\coloneqq \exp (A + B) - \exp (A) \exp (B)
+		&= \sum_{n=0}^{\infty} \frac{(A + B)^{n}}{n!} - \left( \sum_{n=0}^{\infty} \frac{A^{n}}{n!}\right) \left( \sum_{n=0}^{\infty} \frac{B^{n}}{n!}\right)  \\
+		&= \sum_{n=0}^{\infty} \frac{(A + B)^{n}}{n!} - \sum_{k=0}^{\infty} \sum_{m=0}^{\infty} \frac{A^{k} B^{m}}{k! m!} \\
+		&= \sum_{n=2}^{\infty} \frac{(A + B)^{n}}{n!} - \sum_{k=1}^{\infty} \sum_{m=1}^{\infty} \frac{A^{k} B^{m}}{k! m!} \\
+		&= \sum_{n=2}^{\infty} \frac{(A + B)^{n}}{n!} - \left( \sum_{k=1}^{\infty} \frac{A^{k}}{k!} \right) \left( \sum_{m=1}^{\infty} \frac{B^{m}}{m!} \right),
+		\end{align*}
+		and so
+		\begin{equation*}
+		\Ltwonorm{T}_{\dag}
+		\le \sum_{n=2}^{\infty} \frac{(\Ltwonorm{A}_{\dag} + \Ltwonorm{B}_{\dag})^{n}}{n!} 
+			+ \left( \sum_{k=1}^{\infty} \frac{\Ltwonorm{A}_{\dag}^{k}}{k!} \right) \left( \sum_{m=1}^{\infty} \frac{\Ltwonorm{B}_{\dag}^{m}}{m!} \right)
+		\end{equation*}
+		Substituting $ A = \lambda X $ and $ B = \lambda Y $ and using the fact $ 0 \le \lambda \le 1 $,
+		\begin{align*}
+		&\Ltwonorm{\exp ( \lambda X + \lambda Y) - \exp (\lambda X) \exp (\lambda Y)}_{\dag} 
+		\le \lambda^{2} \sum_{n=2}^{\infty} \frac{(\Ltwonorm{X}_{\dag} + \Ltwonorm{Y}_{\dag})^{n}}{n!} 
+			+ \lambda^{2} \left( \sum_{k=1}^{\infty} \frac{\Ltwonorm{X}_{\dag}^{k}}{k!} \right) \left( \sum_{m=1}^{\infty} \frac{\Ltwonorm{X}_{\dag}^{m}}{m!} \right) \\
+		&= \lambda^{2}  \left( e^{\Ltwonorm{X}_{\dag} + \Ltwonorm{Y}_{\dag}} - \Ltwonorm{X}_{\dag} - \Ltwonorm{Y}_{\dag} - 1 + \left( e^{\Ltwonorm{X}_{\dag}} - 1 \right) \left( e^{\Ltwonorm{Y}_{\dag}} - 1 \right) \right) \\
+		&= \lambda^{2} \left( 2 e^{\Ltwonorm{X}_{\dag} + \Ltwonorm{Y}_{\dag}} - e^{\Ltwonorm{X}_{\dag}} - e^{\Ltwonorm{Y}_{\dag}} - \Ltwonorm{X}_{\dag} - \Ltwonorm{Y}_{\dag} \right)
+		\end{align*}
+	\end{proof}
+	
+	From this I conclude:
+	\begin{corollary}
+		\label{ApproximateCumm2}
+		Let $ \widetilde{r} \ge r \ge 1 $. If $ (\mathbf{b}_{1}, R_{1}), (\mathbf{b}_{2}, R_{1}) \in \F^{2} \rtimes \SO(2) $ such that $ \mathbf{b}_{2} \in B_{\pi \widetilde{r}} $, then
+		\begin{equation}
+		\label{ApporximateCummIneq}
+		\Ltwonorm{\Psi_{\widetilde{r}} \left( (\mathbf{b}_{1}, R_{1}) (\mathbf{b}_{2}, R_{2}) \right) - \Psi_{\widetilde{r}} (\mathbf{b}_{1}, R_{1})  \Psi_{\widetilde{r}} (\mathbf{b}_{2}, R_{2})  }
+		\le \frac{C}{\widetilde{r}^{2}}
+		\end{equation}
+		where
+		\begin{align*}
+		C
+		&\coloneqq 2 e^{\Ltwonorm{\mathbf{b}_{1}} + \Ltwonorm{\mathbf{b}_{2}}} - e^{\Ltwonorm{\mathbf{b}_{1}}} - e^{\Ltwonorm{\mathbf{b}_{2}}} - \Ltwonorm{\mathbf{b}_{1}} - \Ltwonorm{\mathbf{b}_{2}} \\
+		&\le 2 e^{\Ltwonorm{\mathbf{b}_{1}} + \widetilde{r}}
+		\end{align*}
+	\end{corollary}
+	
+	\begin{proof}
+		Note that 
+		\begin{equation}
+		\label{AdjointCumm}
+		\exp (R^{\top} \mathbf{b}) 
+		= \bar{R}^{\top} \exp (\mathbf{b})
+		\bar{R}
+		\mbox{ with }
+		\bar{R}
+		\coloneqq \left[\begin{matrix}
+		R & \mathbf{0} \\
+		\mathbf{0} & 1
+		\end{matrix}\right]
+		\quad\mbox{for all } R \in \SO(2) \mbox{ and } \mathbf{b} \in \F^{2},
+		\end{equation}
+		because by \eqref{bIdentif}
+		\begin{equation*}
+		R^{\top} \mathbf{b} 
+		\leftrightarrow
+		\bar{R}^{\top} \mathbf{B} \bar{R},
+		\end{equation*}
+		the matrix exponential commutes with conjunction and $ \bar{R}^{-1} = \bar{R}^{\top} $.
+		
+		Now, denote the left hand side of \eqref{ApporximateCummIneq} by $ M $. Using \eqref{contractionMap} and the definition of $ \bar{R} $ in \eqref{AdjointCumm} I have
+		\begin{align*}
+		\Psi_{\widetilde{r}} \left( (\mathbf{b}_{1}, R_{1}) (\mathbf{b}_{2}, R_{2})\right)
+		&= \Psi_{\widetilde{r}} \left( \mathbf{b}_{1} + R_{1} \mathbf{b}_{2}, R_{1} R_{2} \right)
+		= \exp \left( \frac{\mathbf{b}_{1} + R_{1} \mathbf{b}_{2} }{\widetilde{r}} \right) \bar{R}_{1} \bar{R}_{2} \\
+		\Psi_{\widetilde{r}} (\mathbf{b}_{1}, R_{1}) \Psi_{\widetilde{r}} (\mathbf{b}_{2}, R_{2})
+		&= \exp \left( \frac{\mathbf{b}_{1}}{\widetilde{r}} \right) \bar{R}_{1} \exp \left( \frac{\mathbf{b}_{2}}{\widetilde{r}} \right) \bar{R}_{2} 
+		\end{align*}
+		Since the matrix $ 2 $-norm is rotation-invariant, it follows from the computations above that
+		\begin{equation*}
+		M
+		= \Ltwonorm{\exp \left( \frac{\mathbf{b}_{1} + R_{1} \mathbf{b}_{2}}{\widetilde{r}} \right) - \exp \left( \frac{\mathbf{b}_{1}}{\widetilde{r}} \right) \bar{R}_{1} \exp \left( \frac{\mathbf{b}_{2}}{\widetilde{r}} \right) \bar{R}_{1}^{\top} }.
+		\end{equation*}
+		From \eqref{AdjointCumm} it now follows that
+		\begin{equation*}
+		M 
+		= \Ltwonorm{\exp \left( \frac{\mathbf{b}_{1} + R_{1} \mathbf{b}_{2}}{\widetilde{r}} \right) - \exp \left( \frac{\mathbf{b}_{1}}{\widetilde{r}} \right) \exp \left( \frac{R_{1} \mathbf{b}_{2}}{\widetilde{r}} \right) }.
+		\end{equation*}
+		Since the matrix $ 2 $-norm is submultiplicative, taking $ X = \mathbf{b}_{1} $, $ Y = \mathbf{b}_{2} $ and $ \lambda = \frac{1}{\widetilde{r}} $, it follows from \cref{ApproximateCumm1} 
+		\begin{equation*}
+		M 
+		\le \frac{C}{\widetilde{r}^{2}}
+		\end{equation*}
+		with 
+		\begin{align*}
+		C
+		&= 2 e^{\Ltwonorm{\mathbf{b}_{1}} + \Ltwonorm{R_{1} \mathbf{b}_{2}}} - e^{\Ltwonorm{\mathbf{b}_{1}}} - e^{\Ltwonorm{R_{1} \mathbf{b}_{2}}} - \Ltwonorm{\mathbf{b}_{1}} - \Ltwonorm{R_{1} \mathbf{b}_{2}} \\
+		&= 2 e^{\Ltwonorm{\mathbf{b}_{1}} + \Ltwonorm{\mathbf{b}_{2}}} - e^{\Ltwonorm{\mathbf{b}_{1}}} - e^{\Ltwonorm{\mathbf{b}_{2}}} - \Ltwonorm{\mathbf{b}_{1}} - \Ltwonorm{\mathbf{b}_{2}} 
+		\end{align*}
+		It is easy to prove the the expression above is increasing as a function of $ \Ltwonorm{\mathbf{b}_{1}} $ and as a function of $ \Ltwonorm{\mathbf{b}_{2}} $. Therefore, 
+		\begin{align*}
+		C 
+		\le 2 e^{\Ltwonorm{\mathbf{b}_{1}} + \pi \widetilde{r}}
+		\end{align*}
+	\end{proof}
+	
+	As a final preliminary step, I (partially) prove the following technical lemma:
+	\begin{proposition}
+		\label{LipschitzStuff}
+%		Let $ r > 0 $. If $ f \in C_{c, r}^{\infty} $ is $ L $-Lipschitz, then: 
+		\begin{enumerate}[label=(\roman*)]
+%			\item \label{LipschitzOfProj} $ \kappa_{r} f $ is Lipschitz with constant $ L C r $ in the following sense:
+%			\begin{equation*}
+%			\left| \kappa_{r} f(\mathbf{x}) - \kappa_{r} f (\mathbf{y}) \right|
+%			\le L C r d_{S^{2}} (\mathbf{x}, \mathbf{y})
+%			\quad \mbox{for all } \mathbf{x}, \mathbf{y} \in S^{2},
+%			\end{equation*}
+%			where $ d_{S^{2}} $ is the length of the minimal curve on $ S^{2} $ between $ \mathbf{x} $ and $ \mathbf{y} $ and $ C $ is some constant independent of $ r $, $ f $, $ \mathbf{x} $ and $ \mathbf{y} $.
+%			
+			\item \label{AngularDist} $ d_{S^{2}} (\mathbf{x}, \mathbf{y}) = \arccos \left( \mathbf{y}^{\top} \mathbf{x} \right) $ for all $ \mathbf{x}, \mathbf{y} \in S^{2} $.
+			
+			\item \label{AngularEucDist} $ d_{S^{2}} (\mathbf{x}, \mathbf{y}) 
+			\le \sqrt{\pi} \Ltwonorm{\mathbf{x} - \mathbf{y}} $.
+			
+		\end{enumerate}
+	\end{proposition}
+	
+	\begin{proof}
+		\ref{AngularDist} is simply the well-known spherical distance of the standard metric on the sphere. In order to prove \ref{AngularEucDist}, recall the identity $ 2 \sin^{2} \left( \frac{x}{2} \right) = 1 - \cos x $ and the inequality $ \sin x \ge \frac{2}{\pi} x $ for all $ x \in [0,\pi/2] $. Combining them it follows that
+		\begin{equation}
+		\label{UtilityIneq}
+		2 (1 - \cos x)
+		= 4 \sin^{2} \left( \frac{x}{2} \right) 
+		\ge 4 \cdot \left( \frac{2}{\pi} x \right)^{2}
+		= \frac{16}{\pi^2} x^{2}
+		\ge \frac{x^{2}}{\pi}.
+		\end{equation}
+		Finally, let $ \mathbf{x}, \mathbf{y} \in S^{2} $ and denote $ \theta = d_{S^{2}} (\mathbf{x}, \mathbf{y}) $. Thus:
+		\begin{align*}
+		\Ltwonorm{\mathbf{x} - \mathbf{y}}^{2} 
+		&= \Ltwonorm{\mathbf{x}}^{2} + \Ltwonorm{\mathbf{y}}^{2} - 2 \mathbf{y}^{\top} \mathbf{x} && \mbox{Using a well-known idenity for inner-products} \\
+		&= 2 (1 - \cos \theta) && \mbox{Because $ x, y\in S^{2} $ and \ref{AngularDist}} \\
+		&\ge \frac{\theta^{2}}{\pi}  && \mbox{From \eqref{UtilityIneq}.}
+		\end{align*}
+		\ref{AngularEucDist} easily follows.
+	\end{proof}
+	
+	I am now ready to prove \cref{GroupActionApprox}:
+	\begin{proof}[of \cref{GroupActionApprox}]
+		By definition of $ L^{2} (S^{2}) $, 
+		\begin{equation}
+		\label{L2NormCumm}
+		\begin{aligned}
+		K^{2}
+		&\coloneqq \Ltwonorm{\kappa_{\widetilde{r}} \left( (\mathbf{b}, R) \bullet f \right) - \Psi_{\widetilde{r}} ((\mathbf{b}, R)) \bullet \kappa_{\widetilde{r}} f }_{2}^{2} \\
+		&= \int_{S^{2}} \left| \kappa_{\widetilde{r}} \left( (\mathbf{b}, R) \bullet f \right) (\mathbf{x}) - \Psi_{\widetilde{r}} ((\mathbf{b}, R)) \bullet \kappa_{\widetilde{r}} f (\mathbf{x}) \right|^{2} dS^{2} (\mathbf{x}).
+		\end{aligned}
+		\end{equation}
+		Fix $ \mathbf{x} \in S^{2} $ and let $ \mathbf{b}_{1} \in B_{\pi \widetilde{r}} $ such that $ \eta \circ \Psi_{\widetilde{r}} (\mathbf{b}_{1}, I) = \mathbf{x} $. Unraveling the definitions, it follows that
+		\begin{align}
+		\nonumber
+		\kappa_{\widetilde{r}} \left( (\mathbf{b}, R) \bullet f\right) (\mathbf{x})
+		&= (\mathbf{b}, R) \bullet f ( \mathbf{b}_{1}) \\
+		\nonumber
+		&= f (R^{\top} \mathbf{b}_{1} + \mathbf{b}) \\
+		\nonumber
+		&= f \circ \pi \left( (\mathbf{b}, R) (\mathbf{b}_{1}, I) \right) \\
+		&= \kappa_{\widetilde{r}} f \circ \eta \circ \Psi_{\widetilde{r}} \left( (\mathbf{b}, R) (\mathbf{b}_{1}, I) \right)
+		\nonumber \\
+		\label{Cumm1Final} 
+		&= \kappa_{\widetilde{r}} f \left( \Psi_{\widetilde{r}} \left( (\mathbf{b}, R) (\mathbf{b}_{1}, I) \right) \mathbf{n} \right) \\
+		\nonumber
+		\Psi_{\widetilde{r}} ((\mathbf{b}, R)) \bullet \kappa_{\widetilde{r}} f (\mathbf{x})
+		&= \kappa_{\widetilde{r}} f( \exp (\mathbf{b} ) R \exp(\mathbf{b}_{1}) \mathbf{n} ) \\
+		&= \kappa_{\widetilde{r}} f \left( \Psi_{\widetilde{r}} ((\mathbf{b}, R)) \Psi_{\widetilde{r}}  ((\mathbf{b}_{1}, I) \mathbf{n}) \right)
+		\label{Cumm2Final}
+		\end{align}
+		
+		Now, note that $ (\mathbf{b}, R) = (0, R) (\mathbf{b}, I) $ and that $ \Psi_{\widetilde{r}} (\mathbf{b}, R) = \Psi_{\widetilde{r}} (0, R) \Psi_{\widetilde{r}} (\mathbf{b}, I) $. Therefore, substituting $ \mathbf{b} = \mathbf{0} $ into \eqref{Cumm1Final} and $ \eqref{Cumm2Final} $ shows that the LHS of both equations are equal, for purely rotational elements of $ \SE(2) $. Thus, the integrand in \eqref{L2NormCumm} is zero on $ S^{2} $, which proves \eqref{CummResult2}.
+		
+		In order to prove \eqref{CummResult1}, let $ \alpha = \Psi_{\widetilde{r}} ((\mathbf{b}, R) (\mathbf{b}_{1}, I) ) $ and $ \beta = \Psi_{\widetilde{r}} (\mathbf{b}, R) \Psi_{\widetilde{r}} (\mathbf{b}_{1}, I) $. I have:
+		\begin{align*}
+		| \kappa_{\widetilde{r}} \left( (\mathbf{b}, R) \bullet f \right) (\mathbf{x}) &- \Psi_{\widetilde{r}} ((\mathbf{b}, R)) \bullet \kappa_{\widetilde{r}} f (\mathbf{x}) |\\
+		&= \left| \kappa_{\widetilde{r}} f (\alpha \mathbf{n}) - \kappa_{\widetilde{r}} f (\beta \mathbf{n}) \right|, && \mbox{By \eqref{Cumm1Final} and \eqref{Cumm2Final}} \\
+		&\le L d_{S^{2}} (\alpha \mathbf{n}, \beta \mathbf{n}), && \mbox{By \eqref{LipschitzOfProj}} \\
+		&\le L \sqrt{\pi} \Ltwonorm{\alpha \mathbf{n} - \beta \mathbf{n}}, && \mbox{By \cref{LipschitzStuff}\ref{AngularEucDist}} \\
+		&\le L \sqrt{\pi} \Ltwonorm{\alpha - \beta}, && \mbox{Since $ \Ltwonorm{\mathbf{n}} = 1 $} \\
+		&\le \frac{2 L \sqrt{\pi} e^{\Ltwonorm{\mathbf{b}} + \pi \widetilde{r}}}{\widetilde{r}^{2}}  && \mbox{By \cref{ApproximateCumm2}}
+		\end{align*}
+		From this and \eqref{L2NormCumm} it follows that
+		\begin{equation*}
+		K
+		\le \frac{2 L \sqrt{\pi} e^{\Ltwonorm{\mathbf{b}} + \pi \widetilde{r}}}{\widetilde{r}^{2}} \sqrt{\int_{S^{2}} dS^{2} \mathbf{x}}
+		= \frac{2 L \sqrt{\pi} e^{\Ltwonorm{\mathbf{b}} + \pi \widetilde{r}}}{\widetilde{r}^{2}} \sqrt{4 \pi }
+		= \frac{4 L \pi e^{\Ltwonorm{\mathbf{b}} + \pi \widetilde{r}}}{\widetilde{r}^{2}}.
+		\end{equation*}
+	\end{proof}
+	
+	
+	\section{Properties of $ \kappa_{r} $ (Not Yet Written)}
+	\textbf{TODO} Think about about the relationship between $ R f $ and $ \kappa_{r} R f $ and $ S \kappa_{r} f $ or their norm  where $ S \in \SO(3) $ relates to $ R $. Think about the influence of $ r $ on that relationship. Should be possible to reduce that to analysis of subsets of functions on $ \SE(2) $ and $ \SO(3) $.
+	
+	\textbf{TODO} $ \kappa_{r}  $ is invertible linear transformation
+	
+	\textbf{TODO, pretty sure it's possible} extending $ \kappa_{r} $ to the intersection of $ L^{2} (\F^{2}) $ and functions compactly supported in $ B_{2 \pi r} $ using the fact $ C_{c,r} $ is dense in $ L^{2} (\F^{2}) $.
+	
+	\textbf{TODO} $ \kappa_{r} f $ is integrable/square-integrable if $ f $ is.
+	
+	\textbf{TODO conjecture, pretty sure true} $ \kappa_{r} f $ is square-integrable and $ \kappa_{r}^{-1} f $ is square-integrable if $ f \in L^{2} (S^{2}) $
+	
+	\textbf{TODO conjecture, but I think it's true} $ \kappa_{r} $ and its inverse are continuous.
+	
+	\textbf{TODO} The energy of $ \kappa_{r} f $ is concentrated close to the origin.
+	
+	\textbf{TODO} What happens to $ \kappa_{r} f $ when $ r \to \infty $ or $ r \to 0^{+} $
+	
+	\section{Generalization (Not Yet Written)}
+	\textbf{TODO} key propositions did not rely on the specific map $ \Psi_{r} $ we used. Basically, one needs smooth $ \Psi_{r} $ such that $ \eta \circ \Psi_{r} $ is a surjective submersion and then one could define $ \kappa_{r} $ on a class of functions such that $ \pi \circ f $ are constant on fibers of $ \eta \circ \Psi_{r} $.
+	
+	\appendix
+	\section{An Important Note on the Error Introduced by Rotations on the Sphere (Not Yet Written)}
+	\textbf{TODO} visual demonstration of what happens when I project a function onto the sphere, rotate it by $ R \in \SO(3) $ there and then back-project it. Along which radial lines is the error minimal? \Cref{etaCompPsiFibers} implies the error should grow from zero with the angle from $ \mathbf{b} $, the projection of $ R \mathbf{n} $ onto $ xy $-plane. This is completely contrary to what I thought so far.
+	
+	% Print bibliography
+	\printbibliography
+	
+\end{document}
