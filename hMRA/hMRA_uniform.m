@@ -213,8 +213,8 @@ problem.egrad=@gradf;
 f=@(z)([z(B(:,1),:).*z(B(:,2),:).*conj(z(B(:,3),:));z(P(:,1),:).*conj(z(P(:,2),:));z(M,:)]);
 g=@(z)(Nclus*All-sum(f([z.a;z.b]),2));
 
-figure;
-checkgradient(problem);
+% figure;
+% checkgradient(problem);
 
 T=cputime;
 option.maxinner=25;
