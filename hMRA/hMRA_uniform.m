@@ -1,4 +1,4 @@
-function [FBsPCA_data, z,zcost,info, Timing, imager, image0, ZA] = hMRA_uniform(data, D, shift_range)
+function [FBsPCA_data, z,zcost,info, Timing, imager, image0, ZA] = hMRA_uniform(data, D, sigma)
 %% 
 % This version is a modified form the github repo:
 %   https://github.com/chaom1026/2DhMRA
