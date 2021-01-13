@@ -1,4 +1,4 @@
-function [FBsPCA_data, z,zcost,info, Timing, imager, image0, ZA] = hMRA_uniform(data)
+function [FBsPCA_data, z,zcost,info, Timing, imager, image0, ZA] = hMRA_uniform(data, D, shift_range)
 %% 
 % This version is a modified form the github repo:
 %   https://github.com/chaom1026/2DhMRA
@@ -47,6 +47,9 @@ Nclus = 1;
 % data_raw = zeros(sidel,sidel,2*Nclus);
 % data_raw(:,:,1:Nclus) = D(shift_range+1:shift_range+sidel,shift_range+1:shift_range+sidel,1:Nclus);
 % data_raw(:,:,Nclus+1:2*Nclus) = flipud(D(shift_range+1:shift_range+sidel,shift_range+1:shift_range+sidel,1:Nclus));
+data_raw = zeros([size(D, 1), size(D, 1), 2*Nclus]);
+data_raw(:,:,1:Nclus) = D;
+data_raw(:,:,Nclus+1:2*Nclus) = flipud(D(:,:,1:Nclus));
 % 
 % % rotate and shift projections
 % data=zeros(sidel,sidel,Nclus*Ncopy);
@@ -262,9 +265,9 @@ for I=1:Nclus
 end
 
 image0=zeros(LL^2,Nclus);
-tmp=real(UU(:,Freqs==0)*Coeff_raw(Freqs==0,1:Nclus))+2*real(UU(:,Freqs~=0)*Coeff_raw(Freqs~=0,1:Nclus));
-image0(r<=r_max,:)=image0(r<=r_max,:)+tmp;
-image0=reshape(image0,LL,LL,Nclus)+FMean;
+% tmp=real(UU(:,Freqs==0)*Coeff_raw(Freqs==0,1:Nclus))+2*real(UU(:,Freqs~=0)*Coeff_raw(Freqs~=0,1:Nclus));
+% image0(r<=r_max,:)=image0(r<=r_max,:)+tmp;
+% image0=reshape(image0,LL,LL,Nclus)+FMean;
 
 
 %%=============================sub-functions=================================
