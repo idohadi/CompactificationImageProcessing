@@ -351,7 +351,26 @@
 	\end{proposition}
 	
 	\begin{proof}
-		\textbf{TODO} I got stuck on formalizing it, so I left it for now. I'm sure it's true. The skinny, ffr: outside the poles it has a linear local representation and at the poles composing \cref{etaCompPsiFormula} with the standard smooth coordinate charts on the sphere yields a submersion.
+		Let $ p(\zeta, \theta) = \left(\zeta \cos \theta, \zeta \sin \theta  \right)^{\top} $ be the polar coordinates transformation considered as a map $ p : \F^{2} \to \F^{2} $. It is a local diffeomorphism. Note that $ P (\zeta, \theta, \phi) = \left( p(\zeta, \theta), R(\phi) \right) $, where $ R (\phi) $ is the rotation by $ \phi $ radians counterclockwise, is also a local diffeomorphism about $ \F^{2} \rtimes \SO(2) $. 
+		
+		Now, let $ s(\varphi, \lambda ) = \left( \cos \varphi \sin \lambda , \sin \varphi \sin \lambda , \cos \lambda \right)^{\top} $ be the standard spherical coordinates considered as a map $ s : \F^{2} \to S^{2} $. It is also a local diffeomorphism about $ S^{2} $.
+		
+		Finally, by \cref{etaCompPsiFormula}
+		\begin{equation*}
+			\eta \circ \Psi_{r} \circ P (\zeta, \theta, \phi)
+			= \left( \cos \theta \sin \left( \frac{\zeta}{r} \right),  \sin \theta \sin \left( \frac{\zeta}{r} \right), \cos \left( \frac{\zeta}{r} \right) \right)^{\top}
+		\end{equation*}
+		Since $ s $ is a local diffeomorphism about $ S^{2} $, it is locally invertible, which implies
+		\begin{equation*}
+			s^{-1 } \circ \eta \circ \Psi_{r} \circ P (\zeta, \theta, \phi )
+			= \left( \theta, \frac{\zeta}{r} \right)^{\top}.
+		\end{equation*}
+		Thus, $ s^{-1 } \eta \circ \Psi_{r} \circ \left(p (\zeta, \theta), R (\phi ) \right) $ is locally defined and locally linear, implying it is a submersion. Since both $ s $ and $ P $ are local diffeomorphisms, it follows that one can write (locally)
+		\begin{equation*}
+			\eta \circ \Psi_{r}
+			= s \circ (s^{-1 } \eta \circ \Psi_{r} \circ P ) \circ P^{-1},
+		\end{equation*}
+		Now, recall that local diffeomorphisms have differential of full rank and so $ \eta \circ \Psi_{r} $  and $ s^{-1 } \circ \eta \circ \Psi_{r} \circ P  $ have the same rank. Thus, $ \eta \circ \Psi_{r} $ is also a submersion.
 	\end{proof}
 	
 	The following characterization of the fibers of $ \eta \circ \Psi_{r} $ is an easy corollary of \cref{etaCompPsiFormula}:
@@ -400,8 +419,10 @@
 	\end{proposition}
 	
 	\begin{proof}
-		\textbf{TODO}
-		The skinny, ffr: on $ (2n+1)\pi r $ circles it is zero in neighborhood, so differentiable. Outside, in small enough neighborhood of every point it is identical to values in small enough neighborhood of corresponding point in $ 2 \pi r $-circle.
+		Let $ B^{(n)} \coloneqq \left(B_{\pi r n}\setminus \{0\}\right) \setminus \overline{B_{\pi r (n-1)}}  $. 
+		Define a map $ p : B_{\pi r}\setminus \{0\} \to B^{(n)} $ as $ p(\zeta, \theta) = \left( \zeta + \pi r (n-1), \theta\right) $. This is obviously a (local) diffeomorphism. Note that for $ \mathbf{b} \in B^{(n)} $ we have $ \chi_{r} f (\mathbf{b}) = f \circ p^{-1} (\mathbf{b}) $. Since both $ f $ and $ p $ are smooth, it follows that $ \chi_{r} f $ is smooth in a neighborhood of $ \mathbf{b} $.
+		
+		It remains to prove $ \chi_{r} f $ is smooth for $ \mathbf{b} \in \partial B_{\pi r n} $. Since $ f $ is compactly supported in $ B_{\pi r } $, it follows that it is identically zero in a neighborhood of $ \partial B_{\pi r} $. Therefore, it is identically zero around $ \mathbf{b} $ and so it is smooth there as well.
 	\end{proof}
 	
 	\begin{proposition}
@@ -727,6 +748,9 @@
 		\end{equation*}
 	\end{proof}
 	
+	\begin{remark}
+		The bound in \cref{GroupActionApprox}\eqref{CummResult1} is not assumed to be the best possible. An improved bound might be obtainable by refining the bound obtained in \cref{ApproximateCumm1}\eqref{ApproximatelyCummutativeConstant}. In particular, this may help to reduce the exponential dependency on $ \Ltwonorm{\tilde{r}} $ in \eqref{CummResult1}.
+	\end{remark}
 	
 	\section{Properties of $ \kappa_{r} $ (Not Yet Written)}
 	\textbf{TODO} Think about about the relationship between $ R f $ and $ \kappa_{r} R f $ and $ S \kappa_{r} f $ or their norm  where $ S \in \SO(3) $ relates to $ R $. Think about the influence of $ r $ on that relationship. Should be possible to reduce that to analysis of subsets of functions on $ \SE(2) $ and $ \SO(3) $.
