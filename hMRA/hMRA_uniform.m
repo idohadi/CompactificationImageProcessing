@@ -218,7 +218,17 @@ g=@(z)(Nclus*All-sum(f([z.a;z.b]),2));
 
 T=cputime;
 option.maxinner=25;
-[z, zcost, info] = conjugategradient(problem);
+NinitGuesses = 7;
+options.verbosity = 1;
+zcost = Inf;
+for J=1:NinitGuesses
+    [zTmp, zcostTmp, infoTmp] = conjugategradient(problem, [], options);
+    if zcostTmp<zcost
+        z = zTmp;
+        zcost = zcostTmp; 
+        info = infoTmp;
+    end
+end
 Timing.t_opt = cputime-T;
 
 % align recovered results with groundtruth images
