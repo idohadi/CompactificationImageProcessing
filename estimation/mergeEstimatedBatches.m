@@ -30,5 +30,12 @@ function bispEst = mergeEstimatedBatches(batchBispEst, sampleSizes)
 % Year      2021
 % ***********************************************************
 
+%% Input validation
+assert(size(batchBispEst, 2)==numel(sampleSizes), ...
+    'Number of batches mismatch.');
+
 %% Merge estimators
-% TODO
+weights = sampleSizes(:);
+weights = weights/sum(weights);
+weights = weights';
+bispEst = sum(batchBispEst.*weights, 2);
