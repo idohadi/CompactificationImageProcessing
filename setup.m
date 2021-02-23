@@ -23,9 +23,5 @@ for J=1:length(dirs)
     addpath(genpath(fullfile(p1, dirs{J})));
 end
 
-%% Adding ASPIRE's path
-cd('../aspire/');
-initpath;
-cd('../SphericalInvariantAnalysis/');
-cd('../manopt');
-importmanopt;
+%% Clearing temporary variables
+clear p1 dirs J pathstr;
