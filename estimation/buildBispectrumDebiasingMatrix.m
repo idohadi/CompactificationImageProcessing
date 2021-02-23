@@ -6,7 +6,7 @@ function debiasingMatrix = buildBispectrumDebiasingMatrix(imageSize, bandlimit, 
 % Build the debiasing matrix for bispectrum estimation from images of size
 % imageSize x imageSize. This is a matrix K for which
 %           1    N  (                                                                         )
-%   psEst = - * sum ( bispectrum(n-th sample SHC) - sigma^2 * K * (realified n-th sample SHC) )
+% bispEst = - * sum ( bispectrum(n-th sample SHC) - sigma^2 * K * (realified n-th sample SHC) )
 %           N   n=1 (                                                                         )
 % is an unbiased estimator.
 % 

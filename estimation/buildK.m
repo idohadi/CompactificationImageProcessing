@@ -5,7 +5,7 @@ function K = buildK(bandlimit, U)
 % 
 % Compute the matrix K for which
 %           1    N  (                                                                         )
-%   psEst = - * sum ( bispectrum(n-th sample SHC) - sigma^2 * K * (realified n-th sample SHC) )
+% bispEst = - * sum ( bispectrum(n-th sample SHC) - sigma^2 * K * (realified n-th sample SHC) )
 %           N   n=1 (                                                                         )
 % is an unbiased estimator.
 % 
