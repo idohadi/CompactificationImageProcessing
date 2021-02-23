@@ -7,13 +7,13 @@ function bispEst = esimateBispectrum(batched, images, bandlimit, tDesign, interv
 %           1    N  (                                                                         )
 % bispEst = - * sum ( bispectrum(n-th sample SHC) - sigma^2 * K * (realified n-th sample SHC) )
 %           N   n=1 (                                                                         )
-% is an unbiased estimator.
-
+% where K = debiasingMatrix.
+% 
 % If batched is true, parfor will be used.Otherwise, a regular for loop
 % will be used.
 % 
 % Input arguments
-%   batcehd             logical     true if parfor will be used to shared
+%   batched             logical     true if parfor will be used to shared
 %                                   the workload among serveral workers.
 %                                   false if a single worker will be
 %                                   utilized.
@@ -46,3 +46,5 @@ function bispEst = esimateBispectrum(batched, images, bandlimit, tDesign, interv
 % Email     idohadi@mail.tau.ac.il
 % Year      2021
 % ***********************************************************
+
+%% Estimate the bispectrum
