@@ -48,3 +48,4 @@ function bispEst = esimateBispectrum(batched, images, bandlimit, tDesign, interv
 % ***********************************************************
 
 %% Estimate the bispectrum
+% TODO
