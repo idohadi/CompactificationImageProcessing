@@ -1,4 +1,4 @@
-function bispEst = esimateBispectrum(batched, images, bandlimit, tDesign, interval, scalingParam, debiasingMatrix, sigma2)
+function bispEst = estimateBispectrum(batched, images, bandlimit, tDesign, interval, scalingParam, debiasingMatrix, sigma2)
 %%
 % Call format
 %   bispEst = esimateBispectrum(images, bandlimit, tDesign, interval, scalingParam, debiasingMatrix, sigma2)
@@ -37,7 +37,9 @@ function bispEst = esimateBispectrum(batched, images, bandlimit, tDesign, interv
 %                                   bispectrum.
 % 
 % Notes
-%   None
+%   (1) Prior to using this function, the Clebsch-Gordan coefficient table
+%       needs to be loaded as a global variable. Use the loadCGTable
+%       function for that.
 % 
 % Reference
 %   None
@@ -64,5 +66,57 @@ assert(isscalar(scalingParam) && scalingParam>=0, ...
 assert(isscalar(sigma2) && sigma2>=0, ...
     'Variance must be a non-negative scalar.');
 
+sampleSize = size(images, 3);
+imageSize = size(images, 1);
+
 %% Estimate the bispectrum
-% TODO
+% Declare global CGs
+global CGs;
+
+% Get bispectrum vector length
+shc = image2shc(images(:, :, 1), bandlimit, tDesign, interval, scalingParam);
+b = bispectrum(shc, bandlimit, CGs);
+bispLen = size(b, 1);
+clear shc b;
+
+if batched
+    % Turn on parallel pool
+    gcp;
+    
+    % Set up batching
+    batchSize = 10^3;
+    batchNo = ceil(sampleSize/batchSize);
+    
+    batchSampleSize = repmat(batchSize, 1, batchNo);
+    if batchSize*batchNo > sampleSize
+        batchSampleSize(end) = mod(sampleSize, batchNo);
+    end
+    
+    batchUpperBound = cumsum(batchSampleSize);
+    batchLowerBounds = [1, batchUpperBound(1:end-1)];
+    
+    % Set up batch estimators
+    batchBispEst = zeros(bispLen, batchNo);
+    
+    % Estimate batches
+    for J=1:batchNo
+        batchEst = zeros(bispLen, batchSampleSize(J));
+        parfor M=batchLowerBounds(J):batchUpperBound(J)
+            sampleSHC = image2shc(images(:, :, M), bandlimit, tDesign, interval, scalingParam);
+            batchEst(:, M) = bispectrum(sampleSHC, bandlimit, CGs) ...
+                - sigma2*debiasingMatrix*cSHC2rSHC(sampleSHC);
+        end
+        batchBispEst(:, J) = mean(batchEst, 2);
+    end
+    
+    % Estimate the bispectrum
+    bispEst = mergeEstimatedBatches(batchBispEst, batchSampleSize);
+else
+    bispEst = zeros(bispLen, 1);
+    for J=1:sampleSize
+        sampleSHC = image2shc(images(:, :, J), bandlimit, tDesign, interval, scalingParam);
+        sampleBisp = bispectrum(sampleSHC, bandlimit, CGs) ...
+                - sigma2*debiasingMatrix*cSHC2rSHC(sampleSHC);
+        bispEst = (J-1)/J * bispEst + sampleBisp/J;
+    end
+end
