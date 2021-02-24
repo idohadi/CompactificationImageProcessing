@@ -21,8 +21,9 @@ function rotatedSHC = rotateSHC(shc, bandlimit, rotation, tDesign)
 %   shc         double      (bandlimit+1)^2 x 1 complex array, spherical 
 %                           harmonics coefficients.
 %   bandlimit   double      positive integer, the bandlimit of shc.
-%   rotation    double      4 x 1 array, rotation in quaternion
-%                           representation.
+%   rotation    double      4 x 1 array or 3 x 3 array, rotation in quaternion
+%                           representation or in rotation matrix 
+%                           representation, respectively.
 %   tDesign     double      N x 3 array, a spherical design (a t-design) in
 %                           Cartesian coordiantes.
 % 
