@@ -55,6 +55,7 @@ function [sphTheta, sphPhi] = KondorProj(R2phi, R2rho, scalingParam)
 % Email     idohadi@mail.tau.ac.il
 % Year      2020
 % ***********************************************************
+
 %% Project from R^2 to the sphere
-sphTheta = scalingParam*R2rho;
+sphTheta = R2rho/scalingParam;
 sphPhi = R2phi;
