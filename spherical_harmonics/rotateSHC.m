@@ -44,7 +44,13 @@ function rotatedSHC = rotateSHC(shc, bandlimit, rotation, tDesign)
 
 %% Rotate SHC
 % Step 1
-rotatedPoints = applyRotation(rotation, tDesign.');
+if length(rotation)==4
+    rotatedPoints = applyRotation(rotation, tDesign.');
+elseif size(rotation, 1)==3 && size(rotation, 2)==3
+    rotatedPoints = rotation*tDesign.';
+else
+    error('Rotation in unknown format.');
+end
 [theta, phi, ~] = cart2sph2(rotatedPoints(1, :), ...
                                             rotatedPoints(2, :), ...
                                             rotatedPoints(3, :));
