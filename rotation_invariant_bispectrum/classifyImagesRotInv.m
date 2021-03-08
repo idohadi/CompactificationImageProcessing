@@ -1,8 +1,8 @@
-function nearestNeighbors = classifyImagesRotInv(data, truncation, varargin)
+function [G, D] = classifyImagesRotInv(data, truncation, varargin)
 %% 
 % Call format
-%   nearestNeighbors  = classifyImagesRotInv(data, truncation, angularLimits)
-%   nearestNeighbors  = classifyImagesRotInv(data, truncation, angularLimits, __)
+%   [G, D] = classifyImagesRotInv(data, truncation, angularLimits)
+%   [G, D] = classifyImagesRotInv(data, truncation, angularLimits, __)
 % 
 % Identify close neighbors of images in data and denoise each image, using
 % its neighbors.
@@ -16,7 +16,11 @@ function nearestNeighbors = classifyImagesRotInv(data, truncation, varargin)
 %   angularLimits       double 
 % 
 % Output arguments
-%   nearestNeighbors    double      
+%   G                   double      the nearest neighbors graph in a
+%                                   matrix.
+%   D                   double      The distances from MATLAB's nearest
+%                                   neighbors function.
+%                                   
 % 
 % Optional arguments
 %   lowRank             The rank to use when applying the low rank
@@ -55,7 +59,7 @@ assert(isscalar(truncation) & truncation>=1 & round(truncation)==truncation, ...
 
 % Setting up optional input handling (name, value pairs)
 p = inputParser;
-addParameter(p, 'lowRank', 400, @(x) isscalar(x) & x>=1);
+addParameter(p, 'lowRank', 400, @(x) isscalar(x) & x>=1 & round(x)==x);
 addParameter(p, 'Nneighbors', 50, @(x) isscalar(x) & x>=1);
 addParameter(p, 'wpass', 0.05, @(x) isscalar(x) & x>=0 & x<1);
 
@@ -100,13 +104,10 @@ end
 [idx, D] = knnsearch(b, b, 'K', Nneighbors);
 
 % Construct similarity matrix
-W = sparse(repelem((1:sampleSize)', Nneighbors), ...
+G = sparse(repelem((1:sampleSize)', Nneighbors), ...
     reshape(idx', [numel(idx), 1]), 1, ...
     sampleSize, sampleSize, numel(idx));
-W = W - diag(diag(W));
-
-% Save the denoised similarity graph
-nearestNeighbors = struct('W', W, 'D', D);
+G = G - diag(diag(G));
 
 end
 

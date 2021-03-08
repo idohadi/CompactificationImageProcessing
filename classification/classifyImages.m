@@ -1,8 +1,8 @@
-function [avgedData, nearestNeighbors] = classifyImages(data, bandlimit, varargin)
+function [G, D] = classifyImages(data, bandlimit, varargin)
 %%
 % Call format
-%   [avgedData, nearestNeighbors] = classifyImages(data, bandlimit)
-%   [avgedData, nearestNeighbors] = classifyImages(data, bandlimit, __)
+%   [G, D] = classifyImages(data, bandlimit)
+%   [G, D] = classifyImages(data, bandlimit, __)
 % 
 % Identify close neighbors of images in data and denoise each image, using
 % its neighbors.
@@ -15,13 +15,13 @@ function [avgedData, nearestNeighbors] = classifyImages(data, bandlimit, varargi
 %                                   projection.
 % 
 % Output arguments
-%   avgedData           double      
-%   nearestNeighbors    double      
+%   G                   double      the nearest neighbors graph in a
+%                                   matrix.
+%   D                   double      The distances from MATLAB's nearest
+%                                   neighbors function.
 % 
 % Optional arguments
 %   interval            Parameter for image2shc.
-%   JaccardThreshold    The threshold over which we maintain an edge in the
-%                       similarity matrix.
 %   K                   Bispectrum denoising matrix.
 %                       Default is false. In this case, the code computes
 %                       it below.
@@ -35,7 +35,6 @@ function [avgedData, nearestNeighbors] = classifyImages(data, bandlimit, varargi
 % 
 % Default optional arguments
 %   interval            [-0.5, 0.5]
-%   JaccardThreshold    0.5
 %   K                   false
 %   lowRank             false
 %   Nneighbors          50
@@ -64,7 +63,6 @@ assert(isscalar(bandlimit) & bandlimit>=1 & round(bandlimit)==bandlimit, ...
 % Setting up optional input handling (name, value pairs)
 p = inputParser;
 addParameter(p, 'interval', [-0.5, 0.5], @(x) numel(x)==2 & x(1)<x(2));
-addParameter(p, 'JaccardThreshold', 0.2, @(x) isscalar(x) & x>=0);
 addParameter(p, 'K', false);
 addParameter(p, 'lowRank', false, @(x) x==false | (isscalar(x) & x>=1 & round(x)==x));
 addParameter(p, 'Nneighbors', 50, @(x) isscalar(x) & x>=1);
@@ -76,7 +74,6 @@ addParameter(p, 'wpass', 0.05, @(x) isscalar(x) & x>=0 & x<1);
 % Process the optional input
 parse(p, varargin{:});
 interval = p.Results.interval;
-JaccardThreshold = p.Results.JaccardThreshold;
 K = p.Results.K;
 lowRank = p.Results.lowRank;
 Nneighbors = p.Results.Nneighbors;
@@ -133,23 +130,7 @@ end
 [idx, D] = knnsearch(b, b, 'K', Nneighbors);
 
 % Construct similarity matrix
-W = sparse(repelem((1:sampleSize)', Nneighbors), ...
+G = sparse(repelem((1:sampleSize)', Nneighbors), ...
     reshape(idx', [numel(idx), 1]), 1, ...
     sampleSize, sampleSize, numel(idx));
-W = spdiags(zeros(sampleSize, 1), 0, W);
-
-% Construct the Jaccard index to denoise the nearest neighbors graph
-E = ones(size(W, 1), 1);
-E = E*(E.');
-JacInd = W*(W.')./( W*E + E*(W.') - W*(W.') );
-
-% Denoise the similarity matrix
-Wdenoised = W.*(W.'); % An edge a->b is kept only if there is an edge b->a
-Wdenoised(JacInd<JaccardThreshold) = 0;
-
-% Save the denoised similarity graph
-nearestNeighbors = struct('W', W, 'D', D, 'Wdenoised', Wdenoised);
-
-% Denoise data using the averaging
-avgedData = zeros(size(data));
-% TODO
+G = spdiags(zeros(sampleSize, 1), 0, G);
