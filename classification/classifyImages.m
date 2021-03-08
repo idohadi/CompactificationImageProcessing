@@ -47,6 +47,7 @@ function [avgedData, nearestNeighbors] = classifyImages(data, bandlimit, varargi
 % 
 % Reference
 %   None
+
 % ***********************************************************
 % Author    Ido Hadi
 % Email     idohadi@mail.tau.ac.il

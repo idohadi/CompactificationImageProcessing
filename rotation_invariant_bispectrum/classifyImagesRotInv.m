@@ -1,8 +1,8 @@
-function [avgedData, nearestNeighbors] = classifyImagesRotInv(data, truncation, varargin)
-%% TODO
+function nearestNeighbors = classifyImagesRotInv(data, truncation, varargin)
+%% 
 % Call format
-%   [avgedData, nearestNeighbors] = classifyImagesRotInv(data, truncation, angularLimits)
-%   [avgedData, nearestNeighbors] = classifyImagesRotInv(data, truncation, angularLimits, __)
+%   nearestNeighbors  = classifyImagesRotInv(data, truncation, angularLimits)
+%   nearestNeighbors  = classifyImagesRotInv(data, truncation, angularLimits, __)
 % 
 % Identify close neighbors of images in data and denoise each image, using
 % its neighbors.
@@ -16,23 +16,18 @@ function [avgedData, nearestNeighbors] = classifyImagesRotInv(data, truncation, 
 %   angularLimits       double 
 % 
 % Output arguments
-%   avgedData           double      
 %   nearestNeighbors    double      
 % 
 % Optional arguments
-%   interval            Parameter for image2shc.
-%   JaccardThreshold    The threshold over which we maintain an edge in the
-%                       similarity matrix.
-%   K                   Bispectrum denoising matrix.
-%                       Default is false. In this case, the code computes
-%                       it below.
+%   lowRank             The rank to use when applying the low rank
+%                       approximation to the rotation-invariant 
+%                       representation matrix.
 %   Nneighbors          Number of nearest neighbors to find.
-%   scalingParam        Projection scaling parameter to use in image2shc.
 %   wpass               MATLAB's lowpass function parameter.
 %                       If wpass=0, no low-pass filter is used.
 % 
 % Default optional arguments
-%   JaccardThreshold    0.5
+%   lowRank             400
 %   Nneighbors          50
 %   wpass               0.05
 % 
@@ -44,6 +39,7 @@ function [avgedData, nearestNeighbors] = classifyImagesRotInv(data, truncation, 
 %       An Algorithm for the Principal Component Analysis of Large Data 
 %       Sets. SIAM Journal on Scientific Computing, 33(5), 2580–2594. 
 %       https://doi.org/10.1137/100804139
+
 % ***********************************************************
 % Author    Ido Hadi
 % Email     idohadi@mail.tau.ac.il
@@ -59,19 +55,15 @@ assert(isscalar(truncation) & truncation>=1 & round(truncation)==truncation, ...
 
 % Setting up optional input handling (name, value pairs)
 p = inputParser;
-addParameter(p, 'batchSize', 100, @(x) isscalar(x) & x>=1);
-addParameter(p, 'JaccardThreshold', 0.2, @(x) isscalar(x) & x>=0);
+addParameter(p, 'lowRank', 400, @(x) isscalar(x) & x>=1);
 addParameter(p, 'Nneighbors', 50, @(x) isscalar(x) & x>=1);
 addParameter(p, 'wpass', 0.05, @(x) isscalar(x) & x>=0 & x<1);
 
 % Process the optional input
 parse(p, varargin{:});
-batchSize = p.Results.batchSize;
-JaccardThreshold = p.Results.JaccardThreshold;
+k = p.Results.lowRank;
 Nneighbors = p.Results.Nneighbors;
 wpass = p.Results.wpass;
-
-k = 400;
 
 %% Classify images
 basis = ffb_basis(imageSize*ones(1, 2), truncation);
@@ -113,21 +105,8 @@ W = sparse(repelem((1:sampleSize)', Nneighbors), ...
     sampleSize, sampleSize, numel(idx));
 W = W - diag(diag(W));
 
-% Construct the Jaccard index to denoise the nearest neighbors graph
-E = ones(size(W, 1), 1);
-E = E*(E.');
-JacInd = W*(W.')./( W*E + E*(W.') - W*(W.') );
-
-% Denoise the similarity matrix
-Wdenoised = W.*(W.'); % An edge a->b is kept only if there is an edge b->a
-Wdenoised(JacInd<JaccardThreshold) = 0;
-
 % Save the denoised similarity graph
-nearestNeighbors = struct('W', W, 'D', D, 'Wdenoised', Wdenoised);
-
-% Denoise data using the averaging
-avgedData = zeros(size(data));
-% TODO
+nearestNeighbors = struct('W', W, 'D', D);
 
 end
 
