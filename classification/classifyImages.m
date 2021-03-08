@@ -1,8 +1,8 @@
-function [avgedData, nearestNeighbors] = calssifyImages(data, bandlimit, varargin)
+function [avgedData, nearestNeighbors] = classifyImages(data, bandlimit, varargin)
 %%
 % Call format
-%   [avgedData, nearestNeighbors] = calssifyImages(data, bandlimit)
-%   [avgedData, nearestNeighbors] = calssifyImages(data, bandlimit, __)
+%   [avgedData, nearestNeighbors] = classifyImages(data, bandlimit)
+%   [avgedData, nearestNeighbors] = classifyImages(data, bandlimit, __)
 % 
 % Identify close neighbors of images in data and denoise each image, using
 % its neighbors.

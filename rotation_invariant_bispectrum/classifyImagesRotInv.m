@@ -1,8 +1,8 @@
-function [avgedData, nearestNeighbors] = calssifyImagesRotInv(data, truncation, varargin)
+function [avgedData, nearestNeighbors] = classifyImagesRotInv(data, truncation, varargin)
 %% TODO
 % Call format
-%   [avgedData, nearestNeighbors] = calssifyImagesRotInv(data, truncation, angularLimits)
-%   [avgedData, nearestNeighbors] = calssifyImagesRotInv(data, truncation, angularLimits, __)
+%   [avgedData, nearestNeighbors] = classifyImagesRotInv(data, truncation, angularLimits)
+%   [avgedData, nearestNeighbors] = classifyImagesRotInv(data, truncation, angularLimits, __)
 % 
 % Identify close neighbors of images in data and denoise each image, using
 % its neighbors.
