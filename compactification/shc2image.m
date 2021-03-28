@@ -1,7 +1,9 @@
-function im = shc2image(shc, bandlimit, imageSize, interval, scalingParam)
+function [im, sh] = shc2image(shc, bandlimit, imageSize, interval, scalingParam, sh)
 %%
 % Call format
 %   im = shc2image(shc, bandlimit, tDesign, interval, scalingParam)
+%   im = shc2image(shc, bandlimit, tDesign, interval, scalingParam, sh)
+%   [im, sh] = shc2image(__)
 % 
 % Creates an image by projecting a bandlimited spherical function into R^2.
 % 
@@ -45,6 +47,8 @@ Y = Y(:);
 [theta, phi] = KondorProj(R2phi, R2rho, scalingParam);
 
 % Evaluate image
+if nargin<6
 sh = sphericalHarmonics(theta, phi, bandlimit);
+end
 im = sh.'*shc;
 im = reshape(im, [imageSize, imageSize]);
