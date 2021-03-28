@@ -3,7 +3,8 @@ function [shc, sh] = image2shc(im, bandlimit, tDesign, interval, scalingParam, s
 % Call format
 %   shc = image2shc(im, bandlimit, tDesign, interval, scalingParam)
 %   shc = image2shc(im, bandlimit, tDesign, interval, scalingParam, sh)
-% 
+%   [shc, sh] = image2shc(__)
+%   
 % Interpolates the image im to a select t-design points and use them to
 % estimate the spherical harmonics coefficients of the projection of the
 % image onto the sphere. 
