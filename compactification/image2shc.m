@@ -1,7 +1,8 @@
-function shc = image2shc(im, bandlimit, tDesign, interval, scalingParam)
+function [shc, sh] = image2shc(im, bandlimit, tDesign, interval, scalingParam, sh)
 %%
 % Call format
 %   shc = image2shc(im, bandlimit, tDesign, interval, scalingParam)
+%   shc = image2shc(im, bandlimit, tDesign, interval, scalingParam, sh)
 % 
 % Interpolates the image im to a select t-design points and use them to
 % estimate the spherical harmonics coefficients of the projection of the
@@ -24,6 +25,10 @@ function shc = image2shc(im, bandlimit, tDesign, interval, scalingParam)
 %   shc             double      (bandlimit+1)^2 x 1 array, complex vector 
 %                               of spherical harmonics coefficients ordered 
 %                               lexicographically.
+% 
+% Optional input/output arguments
+%   sh              double      Spherical harmonics matrix. If it is given
+%                               as an input, it is not recomputed below.
 % 
 % Notes
 %   This function performs no input checks.
@@ -62,9 +67,11 @@ extval = 0;
 vals = interp2(X, Y, im, R2x, R2y, 'cubic', extval);
 
 % Compute the spherical harmonics matrix
+if nargin<6
 sh = sphericalHarmonics(tDesignTheta(tDesignInCube), ...
     tDesignPhi(tDesignInCube), ...
     bandlimit);
+end
 
 % Estimate the spherical harmonics coefficients
 shc = (4*pi/size(tDesign, 1)) * (conj(sh) * vals);
