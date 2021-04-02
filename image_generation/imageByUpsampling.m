@@ -71,7 +71,7 @@ shc = randSHCReal(lowBandlimit);
 
 % Step 2
 interval = [-cos(pi/4), cos(pi/4)];
-scalingParam = 2.5;
+scalingParam = 1.5;
 im = shc2image(shc, lowBandlimit, imageSize, interval, scalingParam);
 
 % Step 3
