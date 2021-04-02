@@ -1,4 +1,4 @@
-function bispEst = estimateBispectrum(batched, images, bandlimit, tDesign, interval, scalingParam, debiasingMatrix, sigma2)
+function bispEst = estimateBispectrum(batched, images, bandlimit, tDesign, interval, scalingParam, debiasingMatrix, sigma2, sh)
 %%
 % Call format
 %   bispEst = esimateBispectrum(images, bandlimit, tDesign, interval, scalingParam, debiasingMatrix, sigma2)
@@ -31,6 +31,7 @@ function bispEst = estimateBispectrum(batched, images, bandlimit, tDesign, inter
 %                                   the debiasing matrix.
 %   sigma2              double      positive scalar, the noise variance, 
 %                                   sigma^2. 
+%   sh                  double      spherical harmonics matrix.
 % 
 % Output arguments
 %   bispEst             double      k x 1 array, the estimator of the 
@@ -99,24 +100,45 @@ if batched
     batchBispEst = zeros(bispLen, batchNo);
     
     % Estimate batches
-    for J=1:batchNo
-        batchEst = zeros(bispLen, batchSampleSize(J));
-        parfor M=batchLowerBounds(J):batchUpperBound(J)
-            sampleSHC = image2shc(images(:, :, M), bandlimit, tDesign, interval, scalingParam);
-            batchEst(:, M) = bispectrum(sampleSHC, bandlimit, CGs) ...
-                - sigma2*debiasingMatrix*cSHC2rSHC(sampleSHC);
+    if nargin==8
+        for J=1:batchNo
+            batchEst = zeros(bispLen, batchSampleSize(J));
+            parfor M=batchLowerBounds(J):batchUpperBound(J)
+                sampleSHC = image2shc(images(:, :, M), bandlimit, tDesign, interval, scalingParam);
+                batchEst(:, M) = bispectrum(sampleSHC, bandlimit, CGs) ...
+                    - sigma2*debiasingMatrix*cSHC2rSHC(sampleSHC);
+            end
+            batchBispEst(:, J) = mean(batchEst, 2);
         end
-        batchBispEst(:, J) = mean(batchEst, 2);
+    elseif nargin==9
+        for J=1:batchNo
+            batchEst = zeros(bispLen, batchSampleSize(J));
+            parfor M=batchLowerBounds(J):batchUpperBound(J)
+                sampleSHC = image2shc(images(:, :, M), bandlimit, tDesign, interval, scalingParam, sh);
+                batchEst(:, M) = bispectrum(sampleSHC, bandlimit, CGs) ...
+                    - sigma2*debiasingMatrix*cSHC2rSHC(sampleSHC);
+            end
+            batchBispEst(:, J) = mean(batchEst, 2);
+        end
     end
     
     % Estimate the bispectrum
     bispEst = mergeEstimatedBatches(batchBispEst, batchSampleSize);
 else
     bispEst = zeros(bispLen, 1);
-    for J=1:sampleSize
-        sampleSHC = image2shc(images(:, :, J), bandlimit, tDesign, interval, scalingParam);
-        sampleBisp = bispectrum(sampleSHC, bandlimit, CGs) ...
-                - sigma2*debiasingMatrix*cSHC2rSHC(sampleSHC);
-        bispEst = (J-1)/J * bispEst + sampleBisp/J;
+    if nargin==8
+        for J=1:sampleSize
+            sampleSHC = image2shc(images(:, :, J), bandlimit, tDesign, interval, scalingParam);
+            sampleBisp = bispectrum(sampleSHC, bandlimit, CGs) ...
+                    - sigma2*debiasingMatrix*cSHC2rSHC(sampleSHC);
+            bispEst = (J-1)/J * bispEst + sampleBisp/J;
+        end
+    elseif nargin==9
+        for J=1:sampleSize
+            sampleSHC = image2shc(images(:, :, J), bandlimit, tDesign, interval, scalingParam, sh);
+            sampleBisp = bispectrum(sampleSHC, bandlimit, CGs) ...
+                    - sigma2*debiasingMatrix*cSHC2rSHC(sampleSHC);
+            bispEst = (J-1)/J * bispEst + sampleBisp/J;
+        end
     end
 end
