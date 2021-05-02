@@ -58,14 +58,13 @@ phi = phi.';
 
 fun = @(l, m) sqrt( (2*l+1)/(4*pi) * factorial(l-m)./factorial(l+m));
 
-sh = cell(bandlimit, 1);
+sh = zeros((bandlimit+1)^2, length(theta));
+sh(1, :) = 0.5/sqrt(pi) * ones(1, length(theta));
 for l=1:bandlimit
     ms = (1:2*l+1) - l - 1;
     ms = ms(:);
     factors = fun(l, ms);
     
-    sh{l} = ( exp(1i*ms.*phi) .* assocLegendPol(l, cos(theta)));
-    sh{l} = ((-1).^ms) .* factors .* sh{l};
+    sh(l^2+1:(l+1)^2, :) = ( exp(1i*ms.*phi) .* assocLegendPol(l, cos(theta)));
+    sh(l^2+1:(l+1)^2, :) = ((-1).^ms) .* factors .* sh(l^2+1:(l+1)^2, :);
 end
-sh = vertcat(sh{:});
-sh = [0.5/sqrt(pi) * ones(1, length(theta)); sh];
