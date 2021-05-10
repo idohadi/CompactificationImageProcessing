@@ -61,6 +61,7 @@ else
     initialSHC = cSHC2rSHC(x0);
 end
 
+inversionObjectiveFunc(initialSHC)
 [invertedSHC, squaredResidual, ~, ~, output] ...
     = lsqnonlin(@inversionObjectiveFunc, initialSHC, [], [], opts);
 rootedResidual = sqrt(squaredResidual);
