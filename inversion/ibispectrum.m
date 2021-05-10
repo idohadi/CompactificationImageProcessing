@@ -72,6 +72,8 @@ function [F, grad] = inversionObjectiveFunc(shc)
 F = F - b;
 F(isinf(F)) = 0;
 F(isnan(F)) = 0;
+grad(isinf(grad)) = 0;
+grad(isnan(grad)) = 0;
 
 end
 
