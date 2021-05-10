@@ -58,5 +58,7 @@ if nargout==1
 elseif nargout==2
     [b, gradI, gradJ, gradVals, gradNNZ, gradRowsNo, gradColsNo] ...
         = bispectrum_mex(shc, bandlimit, CGs);
+    gradVals(isnan(gradVals)) = 0;
     grad = sparse(gradI, gradJ, gradVals, gradRowsNo, gradColsNo, gradNNZ);
 end
+b(isnan(b)) = 0;
