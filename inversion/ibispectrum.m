@@ -61,7 +61,6 @@ else
     initialSHC = cSHC2rSHC(x0);
 end
 
-inversionObjectiveFunc(initialSHC)
 [invertedSHC, squaredResidual, ~, ~, output] ...
     = lsqnonlin(@inversionObjectiveFunc, initialSHC, [], [], opts);
 rootedResidual = sqrt(squaredResidual);
@@ -71,6 +70,9 @@ invertedSHC = rSHC2cSHC(invertedSHC);
 function [F, grad] = inversionObjectiveFunc(shc)
 [F, grad] = bispectrum(rSHC2cSHC(shc), bandlimit, CGs);
 F = F - b;
+F(isinf(F)) = 0;
+F(isnan(F)) = 0;
+
 end
 
 end
