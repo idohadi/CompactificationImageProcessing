@@ -83,7 +83,7 @@ wpass = p.Results.wpass;
 
 %% Classify images
 % Load t-design
-td = loadtd(2*bandlimit + 2);
+td = loadtd(2*bandlimit);
 
 % Declare global CGs variable
 global CGs;
