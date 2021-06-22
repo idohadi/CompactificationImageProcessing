@@ -1,0 +1,741 @@
+15-May-2021 03:22:04 ::: Beginning: Rotation and translation algorithm setup
+Starting parallel pool (parpool) using the 'local' profile ...
+Connected to the parallel pool (number of workers: 12).
+Completed column 1 of 101.Completed column 2 of 101.Completed column 3 of 101.Completed column 4 of 101.Completed column 5 of 101.Completed column 6 of 101.Completed column 7 of 101.Completed column 8 of 101.Completed column 9 of 101.Completed column 10 of 101.Completed column 11 of 101.Completed column 12 of 101.Completed column 13 of 101.Completed column 14 of 101.Completed column 15 of 101.Completed column 16 of 101.Completed column 17 of 101.Completed column 18 of 101.Completed column 19 of 101.Completed column 20 of 101.Completed column 21 of 101.Completed column 22 of 101.Completed column 23 of 101.Completed column 24 of 101.Completed column 25 of 101.Completed column 26 of 101.Completed column 27 of 101.Completed column 28 of 101.Completed column 29 of 101.Completed column 30 of 101.Completed column 31 of 101.Completed column 32 of 101.Completed column 33 of 101.Completed column 34 of 101.Completed column 35 of 101.Completed column 36 of 101.Completed column 37 of 101.Completed column 38 of 101.Completed column 39 of 101.Completed column 40 of 101.Completed column 41 of 101.Completed column 42 of 101.Completed column 43 of 101.Completed column 44 of 101.Completed column 45 of 101.Completed column 46 of 101.Completed column 47 of 101.Completed column 48 of 101.Completed column 49 of 101.Completed column 50 of 101.Completed column 51 of 101.Completed column 52 of 101.Completed column 53 of 101.Completed column 54 of 101.Completed column 55 of 101.Completed column 56 of 101.Completed column 57 of 101.Completed column 58 of 101.Completed column 59 of 101.Completed column 60 of 101.Completed column 61 of 101.Completed column 62 of 101.Completed column 63 of 101.Completed column 64 of 101.Completed column 65 of 101.Completed column 66 of 101.Completed column 67 of 101.Completed column 68 of 101.Completed column 69 of 101.Completed column 70 of 101.Completed column 71 of 101.Completed column 72 of 101.Completed column 73 of 101.Completed column 74 of 101.Completed column 75 of 101.Completed column 76 of 101.Completed column 77 of 101.Completed column 78 of 101.Completed column 79 of 101.Completed column 80 of 101.Completed column 81 of 101.Completed column 82 of 101.Completed column 83 of 101.Completed column 84 of 101.Completed column 85 of 101.Completed column 86 of 101.Completed column 87 of 101.Completed column 88 of 101.Completed column 89 of 101.Completed column 90 of 101.Completed column 91 of 101.Completed column 92 of 101.Completed column 93 of 101.Completed column 94 of 101.Completed column 95 of 101.Completed column 96 of 101.Completed column 97 of 101.Completed column 98 of 101.Completed column 99 of 101.Completed column 100 of 101.Completed column 101 of 101.15-May-2021 03:23:00 ::: Completed: Rotation and translation algorithm setup
+15-May-2021 03:23:00 ::: Beginning: Rotation only algorithm setup
+15-May-2021 03:23:00 ::: Completed: Rotation only algorithm setup
+15-May-2021 03:23:00 ::: Beginning: Dataset generation
+15-May-2021 03:23:00 ::: Beginning: Generating class representatives.
+15-May-2021 03:23:02 ::: Completed: Generating class representatives.
+15-May-2021 03:23:02 ::: Beginning: Genearting image paramters.
+15-May-2021 03:23:02 ::: Completed: Genearting image paramters.
+15-May-2021 03:23:02 ::: Beginning: Genearting images.
+15-May-2021 03:23:08 ::: Completed: Genearting images.
+15-May-2021 03:23:08 ::: Completed: Dataset generation
+15-May-2021 03:23:08 ::: Beginning: Max translation size 1 of 5. max translation size = 0.00
+15-May-2021 03:23:08 ::: Beginning: Applying translations to images.
+15-May-2021 03:23:08 ::: Completed: Applying translations to images.
+15-May-2021 03:23:08 ::: Beginning: Trial 1 of 10.
+15-May-2021 03:23:08 ::: Beginning: Adding noise.
+15-May-2021 03:23:09 ::: Completed: Adding noise.
+15-May-2021 03:23:09 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 03:25:26 ::: Completed: Rotation and translation algorithm.
+15-May-2021 03:25:26 ::: Beginning: Rotation only algorithm.
+15-May-2021 04:05:43 ::: Completed: Rotation only algorithm.
+15-May-2021 04:05:43 ::: Beginning: Node specificity computation.
+15-May-2021 04:05:47 ::: Completed: Node specificity computation.
+15-May-2021 04:05:48 ::: Beginning: Trial 1 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.283
+	Rot only 		 1.000 			40.282
+15-May-2021 04:05:48 ::: Beginning: Trial 2 of 10.
+15-May-2021 04:05:48 ::: Beginning: Adding noise.
+15-May-2021 04:05:48 ::: Completed: Adding noise.
+15-May-2021 04:05:48 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 04:08:01 ::: Completed: Rotation and translation algorithm.
+15-May-2021 04:08:01 ::: Beginning: Rotation only algorithm.
+15-May-2021 04:48:00 ::: Completed: Rotation only algorithm.
+15-May-2021 04:48:00 ::: Beginning: Node specificity computation.
+15-May-2021 04:48:04 ::: Completed: Node specificity computation.
+15-May-2021 04:48:05 ::: Beginning: Trial 2 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.211
+	Rot only 		 1.000 			39.976
+15-May-2021 04:48:05 ::: Beginning: Trial 3 of 10.
+15-May-2021 04:48:05 ::: Beginning: Adding noise.
+15-May-2021 04:48:06 ::: Completed: Adding noise.
+15-May-2021 04:48:06 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 04:50:18 ::: Completed: Rotation and translation algorithm.
+15-May-2021 04:50:18 ::: Beginning: Rotation only algorithm.
+15-May-2021 05:30:22 ::: Completed: Rotation only algorithm.
+15-May-2021 05:30:22 ::: Beginning: Node specificity computation.
+15-May-2021 05:30:26 ::: Completed: Node specificity computation.
+15-May-2021 05:30:28 ::: Beginning: Trial 3 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.200
+	Rot only 		 1.000 			40.063
+15-May-2021 05:30:28 ::: Beginning: Trial 4 of 10.
+15-May-2021 05:30:28 ::: Beginning: Adding noise.
+15-May-2021 05:30:28 ::: Completed: Adding noise.
+15-May-2021 05:30:28 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 05:32:43 ::: Completed: Rotation and translation algorithm.
+15-May-2021 05:32:43 ::: Beginning: Rotation only algorithm.
+15-May-2021 06:12:42 ::: Completed: Rotation only algorithm.
+15-May-2021 06:12:42 ::: Beginning: Node specificity computation.
+15-May-2021 06:12:47 ::: Completed: Node specificity computation.
+15-May-2021 06:12:48 ::: Beginning: Trial 4 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.248
+	Rot only 		 1.000 			39.980
+15-May-2021 06:12:48 ::: Beginning: Trial 5 of 10.
+15-May-2021 06:12:48 ::: Beginning: Adding noise.
+15-May-2021 06:12:49 ::: Completed: Adding noise.
+15-May-2021 06:12:49 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 06:15:07 ::: Completed: Rotation and translation algorithm.
+15-May-2021 06:15:07 ::: Beginning: Rotation only algorithm.
+15-May-2021 06:55:08 ::: Completed: Rotation only algorithm.
+15-May-2021 06:55:08 ::: Beginning: Node specificity computation.
+15-May-2021 06:55:13 ::: Completed: Node specificity computation.
+15-May-2021 06:55:15 ::: Beginning: Trial 5 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.308
+	Rot only 		 1.000 			40.019
+15-May-2021 06:55:15 ::: Beginning: Trial 6 of 10.
+15-May-2021 06:55:15 ::: Beginning: Adding noise.
+15-May-2021 06:55:15 ::: Completed: Adding noise.
+15-May-2021 06:55:15 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 06:57:27 ::: Completed: Rotation and translation algorithm.
+15-May-2021 06:57:27 ::: Beginning: Rotation only algorithm.
+15-May-2021 07:37:25 ::: Completed: Rotation only algorithm.
+15-May-2021 07:37:25 ::: Beginning: Node specificity computation.
+15-May-2021 07:37:29 ::: Completed: Node specificity computation.
+15-May-2021 07:37:31 ::: Beginning: Trial 6 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.199
+	Rot only 		 1.000 			39.956
+15-May-2021 07:37:31 ::: Beginning: Trial 7 of 10.
+15-May-2021 07:37:31 ::: Beginning: Adding noise.
+15-May-2021 07:37:32 ::: Completed: Adding noise.
+15-May-2021 07:37:32 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 07:39:47 ::: Completed: Rotation and translation algorithm.
+15-May-2021 07:39:47 ::: Beginning: Rotation only algorithm.
+15-May-2021 08:19:52 ::: Completed: Rotation only algorithm.
+15-May-2021 08:19:52 ::: Beginning: Node specificity computation.
+15-May-2021 08:19:57 ::: Completed: Node specificity computation.
+15-May-2021 08:19:59 ::: Beginning: Trial 7 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.252
+	Rot only 		 1.000 			40.086
+15-May-2021 08:19:59 ::: Beginning: Trial 8 of 10.
+15-May-2021 08:19:59 ::: Beginning: Adding noise.
+15-May-2021 08:19:59 ::: Completed: Adding noise.
+15-May-2021 08:19:59 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 08:22:17 ::: Completed: Rotation and translation algorithm.
+15-May-2021 08:22:17 ::: Beginning: Rotation only algorithm.
+15-May-2021 09:02:22 ::: Completed: Rotation only algorithm.
+15-May-2021 09:02:22 ::: Beginning: Node specificity computation.
+15-May-2021 09:02:27 ::: Completed: Node specificity computation.
+15-May-2021 09:02:29 ::: Beginning: Trial 8 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.302
+	Rot only 		 1.000 			40.084
+15-May-2021 09:02:29 ::: Beginning: Trial 9 of 10.
+15-May-2021 09:02:29 ::: Beginning: Adding noise.
+15-May-2021 09:02:30 ::: Completed: Adding noise.
+15-May-2021 09:02:30 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 09:04:46 ::: Completed: Rotation and translation algorithm.
+15-May-2021 09:04:46 ::: Beginning: Rotation only algorithm.
+15-May-2021 09:44:54 ::: Completed: Rotation only algorithm.
+15-May-2021 09:44:54 ::: Beginning: Node specificity computation.
+15-May-2021 09:44:59 ::: Completed: Node specificity computation.
+15-May-2021 09:45:01 ::: Beginning: Trial 9 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.272
+	Rot only 		 1.000 			40.139
+15-May-2021 09:45:01 ::: Beginning: Trial 10 of 10.
+15-May-2021 09:45:01 ::: Beginning: Adding noise.
+15-May-2021 09:45:02 ::: Completed: Adding noise.
+15-May-2021 09:45:02 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 09:47:19 ::: Completed: Rotation and translation algorithm.
+15-May-2021 09:47:19 ::: Beginning: Rotation only algorithm.
+15-May-2021 10:27:24 ::: Completed: Rotation only algorithm.
+15-May-2021 10:27:24 ::: Beginning: Node specificity computation.
+15-May-2021 10:27:28 ::: Completed: Node specificity computation.
+15-May-2021 10:27:31 ::: Beginning: Trial 10 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.292
+	Rot only 		 1.000 			40.073
+15-May-2021 10:27:31 ::: Completed: Max translation size 1 of 5. max translation size = 0.00
+15-May-2021 10:27:31 ::: Beginning: Max translation size 2 of 5. max translation size = 2.50
+15-May-2021 10:27:31 ::: Beginning: Applying translations to images.
+15-May-2021 10:27:33 ::: Completed: Applying translations to images.
+15-May-2021 10:27:33 ::: Beginning: Trial 1 of 10.
+15-May-2021 10:27:33 ::: Beginning: Adding noise.
+15-May-2021 10:27:33 ::: Completed: Adding noise.
+15-May-2021 10:27:33 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 10:29:50 ::: Completed: Rotation and translation algorithm.
+15-May-2021 10:29:50 ::: Beginning: Rotation only algorithm.
+15-May-2021 11:09:49 ::: Completed: Rotation only algorithm.
+15-May-2021 11:09:49 ::: Beginning: Node specificity computation.
+15-May-2021 11:09:54 ::: Completed: Node specificity computation.
+15-May-2021 11:09:57 ::: Beginning: Trial 1 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.287
+	Rot only 		 1.000 			39.982
+15-May-2021 11:09:57 ::: Beginning: Trial 2 of 10.
+15-May-2021 11:09:57 ::: Beginning: Adding noise.
+15-May-2021 11:09:57 ::: Completed: Adding noise.
+15-May-2021 11:09:57 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 11:12:17 ::: Completed: Rotation and translation algorithm.
+15-May-2021 11:12:17 ::: Beginning: Rotation only algorithm.
+15-May-2021 11:52:21 ::: Completed: Rotation only algorithm.
+15-May-2021 11:52:21 ::: Beginning: Node specificity computation.
+15-May-2021 11:52:26 ::: Completed: Node specificity computation.
+15-May-2021 11:52:29 ::: Beginning: Trial 2 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.331
+	Rot only 		 1.000 			40.075
+15-May-2021 11:52:29 ::: Beginning: Trial 3 of 10.
+15-May-2021 11:52:29 ::: Beginning: Adding noise.
+15-May-2021 11:52:29 ::: Completed: Adding noise.
+15-May-2021 11:52:29 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 11:54:47 ::: Completed: Rotation and translation algorithm.
+15-May-2021 11:54:47 ::: Beginning: Rotation only algorithm.
+15-May-2021 12:34:51 ::: Completed: Rotation only algorithm.
+15-May-2021 12:34:51 ::: Beginning: Node specificity computation.
+15-May-2021 12:34:55 ::: Completed: Node specificity computation.
+15-May-2021 12:34:58 ::: Beginning: Trial 3 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.292
+	Rot only 		 1.000 			40.065
+15-May-2021 12:34:58 ::: Beginning: Trial 4 of 10.
+15-May-2021 12:34:58 ::: Beginning: Adding noise.
+15-May-2021 12:34:59 ::: Completed: Adding noise.
+15-May-2021 12:34:59 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 12:37:16 ::: Completed: Rotation and translation algorithm.
+15-May-2021 12:37:16 ::: Beginning: Rotation only algorithm.
+15-May-2021 13:17:24 ::: Completed: Rotation only algorithm.
+15-May-2021 13:17:24 ::: Beginning: Node specificity computation.
+15-May-2021 13:17:29 ::: Completed: Node specificity computation.
+15-May-2021 13:17:32 ::: Beginning: Trial 4 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.286
+	Rot only 		 1.000 			40.140
+15-May-2021 13:17:32 ::: Beginning: Trial 5 of 10.
+15-May-2021 13:17:32 ::: Beginning: Adding noise.
+15-May-2021 13:17:32 ::: Completed: Adding noise.
+15-May-2021 13:17:32 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 13:19:50 ::: Completed: Rotation and translation algorithm.
+15-May-2021 13:19:50 ::: Beginning: Rotation only algorithm.
+15-May-2021 14:00:02 ::: Completed: Rotation only algorithm.
+15-May-2021 14:00:02 ::: Beginning: Node specificity computation.
+15-May-2021 14:00:07 ::: Completed: Node specificity computation.
+15-May-2021 14:00:10 ::: Beginning: Trial 5 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.292
+	Rot only 		 1.000 			40.206
+15-May-2021 14:00:10 ::: Beginning: Trial 6 of 10.
+15-May-2021 14:00:10 ::: Beginning: Adding noise.
+15-May-2021 14:00:11 ::: Completed: Adding noise.
+15-May-2021 14:00:11 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 14:02:29 ::: Completed: Rotation and translation algorithm.
+15-May-2021 14:02:29 ::: Beginning: Rotation only algorithm.
+15-May-2021 14:43:02 ::: Completed: Rotation only algorithm.
+15-May-2021 14:43:02 ::: Beginning: Node specificity computation.
+15-May-2021 14:43:06 ::: Completed: Node specificity computation.
+15-May-2021 14:43:10 ::: Beginning: Trial 6 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.312
+	Rot only 		 1.000 			40.537
+15-May-2021 14:43:10 ::: Beginning: Trial 7 of 10.
+15-May-2021 14:43:10 ::: Beginning: Adding noise.
+15-May-2021 14:43:10 ::: Completed: Adding noise.
+15-May-2021 14:43:10 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 14:45:30 ::: Completed: Rotation and translation algorithm.
+15-May-2021 14:45:30 ::: Beginning: Rotation only algorithm.
+15-May-2021 15:25:45 ::: Completed: Rotation only algorithm.
+15-May-2021 15:25:45 ::: Beginning: Node specificity computation.
+15-May-2021 15:25:49 ::: Completed: Node specificity computation.
+15-May-2021 15:25:53 ::: Beginning: Trial 7 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.338
+	Rot only 		 1.000 			40.242
+15-May-2021 15:25:53 ::: Beginning: Trial 8 of 10.
+15-May-2021 15:25:53 ::: Beginning: Adding noise.
+15-May-2021 15:25:54 ::: Completed: Adding noise.
+15-May-2021 15:25:54 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 15:28:11 ::: Completed: Rotation and translation algorithm.
+15-May-2021 15:28:11 ::: Beginning: Rotation only algorithm.
+15-May-2021 16:08:33 ::: Completed: Rotation only algorithm.
+15-May-2021 16:08:33 ::: Beginning: Node specificity computation.
+15-May-2021 16:08:38 ::: Completed: Node specificity computation.
+15-May-2021 16:08:41 ::: Beginning: Trial 8 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.298
+	Rot only 		 1.000 			40.364
+15-May-2021 16:08:41 ::: Beginning: Trial 9 of 10.
+15-May-2021 16:08:41 ::: Beginning: Adding noise.
+15-May-2021 16:08:42 ::: Completed: Adding noise.
+15-May-2021 16:08:42 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 16:11:00 ::: Completed: Rotation and translation algorithm.
+15-May-2021 16:11:00 ::: Beginning: Rotation only algorithm.
+15-May-2021 16:51:24 ::: Completed: Rotation only algorithm.
+15-May-2021 16:51:24 ::: Beginning: Node specificity computation.
+15-May-2021 16:51:29 ::: Completed: Node specificity computation.
+15-May-2021 16:51:33 ::: Beginning: Trial 9 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.293
+	Rot only 		 1.000 			40.407
+15-May-2021 16:51:33 ::: Beginning: Trial 10 of 10.
+15-May-2021 16:51:33 ::: Beginning: Adding noise.
+15-May-2021 16:51:33 ::: Completed: Adding noise.
+15-May-2021 16:51:33 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 16:53:52 ::: Completed: Rotation and translation algorithm.
+15-May-2021 16:53:52 ::: Beginning: Rotation only algorithm.
+15-May-2021 17:34:07 ::: Completed: Rotation only algorithm.
+15-May-2021 17:34:07 ::: Beginning: Node specificity computation.
+15-May-2021 17:34:12 ::: Completed: Node specificity computation.
+15-May-2021 17:34:16 ::: Beginning: Trial 10 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.319
+	Rot only 		 1.000 			40.249
+15-May-2021 17:34:16 ::: Completed: Max translation size 2 of 5. max translation size = 2.50
+15-May-2021 17:34:16 ::: Beginning: Max translation size 3 of 5. max translation size = 5.00
+15-May-2021 17:34:16 ::: Beginning: Applying translations to images.
+15-May-2021 17:34:18 ::: Completed: Applying translations to images.
+15-May-2021 17:34:18 ::: Beginning: Trial 1 of 10.
+15-May-2021 17:34:18 ::: Beginning: Adding noise.
+15-May-2021 17:34:18 ::: Completed: Adding noise.
+15-May-2021 17:34:18 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 17:36:40 ::: Completed: Rotation and translation algorithm.
+15-May-2021 17:36:40 ::: Beginning: Rotation only algorithm.
+15-May-2021 18:17:03 ::: Completed: Rotation only algorithm.
+15-May-2021 18:17:03 ::: Beginning: Node specificity computation.
+15-May-2021 18:17:08 ::: Completed: Node specificity computation.
+15-May-2021 18:17:12 ::: Beginning: Trial 1 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.372
+	Rot only 		 1.000 			40.381
+15-May-2021 18:17:12 ::: Beginning: Trial 2 of 10.
+15-May-2021 18:17:12 ::: Beginning: Adding noise.
+15-May-2021 18:17:13 ::: Completed: Adding noise.
+15-May-2021 18:17:13 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 18:19:32 ::: Completed: Rotation and translation algorithm.
+15-May-2021 18:19:32 ::: Beginning: Rotation only algorithm.
+15-May-2021 18:59:52 ::: Completed: Rotation only algorithm.
+15-May-2021 18:59:52 ::: Beginning: Node specificity computation.
+15-May-2021 18:59:57 ::: Completed: Node specificity computation.
+15-May-2021 19:00:01 ::: Beginning: Trial 2 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.315
+	Rot only 		 1.000 			40.346
+15-May-2021 19:00:01 ::: Beginning: Trial 3 of 10.
+15-May-2021 19:00:01 ::: Beginning: Adding noise.
+15-May-2021 19:00:02 ::: Completed: Adding noise.
+15-May-2021 19:00:02 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 19:02:21 ::: Completed: Rotation and translation algorithm.
+15-May-2021 19:02:21 ::: Beginning: Rotation only algorithm.
+15-May-2021 19:42:45 ::: Completed: Rotation only algorithm.
+15-May-2021 19:42:45 ::: Beginning: Node specificity computation.
+15-May-2021 19:42:50 ::: Completed: Node specificity computation.
+15-May-2021 19:42:54 ::: Beginning: Trial 3 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.319
+	Rot only 		 1.000 			40.404
+15-May-2021 19:42:54 ::: Beginning: Trial 4 of 10.
+15-May-2021 19:42:54 ::: Beginning: Adding noise.
+15-May-2021 19:42:55 ::: Completed: Adding noise.
+15-May-2021 19:42:55 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 19:45:13 ::: Completed: Rotation and translation algorithm.
+15-May-2021 19:45:13 ::: Beginning: Rotation only algorithm.
+15-May-2021 20:25:43 ::: Completed: Rotation only algorithm.
+15-May-2021 20:25:43 ::: Beginning: Node specificity computation.
+15-May-2021 20:25:48 ::: Completed: Node specificity computation.
+15-May-2021 20:25:53 ::: Beginning: Trial 4 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.305
+	Rot only 		 1.000 			40.511
+15-May-2021 20:25:53 ::: Beginning: Trial 5 of 10.
+15-May-2021 20:25:53 ::: Beginning: Adding noise.
+15-May-2021 20:25:53 ::: Completed: Adding noise.
+15-May-2021 20:25:53 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 20:28:14 ::: Completed: Rotation and translation algorithm.
+15-May-2021 20:28:14 ::: Beginning: Rotation only algorithm.
+15-May-2021 21:08:44 ::: Completed: Rotation only algorithm.
+15-May-2021 21:08:44 ::: Beginning: Node specificity computation.
+15-May-2021 21:08:48 ::: Completed: Node specificity computation.
+15-May-2021 21:08:53 ::: Beginning: Trial 5 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.341
+	Rot only 		 1.000 			40.500
+15-May-2021 21:08:53 ::: Beginning: Trial 6 of 10.
+15-May-2021 21:08:53 ::: Beginning: Adding noise.
+15-May-2021 21:08:53 ::: Completed: Adding noise.
+15-May-2021 21:08:53 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 21:11:13 ::: Completed: Rotation and translation algorithm.
+15-May-2021 21:11:13 ::: Beginning: Rotation only algorithm.
+15-May-2021 21:51:45 ::: Completed: Rotation only algorithm.
+15-May-2021 21:51:45 ::: Beginning: Node specificity computation.
+15-May-2021 21:51:49 ::: Completed: Node specificity computation.
+15-May-2021 21:51:54 ::: Beginning: Trial 6 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.334
+	Rot only 		 1.000 			40.523
+15-May-2021 21:51:54 ::: Beginning: Trial 7 of 10.
+15-May-2021 21:51:54 ::: Beginning: Adding noise.
+15-May-2021 21:51:55 ::: Completed: Adding noise.
+15-May-2021 21:51:55 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 21:54:14 ::: Completed: Rotation and translation algorithm.
+15-May-2021 21:54:14 ::: Beginning: Rotation only algorithm.
+15-May-2021 22:34:41 ::: Completed: Rotation only algorithm.
+15-May-2021 22:34:41 ::: Beginning: Node specificity computation.
+15-May-2021 22:34:45 ::: Completed: Node specificity computation.
+15-May-2021 22:34:50 ::: Beginning: Trial 7 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.325
+	Rot only 		 1.000 			40.442
+15-May-2021 22:34:50 ::: Beginning: Trial 8 of 10.
+15-May-2021 22:34:50 ::: Beginning: Adding noise.
+15-May-2021 22:34:51 ::: Completed: Adding noise.
+15-May-2021 22:34:51 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 22:37:10 ::: Completed: Rotation and translation algorithm.
+15-May-2021 22:37:10 ::: Beginning: Rotation only algorithm.
+15-May-2021 23:17:41 ::: Completed: Rotation only algorithm.
+15-May-2021 23:17:41 ::: Beginning: Node specificity computation.
+15-May-2021 23:17:46 ::: Completed: Node specificity computation.
+15-May-2021 23:17:51 ::: Beginning: Trial 8 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.312
+	Rot only 		 1.000 			40.525
+15-May-2021 23:17:51 ::: Beginning: Trial 9 of 10.
+15-May-2021 23:17:51 ::: Beginning: Adding noise.
+15-May-2021 23:17:52 ::: Completed: Adding noise.
+15-May-2021 23:17:52 ::: Beginning: Rotation and translation algorithm.
+15-May-2021 23:20:10 ::: Completed: Rotation and translation algorithm.
+15-May-2021 23:20:10 ::: Beginning: Rotation only algorithm.
+16-May-2021 00:00:47 ::: Completed: Rotation only algorithm.
+16-May-2021 00:00:47 ::: Beginning: Node specificity computation.
+16-May-2021 00:00:51 ::: Completed: Node specificity computation.
+16-May-2021 00:00:57 ::: Beginning: Trial 9 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.310
+	Rot only 		 1.000 			40.609
+16-May-2021 00:00:57 ::: Beginning: Trial 10 of 10.
+16-May-2021 00:00:57 ::: Beginning: Adding noise.
+16-May-2021 00:00:57 ::: Completed: Adding noise.
+16-May-2021 00:00:57 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 00:03:16 ::: Completed: Rotation and translation algorithm.
+16-May-2021 00:03:16 ::: Beginning: Rotation only algorithm.
+16-May-2021 00:43:48 ::: Completed: Rotation only algorithm.
+16-May-2021 00:43:48 ::: Beginning: Node specificity computation.
+16-May-2021 00:43:52 ::: Completed: Node specificity computation.
+16-May-2021 00:43:58 ::: Beginning: Trial 10 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.316
+	Rot only 		 1.000 			40.525
+16-May-2021 00:43:58 ::: Completed: Max translation size 3 of 5. max translation size = 5.00
+16-May-2021 00:43:58 ::: Beginning: Max translation size 4 of 5. max translation size = 7.50
+16-May-2021 00:43:58 ::: Beginning: Applying translations to images.
+16-May-2021 00:44:00 ::: Completed: Applying translations to images.
+16-May-2021 00:44:00 ::: Beginning: Trial 1 of 10.
+16-May-2021 00:44:00 ::: Beginning: Adding noise.
+16-May-2021 00:44:01 ::: Completed: Adding noise.
+16-May-2021 00:44:01 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 00:46:22 ::: Completed: Rotation and translation algorithm.
+16-May-2021 00:46:22 ::: Beginning: Rotation only algorithm.
+16-May-2021 01:27:25 ::: Completed: Rotation only algorithm.
+16-May-2021 01:27:25 ::: Beginning: Node specificity computation.
+16-May-2021 01:27:29 ::: Completed: Node specificity computation.
+16-May-2021 01:27:35 ::: Beginning: Trial 1 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.339
+	Rot only 		 1.000 			41.052
+16-May-2021 01:27:35 ::: Beginning: Trial 2 of 10.
+16-May-2021 01:27:35 ::: Beginning: Adding noise.
+16-May-2021 01:27:36 ::: Completed: Adding noise.
+16-May-2021 01:27:36 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 01:29:55 ::: Completed: Rotation and translation algorithm.
+16-May-2021 01:29:55 ::: Beginning: Rotation only algorithm.
+16-May-2021 02:10:53 ::: Completed: Rotation only algorithm.
+16-May-2021 02:10:53 ::: Beginning: Node specificity computation.
+16-May-2021 02:10:57 ::: Completed: Node specificity computation.
+16-May-2021 02:11:03 ::: Beginning: Trial 2 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.326
+	Rot only 		 1.000 			40.962
+16-May-2021 02:11:03 ::: Beginning: Trial 3 of 10.
+16-May-2021 02:11:03 ::: Beginning: Adding noise.
+16-May-2021 02:11:04 ::: Completed: Adding noise.
+16-May-2021 02:11:04 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 02:13:25 ::: Completed: Rotation and translation algorithm.
+16-May-2021 02:13:25 ::: Beginning: Rotation only algorithm.
+16-May-2021 02:54:22 ::: Completed: Rotation only algorithm.
+16-May-2021 02:54:22 ::: Beginning: Node specificity computation.
+16-May-2021 02:54:26 ::: Completed: Node specificity computation.
+16-May-2021 02:54:32 ::: Beginning: Trial 3 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.348
+	Rot only 		 1.000 			40.955
+16-May-2021 02:54:32 ::: Beginning: Trial 4 of 10.
+16-May-2021 02:54:32 ::: Beginning: Adding noise.
+16-May-2021 02:54:33 ::: Completed: Adding noise.
+16-May-2021 02:54:33 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 02:56:53 ::: Completed: Rotation and translation algorithm.
+16-May-2021 02:56:53 ::: Beginning: Rotation only algorithm.
+16-May-2021 03:38:24 ::: Completed: Rotation only algorithm.
+16-May-2021 03:38:24 ::: Beginning: Node specificity computation.
+16-May-2021 03:38:28 ::: Completed: Node specificity computation.
+16-May-2021 03:38:35 ::: Beginning: Trial 4 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.337
+	Rot only 		 1.000 			41.512
+16-May-2021 03:38:35 ::: Beginning: Trial 5 of 10.
+16-May-2021 03:38:35 ::: Beginning: Adding noise.
+16-May-2021 03:38:35 ::: Completed: Adding noise.
+16-May-2021 03:38:35 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 03:40:57 ::: Completed: Rotation and translation algorithm.
+16-May-2021 03:40:57 ::: Beginning: Rotation only algorithm.
+16-May-2021 04:22:50 ::: Completed: Rotation only algorithm.
+16-May-2021 04:22:50 ::: Beginning: Node specificity computation.
+16-May-2021 04:22:54 ::: Completed: Node specificity computation.
+16-May-2021 04:23:01 ::: Beginning: Trial 5 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.364
+	Rot only 		 1.000 			41.881
+16-May-2021 04:23:01 ::: Beginning: Trial 6 of 10.
+16-May-2021 04:23:01 ::: Beginning: Adding noise.
+16-May-2021 04:23:01 ::: Completed: Adding noise.
+16-May-2021 04:23:01 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 04:25:20 ::: Completed: Rotation and translation algorithm.
+16-May-2021 04:25:20 ::: Beginning: Rotation only algorithm.
+16-May-2021 05:06:28 ::: Completed: Rotation only algorithm.
+16-May-2021 05:06:28 ::: Beginning: Node specificity computation.
+16-May-2021 05:06:32 ::: Completed: Node specificity computation.
+16-May-2021 05:06:39 ::: Beginning: Trial 6 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.314
+	Rot only 		 1.000 			41.128
+16-May-2021 05:06:39 ::: Beginning: Trial 7 of 10.
+16-May-2021 05:06:39 ::: Beginning: Adding noise.
+16-May-2021 05:06:39 ::: Completed: Adding noise.
+16-May-2021 05:06:39 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 05:08:59 ::: Completed: Rotation and translation algorithm.
+16-May-2021 05:08:59 ::: Beginning: Rotation only algorithm.
+16-May-2021 05:50:13 ::: Completed: Rotation only algorithm.
+16-May-2021 05:50:13 ::: Beginning: Node specificity computation.
+16-May-2021 05:50:18 ::: Completed: Node specificity computation.
+16-May-2021 05:50:24 ::: Beginning: Trial 7 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.327
+	Rot only 		 1.000 			41.246
+16-May-2021 05:50:24 ::: Beginning: Trial 8 of 10.
+16-May-2021 05:50:24 ::: Beginning: Adding noise.
+16-May-2021 05:50:25 ::: Completed: Adding noise.
+16-May-2021 05:50:25 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 05:52:46 ::: Completed: Rotation and translation algorithm.
+16-May-2021 05:52:46 ::: Beginning: Rotation only algorithm.
+16-May-2021 06:34:02 ::: Completed: Rotation only algorithm.
+16-May-2021 06:34:02 ::: Beginning: Node specificity computation.
+16-May-2021 06:34:07 ::: Completed: Node specificity computation.
+16-May-2021 06:34:14 ::: Beginning: Trial 8 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.343
+	Rot only 		 1.000 			41.280
+16-May-2021 06:34:14 ::: Beginning: Trial 9 of 10.
+16-May-2021 06:34:14 ::: Beginning: Adding noise.
+16-May-2021 06:34:14 ::: Completed: Adding noise.
+16-May-2021 06:34:14 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 06:36:35 ::: Completed: Rotation and translation algorithm.
+16-May-2021 06:36:35 ::: Beginning: Rotation only algorithm.
+16-May-2021 07:17:52 ::: Completed: Rotation only algorithm.
+16-May-2021 07:17:52 ::: Beginning: Node specificity computation.
+16-May-2021 07:17:57 ::: Completed: Node specificity computation.
+16-May-2021 07:18:04 ::: Beginning: Trial 9 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.345
+	Rot only 		 1.000 			41.289
+16-May-2021 07:18:04 ::: Beginning: Trial 10 of 10.
+16-May-2021 07:18:04 ::: Beginning: Adding noise.
+16-May-2021 07:18:04 ::: Completed: Adding noise.
+16-May-2021 07:18:04 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 07:20:24 ::: Completed: Rotation and translation algorithm.
+16-May-2021 07:20:24 ::: Beginning: Rotation only algorithm.
+16-May-2021 08:01:42 ::: Completed: Rotation only algorithm.
+16-May-2021 08:01:42 ::: Beginning: Node specificity computation.
+16-May-2021 08:01:46 ::: Completed: Node specificity computation.
+16-May-2021 08:01:53 ::: Beginning: Trial 10 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.338
+	Rot only 		 1.000 			41.288
+16-May-2021 08:01:53 ::: Completed: Max translation size 4 of 5. max translation size = 7.50
+16-May-2021 08:01:53 ::: Beginning: Max translation size 5 of 5. max translation size = 10.00
+16-May-2021 08:01:53 ::: Beginning: Applying translations to images.
+16-May-2021 08:01:55 ::: Completed: Applying translations to images.
+16-May-2021 08:01:55 ::: Beginning: Trial 1 of 10.
+16-May-2021 08:01:55 ::: Beginning: Adding noise.
+16-May-2021 08:01:55 ::: Completed: Adding noise.
+16-May-2021 08:01:55 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 08:04:16 ::: Completed: Rotation and translation algorithm.
+16-May-2021 08:04:16 ::: Beginning: Rotation only algorithm.
+16-May-2021 08:46:05 ::: Completed: Rotation only algorithm.
+16-May-2021 08:46:05 ::: Beginning: Node specificity computation.
+16-May-2021 08:46:09 ::: Completed: Node specificity computation.
+16-May-2021 08:46:17 ::: Beginning: Trial 1 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.339
+	Rot only 		 1.000 			41.823
+16-May-2021 08:46:17 ::: Beginning: Trial 2 of 10.
+16-May-2021 08:46:17 ::: Beginning: Adding noise.
+16-May-2021 08:46:17 ::: Completed: Adding noise.
+16-May-2021 08:46:17 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 08:48:37 ::: Completed: Rotation and translation algorithm.
+16-May-2021 08:48:37 ::: Beginning: Rotation only algorithm.
+16-May-2021 09:30:26 ::: Completed: Rotation only algorithm.
+16-May-2021 09:30:26 ::: Beginning: Node specificity computation.
+16-May-2021 09:30:30 ::: Completed: Node specificity computation.
+16-May-2021 09:30:38 ::: Beginning: Trial 2 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.333
+	Rot only 		 1.000 			41.808
+16-May-2021 09:30:38 ::: Beginning: Trial 3 of 10.
+16-May-2021 09:30:38 ::: Beginning: Adding noise.
+16-May-2021 09:30:38 ::: Completed: Adding noise.
+16-May-2021 09:30:38 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 09:32:58 ::: Completed: Rotation and translation algorithm.
+16-May-2021 09:32:58 ::: Beginning: Rotation only algorithm.
+16-May-2021 10:14:47 ::: Completed: Rotation only algorithm.
+16-May-2021 10:14:47 ::: Beginning: Node specificity computation.
+16-May-2021 10:14:52 ::: Completed: Node specificity computation.
+16-May-2021 10:14:59 ::: Beginning: Trial 3 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.325
+	Rot only 		 1.000 			41.828
+16-May-2021 10:14:59 ::: Beginning: Trial 4 of 10.
+16-May-2021 10:14:59 ::: Beginning: Adding noise.
+16-May-2021 10:15:00 ::: Completed: Adding noise.
+16-May-2021 10:15:00 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 10:17:20 ::: Completed: Rotation and translation algorithm.
+16-May-2021 10:17:20 ::: Beginning: Rotation only algorithm.
+16-May-2021 10:59:06 ::: Completed: Rotation only algorithm.
+16-May-2021 10:59:06 ::: Beginning: Node specificity computation.
+16-May-2021 10:59:10 ::: Completed: Node specificity computation.
+16-May-2021 10:59:18 ::: Beginning: Trial 4 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.343
+	Rot only 		 1.000 			41.753
+16-May-2021 10:59:18 ::: Beginning: Trial 5 of 10.
+16-May-2021 10:59:18 ::: Beginning: Adding noise.
+16-May-2021 10:59:18 ::: Completed: Adding noise.
+16-May-2021 10:59:18 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 11:01:38 ::: Completed: Rotation and translation algorithm.
+16-May-2021 11:01:38 ::: Beginning: Rotation only algorithm.
+16-May-2021 11:43:25 ::: Completed: Rotation only algorithm.
+16-May-2021 11:43:25 ::: Beginning: Node specificity computation.
+16-May-2021 11:43:29 ::: Completed: Node specificity computation.
+16-May-2021 11:43:37 ::: Beginning: Trial 5 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.324
+	Rot only 		 1.000 			41.785
+16-May-2021 11:43:37 ::: Beginning: Trial 6 of 10.
+16-May-2021 11:43:37 ::: Beginning: Adding noise.
+16-May-2021 11:43:38 ::: Completed: Adding noise.
+16-May-2021 11:43:38 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 11:45:59 ::: Completed: Rotation and translation algorithm.
+16-May-2021 11:45:59 ::: Beginning: Rotation only algorithm.
+16-May-2021 12:27:50 ::: Completed: Rotation only algorithm.
+16-May-2021 12:27:50 ::: Beginning: Node specificity computation.
+16-May-2021 12:27:55 ::: Completed: Node specificity computation.
+16-May-2021 12:28:03 ::: Beginning: Trial 6 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.352
+	Rot only 		 1.000 			41.855
+16-May-2021 12:28:03 ::: Beginning: Trial 7 of 10.
+16-May-2021 12:28:03 ::: Beginning: Adding noise.
+16-May-2021 12:28:03 ::: Completed: Adding noise.
+16-May-2021 12:28:03 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 12:30:23 ::: Completed: Rotation and translation algorithm.
+16-May-2021 12:30:23 ::: Beginning: Rotation only algorithm.
+16-May-2021 13:12:12 ::: Completed: Rotation only algorithm.
+16-May-2021 13:12:12 ::: Beginning: Node specificity computation.
+16-May-2021 13:12:17 ::: Completed: Node specificity computation.
+16-May-2021 13:12:25 ::: Beginning: Trial 7 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.336
+	Rot only 		 1.000 			41.810
+16-May-2021 13:12:25 ::: Beginning: Trial 8 of 10.
+16-May-2021 13:12:25 ::: Beginning: Adding noise.
+16-May-2021 13:12:25 ::: Completed: Adding noise.
+16-May-2021 13:12:25 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 13:14:46 ::: Completed: Rotation and translation algorithm.
+16-May-2021 13:14:46 ::: Beginning: Rotation only algorithm.
+16-May-2021 13:56:34 ::: Completed: Rotation only algorithm.
+16-May-2021 13:56:34 ::: Beginning: Node specificity computation.
+16-May-2021 13:56:39 ::: Completed: Node specificity computation.
+16-May-2021 13:56:47 ::: Beginning: Trial 8 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.352
+	Rot only 		 1.000 			41.791
+16-May-2021 13:56:47 ::: Beginning: Trial 9 of 10.
+16-May-2021 13:56:47 ::: Beginning: Adding noise.
+16-May-2021 13:56:47 ::: Completed: Adding noise.
+16-May-2021 13:56:47 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 13:59:08 ::: Completed: Rotation and translation algorithm.
+16-May-2021 13:59:08 ::: Beginning: Rotation only algorithm.
+16-May-2021 14:40:58 ::: Completed: Rotation only algorithm.
+16-May-2021 14:40:58 ::: Beginning: Node specificity computation.
+16-May-2021 14:41:02 ::: Completed: Node specificity computation.
+16-May-2021 14:41:10 ::: Beginning: Trial 9 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.339
+	Rot only 		 1.000 			41.830
+16-May-2021 14:41:10 ::: Beginning: Trial 10 of 10.
+16-May-2021 14:41:10 ::: Beginning: Adding noise.
+16-May-2021 14:41:11 ::: Completed: Adding noise.
+16-May-2021 14:41:11 ::: Beginning: Rotation and translation algorithm.
+16-May-2021 14:43:32 ::: Completed: Rotation and translation algorithm.
+16-May-2021 14:43:32 ::: Beginning: Rotation only algorithm.
+16-May-2021 15:25:20 ::: Completed: Rotation only algorithm.
+16-May-2021 15:25:20 ::: Beginning: Node specificity computation.
+16-May-2021 15:25:25 ::: Completed: Node specificity computation.
+16-May-2021 15:25:34 ::: Beginning: Trial 10 of 10.
+Results saved to disk. Summary statistics: 
+			95th prtle		Runtime (min)
+	Rot & trans 		 1.000 			2.344
+	Rot only 		 1.000 			41.814
+16-May-2021 15:25:34 ::: Completed: Max translation size 5 of 5. max translation size = 10.00
+[Warning: MATLAB has disabled some advanced graphics rendering features by switching to software OpenGL.
+For more information, click <a href="matlab:opengl('problems')">here</a>.] 
+Current plot held
+Current plot held
+Current plot held
+Current plot held
+Current plot held
