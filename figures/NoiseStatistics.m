@@ -102,5 +102,3 @@ for J=dims
     Y = fft(X, [], J);
 end
 end
-
-end
