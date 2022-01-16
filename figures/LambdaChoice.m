@@ -37,7 +37,7 @@ printBegEndMsg('Setup parameters', false);
 printBegEndMsg('Image generation functions', true);
 
 % Image by upsampling
-genFunc1 = @(tn) imagebyUps(tn, imSz);
+genFunc1 = @(tn) imagebyUps(tn, imageSize);
 
 % Image by cryo-EM simulation
 root = aspire_root();
