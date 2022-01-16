@@ -1,0 +1,99 @@
+%% Docs
+% ***********************************************************
+% Author    Ido Hadi
+% Email     idohadi@mail.tau.ac.il
+% Year      2022
+% ***********************************************************
+
+%% RNG seed
+rng(0, 'twister');
+
+%% File setup
+dt = datetime;
+dt = datestr(dt, 'yyyy-mm-dd-HHMM');
+fnNOEXT = ['NoiseStatistics-', dt]; 
+diary([fnNOEXT, '.log']); % Log file
+fn = [fnNOEXT, '.mat']; % Output file
+
+%% Setup parameters
+printBegEndMsg('Setup parameters', true);
+
+genFunc = @() imageByUpsampling(14, 16, imageSize, round(0.2*imageSize));
+
+sigma = 0:0.25:6;
+trialNo = 500;
+
+imageSize = 101;
+
+bandlimit = 50;
+tDesign = loadtd(2*bandlimit);
+interval = cos(pi/4)*[-1, 1];
+scalingParam = 1;
+
+save(fn, 'sigma', 'imageNo', 'imageSize', 'bandlimit', 'interval', ...
+    'scalingParam');
+
+[~, sh] = image2shc(randn(imageSize, imageSize), bandlimit, ...
+    tDesign, interval, scalingParam);
+
+printBegEndMsg('Setup parameters', false);
+
+%% Run test
+image = zeros(imageSize, imageSize, trialNo, length(sigma));
+imagePowSpec = zeros(imageSize, imageSize, trialNo, length(sigma));
+shc = zeros((bandlimit+1)^2, trialNo, length(sigma));
+shcPowSpec = zeros(bandlimit+1, trialNo, length(sigma));
+
+for s=length(sigma)
+    printBegEndMsg(num2str(sigma(s)^2, 'Sigma^2 = %.3f'), true);
+
+    % Calculate the images
+    printBegEndMsg('Generate white noise images', true);
+    image(:, :, :, s) = sigma(s)^2 * randn(imageSize, imageSize, trialNo);
+    printBegEndMsg('Generate white noise images', false);
+    
+    % Calculate power spectrum of images
+    printBegEndMsg('Calculate power spectrum of images', true);
+    imagePowSpec = fft2d(image, 3);
+    imagePowSpec = abs(imagePowSpec).^2;
+    printBegEndMsg('Calculate power spectrum of images', false);
+    
+    % Project the images onto the sphere and compute their power spectrum
+    printBegEndMsg('Project images to sphere and compute power spectrum', true);
+    parfor J=1:size(image, 3)
+        shc(:, J, s) = image2shc(image(:, :, J, s), bandlimit, tDesign, ...
+            interval, scalingParam, sh);
+        shcPowSpec(:, J, s) = powerSpectrum(shc(:, J, s), bandlimit);
+    end
+    printBegEndMsg('Project images to sphere and compute power spectrum', false);
+
+    printBegEndMsg(num2str(sigma(s)^2, 'Sigma^2 = %.3f'), false);
+end
+
+% Save result
+save(fn, 'image', 'imagePowSpec', 'shc', 'shcPowSpec', '-append');
+
+%% Produce figure
+fig = figure;
+
+savefig(fig, [fnNOEXT, '.fig']);
+
+%% Shut down the diary
+diary off;
+
+
+function Y = fft2d(X, dim)
+for J=size(X)
+    if J~=dim
+        Y = fft(X, [], J);
+    end
+end
+end
+
+function Y = ifft2d(X, dim)
+for J=size(X)
+    if J~=dim
+        Y = ifft(X, [], J);
+    end
+end
+end
