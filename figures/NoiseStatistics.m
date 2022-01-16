@@ -88,15 +88,17 @@ printBegEndMsg('Calculating the mean power spectrums', false);
 %% Produce figure
 fig = figure;
 
+s = 5;
+
 
 savefig(fig, [fnNOEXT, '.fig']);
 
 %% Shut down the diary
 diary off;
 
-
+%% Utility functions
 function Y = fft2d(X, dim)
-for J=size(X)
+for J=1:ndims(X)
     if J~=dim
         Y = fft(X, [], J);
     end
@@ -104,7 +106,7 @@ end
 end
 
 function Y = ifft2d(X, dim)
-for J=size(X)
+for J=1:ndims(X)
     if J~=dim
         Y = ifft(X, [], J);
     end
