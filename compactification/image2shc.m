@@ -63,10 +63,6 @@ Y = linspace(interval(1), interval(2), size(im, 1));
 % Value for extrapulation outside interval^2
 extval = 0;
 
-% Interpolate the image to values of the t-design that are back-projected
-% into the cube interval^2
-vals = interp2(X, Y, im, R2x, R2y, 'cubic', extval);
-
 % Compute the spherical harmonics matrix
 if nargin<6
 sh = sphericalHarmonics(tDesignTheta(tDesignInCube), ...
@@ -74,5 +70,22 @@ sh = sphericalHarmonics(tDesignTheta(tDesignInCube), ...
     bandlimit);
 end
 
-% Estimate the spherical harmonics coefficients
-shc = (4*pi/size(tDesign, 1)) * (conj(sh) * vals);
+L = size(im, 3);
+if L==1
+    % Interpolate the image to values of the t-design that are back-projected
+    % into the cube interval^2
+    vals = interp2(X, Y, im, R2x, R2y, 'cubic', extval);
+
+    % Estimate the spherical harmonics coefficients
+    shc = (4*pi/size(tDesign, 1)) * (conj(sh) * vals);
+else
+    % Interpolate the image to values of the t-design that are back-projected
+    % into the cube interval^2
+    vals = zeros(length(R2x), L);
+    parfor J=1:L
+        vals(:, J) = interp2(X, Y, im(:, :, J), R2x, R2y, 'cubic', extval);
+    end
+    
+    % Estimate the spherical harmonics coefficients
+    shc = (4*pi/size(tDesign, 1)) * (conj(sh) * vals);
+end
