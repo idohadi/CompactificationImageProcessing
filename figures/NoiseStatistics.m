@@ -86,6 +86,7 @@ title('Image');
 
 nexttile;
 stem(shcPowSpecMean);
+xlim([0, bandlimit]);
 
 title('Projection');
 xlabel('Frequency');
