@@ -54,7 +54,7 @@ for s=1:length(sigma)
     
     % Calculate power spectrum of images
     printBegEndMsg('Calculate power spectrum of images', true);
-    imagePowSpec = fft2d(image, 3);
+    imagePowSpec = fft2d(image, [1, 2]);
     imagePowSpec = abs(imagePowSpec).^2;
     printBegEndMsg('Calculate power spectrum of images', false);
     
@@ -97,18 +97,10 @@ savefig(fig, [fnNOEXT, '.fig']);
 diary off;
 
 %% Utility functions
-function Y = fft2d(X, dim)
-for J=1:ndims(X)
-    if J~=dim
-        Y = fft(X, [], J);
-    end
+function Y = fft2d(X, dims)
+for J=dims
+    Y = fft(X, [], J);
 end
 end
 
-function Y = ifft2d(X, dim)
-for J=1:ndims(X)
-    if J~=dim
-        Y = ifft(X, [], J);
-    end
-end
 end
