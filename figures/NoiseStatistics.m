@@ -18,10 +18,8 @@ fn = [fnNOEXT, '.mat']; % Output file
 %% Setup parameters
 printBegEndMsg('Setup parameters', true);
 
-genFunc = @() imageByUpsampling(14, 16, imageSize, round(0.2*imageSize));
-
-sigma = 1:0.5:3;
-trialNo = 10^3;
+sigma = 1;
+trialNo = 10^4;
 
 imageSize = 101;
 
@@ -72,7 +70,7 @@ for s=1:length(sigma)
 end
 
 % Save result
-save(fn, 'image', 'imagePowSpec', 'shc', 'shcPowSpec', '-append');
+%save(fn, 'image', 'imagePowSpec', 'shc', 'shcPowSpec', '-append');
 
 %% Generate the mean power spectrum
 printBegEndMsg('Calculating the mean power spectrums', true);
@@ -87,8 +85,22 @@ printBegEndMsg('Calculating the mean power spectrums', false);
 
 %% Produce figure
 fig = figure;
+t = tiledlayout(1, 3, ...
+    'TileSpacing', 'compact', 'Padding', 'compact');
 
-s = 5;
+shcPowSpecMeanNormalized = shcPowSpecMean./(2*(0:bandlimit)'+1);
+shcNorms = zeros(size(shcAbsMean, 1), 1);
+for l=0:bandlimit
+    for m=-l:l
+        shcNorms(l^2 + l + m +1) = l;
+    end
+end
+shcAbsMeanNormalized = shcAbsMean./shcNorms;
+rescell = {shcAbsMean, shcPowSpecMeanNormalized, imagePowSpecMean};
+caxislims = [minCell(rescell), maxCell(rescell)];
+
+nexttile;
+
 
 
 savefig(fig, [fnNOEXT, '.fig']);
@@ -100,5 +112,21 @@ diary off;
 function Y = fft2d(X, dims)
 for J=dims
     Y = fft(X, [], J)/size(X, J);
+end
+end
+
+function maxX = maxCell(C)
+maxX = 0;
+for J=1:numel(C)
+    tmp2 = max(C{J}, [], 'all');
+    maxX = max(maxX, tmp2);
+end
+end
+
+function minX = minCell(C)
+minX = 0;
+for J=1:numel(C)
+    tmp2 = min(C{J}, [], 'all');
+    minX = min(minX, tmp2);
 end
 end
