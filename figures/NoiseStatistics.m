@@ -20,8 +20,8 @@ printBegEndMsg('Setup parameters', true);
 
 genFunc = @() imageByUpsampling(14, 16, imageSize, round(0.2*imageSize));
 
-sigma = 0:0.25:6;
-trialNo = 500;
+sigma = 0.5:0.5:3;
+trialNo = 10^6;
 
 imageSize = 101;
 
@@ -72,7 +72,7 @@ for s=1:length(sigma)
 end
 
 % Save result
-save(fn, 'image', 'imagePowSpec', 'shc', 'shcPowSpec', '-append');
+%save(fn, 'image', 'imagePowSpec', 'shc', 'shcPowSpec', '-append');
 
 %% Generate the mean power spectrum
 printBegEndMsg('Calculating the mean power spectrums', true);
@@ -99,6 +99,6 @@ diary off;
 %% Utility functions
 function Y = fft2d(X, dims)
 for J=dims
-    Y = fft(X, [], J);
+    Y = fft(X, [], J)/size(X, J);
 end
 end
