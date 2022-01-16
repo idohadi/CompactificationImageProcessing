@@ -44,7 +44,7 @@ shc = zeros((bandlimit+1)^2, trialNo, length(sigma));
 shcPowSpec = zeros(bandlimit+1, trialNo, length(sigma));
 
 for s=1:length(sigma)
-    printBegEndMsg(num2str(s, length(sigma), sigma(s)^2, ...
+    printBegEndMsg(num2str([s, length(sigma), sigma(s)^2], ...
         'Variance %d of %d (Sigma^2 = %.3f)'), true);
 
     % Calculate the images
@@ -67,8 +67,8 @@ for s=1:length(sigma)
     end
     printBegEndMsg('Project images to sphere and compute power spectrum', false);
 
-    printBegEndMsg(num2str(s, length(sigma), sigma(s)^2, ...
-        'Variance %d of %d (Sigma^2 = %.3f)'), true);
+    printBegEndMsg(num2str([s, length(sigma), sigma(s)^2], ...
+        'Variance %d of %d (Sigma^2 = %.3f)'), false);
 end
 
 % Save result
