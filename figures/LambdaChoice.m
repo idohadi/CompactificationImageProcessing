@@ -11,7 +11,7 @@ rng(0, 'twister');
 %% File setup
 dt = datetime;
 dt = datestr(dt, 'yyyy-mm-dd-HHMM');
-fnNOEXT = ['NoiseStatistics-', dt]; 
+fnNOEXT = ['LambdaChoice-', dt]; 
 diary([fnNOEXT, '.log']); % Log file
 fn = [fnNOEXT, '.mat']; % Output file
 
@@ -29,7 +29,7 @@ scalingParam = 1;
 
 
 save(fn, 'lambda', 'bandlimit', 'imageNo', 'imageSize', 'interval', ...
-    'scalingParam');
+    'scalingParam', 'fnNOEXT');
 
 printBegEndMsg('Setup parameters', false);
 
