@@ -30,8 +30,7 @@ tDesign = loadtd(2*bandlimit);
 interval = cos(pi/4)*[-1, 1];
 scalingParam = 1;
 
-save(fn, 'sigma', 'imageNo', 'imageSize', 'bandlimit', 'interval', ...
-    'scalingParam');
+save(fn, 'sigma', 'imageSize', 'bandlimit', 'interval', 'scalingParam');
 
 [~, sh] = image2shc(randn(imageSize, imageSize), bandlimit, ...
     tDesign, interval, scalingParam);
