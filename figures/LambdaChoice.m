@@ -89,14 +89,14 @@ for b=1:length(bandlimit)
         parfor t=1:imageNo
             % Upsampling
             upsSHC = image2shc(imUps(:, :, t), bl, ...
-                tDesign, interval, scalingParam);
+                tDesign, interval, scalingParam, sh);
             upsIm = shc2image(upsSHC, bl, imageSize, interval, scalingParam, sh2);
             upsBackProjErr(l, b, t) = norm(upsIm - imUps(:, :, t), 'fro');
             upsBackProjRelErr(l, b, t) = upsBackProjErr(l, b, t)/norm(imUps(:, :, t), 'fro');
             
             % Cryo
             cryoSHC = image2shc(imCryo(:, :, t), bl, ...
-                tDesign, interval, scalingParam);
+                tDesign, interval, scalingParam, sh);
             cryoIm = shc2image(cryoSHC, bl, imageSize, interval, scalingParam, sh2);
             cryoBackProjErr(l, b, t) = norm(cryoIm - imCryo(:, :, t), 'fro');
             cryoBackProjRelErr(l, b, t) = cryoBackProjErr(l, b, t)/norm(imCryo(:, :, t), 'fro');
