@@ -1,0 +1,11 @@
+16-Jan-2022 22:33:12 ::: Beginning: Setup parameters
+16-Jan-2022 22:33:12 ::: Completed: Setup parameters
+16-Jan-2022 22:33:12 ::: Beginning: Generate white noise images
+16-Jan-2022 22:33:15 ::: Completed: Generate white noise images
+16-Jan-2022 22:33:15 ::: Beginning: Calculate power spectrum of images
+16-Jan-2022 22:33:16 ::: Completed: Calculate power spectrum of images
+16-Jan-2022 22:33:16 ::: Beginning: Project images to sphere and compute power spectrum
+16-Jan-2022 22:33:26 ::: Completed: Project images to sphere and compute power spectrum
+16-Jan-2022 22:33:26 ::: Beginning: Calculating the mean power spectrums
+16-Jan-2022 22:33:27 ::: Completed: Calculating the mean power spectrums
+[Warning: MATLAB has disabled some advanced graphics rendering features by switching to software OpenGL. For more information, click <a href="matlab:opengl('problems')">here</a>.] 
