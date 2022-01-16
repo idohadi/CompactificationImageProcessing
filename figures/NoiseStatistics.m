@@ -74,8 +74,14 @@ end
 % Save result
 save(fn, 'image', 'imagePowSpec', 'shc', 'shcPowSpec', '-append');
 
+%% Generate the mean power spectrum
+shcAbsMean = squeeze(mean(abs(shc).^2, 2));
+shcPowSpecMean = squeeze(mean(shcPowSpec, 2));
+imagePowSpecMean = squeeze(mean(imagePowSpec, 3));
+
 %% Produce figure
 fig = figure;
+
 
 savefig(fig, [fnNOEXT, '.fig']);
 
