@@ -86,21 +86,25 @@ for b=1:length(bandlimit)
             tDesign, interval, scalingParam);
         [~, sh2] = shc2image(shc, bl, imageSize, interval, scalingParam);
         
-        parfor t=1:imageNo
-            % Upsampling
-            upsSHC = image2shc(imUps(:, :, t), bl, ...
-                tDesign, interval, scalingParam);
-            upsIm = shc2image(upsSHC, bl, imageSize, interval, scalingParam, sh2);
-            upsBackProjErr(l, b, t) = norm(upsIm - imUps(:, :, t), 'fro');
-            upsBackProjRelErr(l, b, t) = upsBackProjErr(l, b, t)/norm(imUps(:, :, t), 'fro');
-            
-            % Cryo
-            cryoSHC = image2shc(imCryo(:, :, t), bl, ...
-                tDesign, interval, scalingParam);
-            cryoIm = shc2image(cryoSHC, bl, imageSize, interval, scalingParam, sh2);
-            cryoBackProjErr(l, b, t) = norm(cryoIm - imCryo(:, :, t), 'fro');
-            cryoBackProjRelErr(l, b, t) = cryoBackProjErr(l, b, t)/norm(imCryo(:, :, t), 'fro');
-        end
+        % Upsampling
+        upsSHC = image2shc(imUps, bl, ...
+            tDesign, interval, scalingParam, sh);
+        upsIm = shc2image(upsSHC, bl, imageSize, interval, scalingParam, sh2);
+        upsBackProjErr(l, b, :) = vecnorm(...
+            reshape(upsIm - imUps, imageSize^2, size(im, 3)), ...
+            2, 2);
+        upsBackProjRelErr(l, b, :) = upsBackProjErr(l, b, :)./ ...
+            vecnorm(reshape(imUps, imageSize^2, size(imUps, 3)), 2, 2);
+
+        % Cryo
+        cryoSHC = image2shc(imCryo, bl, ...
+            tDesign, interval, scalingParam, sh);
+        cryoIm = shc2image(cryoSHC, bl, imageSize, interval, scalingParam, sh2);
+        cryoBackProjErr(l, b, :) = vecnorm(...
+            reshape(cryoIm - imCryo, imageSize^2, size(im, 3)), ...
+            2, 2);
+        cryoBackProjRelErr(l, b, :) = cryoBackProjErr(l, b, :)./ ...
+            vecnorm(reshape(imCryo, imageSize^2, size(imUps, 3)), 2, 2);
         
         printBegEndMsg(num2str([l, length(lambda), lambda(l)], ...
             'Lambda %d of %d (lambda = %.3f)'), false);
