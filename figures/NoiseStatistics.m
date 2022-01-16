@@ -43,7 +43,7 @@ imagePowSpec = zeros(imageSize, imageSize, trialNo, length(sigma));
 shc = zeros((bandlimit+1)^2, trialNo, length(sigma));
 shcPowSpec = zeros(bandlimit+1, trialNo, length(sigma));
 
-for s=length(sigma)
+for s=1:length(sigma)
     printBegEndMsg(num2str(sigma(s)^2, 'Sigma^2 = %.3f'), true);
 
     % Calculate the images
