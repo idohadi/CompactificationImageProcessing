@@ -20,8 +20,8 @@ printBegEndMsg('Setup parameters', true);
 
 genFunc = @() imageByUpsampling(14, 16, imageSize, round(0.2*imageSize));
 
-sigma = 0.5:0.5:3;
-trialNo = 10^6;
+sigma = 1:0.5:3;
+trialNo = 10^3;
 
 imageSize = 101;
 
@@ -72,7 +72,7 @@ for s=1:length(sigma)
 end
 
 % Save result
-%save(fn, 'image', 'imagePowSpec', 'shc', 'shcPowSpec', '-append');
+save(fn, 'image', 'imagePowSpec', 'shc', 'shcPowSpec', '-append');
 
 %% Generate the mean power spectrum
 printBegEndMsg('Calculating the mean power spectrums', true);
