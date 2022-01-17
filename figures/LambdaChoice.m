@@ -137,8 +137,54 @@ printBegEndMsg('Calculating the mean over all images', false);
 fig = figure;
 t = tiledlayout(1, 2, ...
     'TileSpacing', 'compact', 'Padding', 'compact');
-%title(t, 'Power Spectrum of White Noise');
+title(t, 'Relationship of Scaling Parameter and Bandlimit');
 
+caxismin = min([min(cryoBackProjRelErrMean), ...
+    min(upsBackProjRelErrMean)]);
+caxismax = max([max(cryoBackProjRelErrMean), ...
+    max(upsBackProjRelErrMean)]);
+caxislims = [caxismin, caxismax];
+
+nexttile;
+imagesc(cryoBackProjRelErrMean);
+colormap('hot');
+colorbar;
+caxis(caxislims);
+
+xt = 5:5:length(bandlimit);
+xticks(xt);
+xticklabels(bandlimit(xt));
+
+yt = 1:5:length(lambda);
+yticks(yt);
+yticklabels(lambda(yt));
+
+title('Cryo-EM images');
+xlabel('Bandlimit');
+ylabel('Scaling parameter');
+
+set(gca,'ColorScale','log')
+
+
+nexttile;
+imagesc(upsBackProjRelErrMean);
+colormap('hot');
+colorbar;
+caxis(caxislims);
+
+xt = 5:5:length(bandlimit);
+xticks(xt);
+xticklabels(bandlimit(xt));
+
+yt = 1:5:length(lambda);
+yticks(yt);
+yticklabels(lambda(yt));
+
+title('Random images');
+xlabel('Bandlimit');
+ylabel('Scaling parameter');
+
+set(gca,'ColorScale','log')
 
 savefig(fig, [fnNOEXT, '.fig']);
 
