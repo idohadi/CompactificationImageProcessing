@@ -78,19 +78,26 @@ t = tiledlayout(1, 2, ...
 title(t, 'Power Spectrum of White Noise');
 
 nexttile;
-imagesc(imagePowSpecMean);
-colormap('hot');
-colorbar;
+plot(1:numel(imagePowSpecMean), imagePowSpecMean(:));
+xlim([1, numel(imagePowSpecMean)]);
+ylim([10^-4, 10^-1])
 
 title('Image');
+xlabel('Frequency');
+ylabel('Power Spectrum');
+
+set(gca, 'yscale', 'log');
 
 nexttile;
-stem(shcPowSpecMean);
+plot(0:bandlimit, shcPowSpecMean);
 xlim([0, bandlimit]);
+ylim([10^-4, 10^-1])
 
 title('Projection');
 xlabel('Frequency');
 ylabel('Power Spectrum');
+
+set(gca, 'yscale', 'log');
 
 savefig(fig, [fnNOEXT, '.fig']);
 
