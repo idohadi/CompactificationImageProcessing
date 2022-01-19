@@ -16,6 +16,8 @@ diary([fnNOEXT, '.log']); % Log file
 fn = [fnNOEXT, '.mat']; % Output file
 
 %% Setup parameters
+printBegEndMsg('Setup parameters', true);
+
 sigma = 0.5;
 maxTranslation = 10;
 sampleSize = 10^4;
@@ -45,6 +47,8 @@ K = buildBispectrumDebiasingMatrix(imageSize, bandlimit, tDesign, ...
 save(fn, 'K', '-append');
 
 printBegEndMsg('Rotation and translation algorithm setup', false);
+
+printBegEndMsg('Setup parameters', false);
 
 %% Generate the dataset
 printBegEndMsg('Dataset generation', true);
