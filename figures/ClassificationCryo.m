@@ -66,7 +66,6 @@ save(fn, 'rotations', 'dataset', '-append');
 
 
 % Generate image paramters
-classMembership = randsample(1:classesNo, sampleSize, true, classProb);
 translationAngle = 2*pi*rand(1, sampleSize);
 translationSize = rand(1, sampleSize);
 
@@ -77,14 +76,15 @@ parfor J=1:sampleSize
         'cubic', 'OutputView', 'same');
 end
 
-save(fn, 'classMembership', 'rotations', 'translationAngle', ...
-    'translationSize', '-append');
+save(fn, 'translationAngle', 'translationSize', '-append');
 printBegEndMsg('Genearting image paramters.', false);
 
 noise = sigma*randn(size(dataset));
 noisyDataset = dataset + noise;
 
 save(fn, 'noise', '-append');
+clear noise;
+clear dataset;
 
 printBegEndMsg('Dataset generation', false);
 
@@ -95,7 +95,7 @@ results = struct();
 printBegEndMsg('Running test', true);
 
 % Compute the length of the bispectrum vector
-[shc, sh] = image2shc(dataset(:, :, 1), bandlimit, tDesign, interval, ...
+[shc, sh] = image2shc(noisyDataset(:, :, 1), bandlimit, tDesign, interval, ...
     scalingParam);
 b = bispectrum(shc, bandlimit, CGs);
 blen = size(b, 1);
