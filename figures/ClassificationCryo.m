@@ -20,7 +20,7 @@ printBegEndMsg('Setup parameters', true);
 
 sigma = 0.5;
 maxTranslation = 10;
-sampleSize = 10;
+sampleSize = 10^4;
 imageSize = 101;
 classNo = 100;
 classProb = ones(classNo, 1)/classNo;
