@@ -19,7 +19,7 @@ fn = [fnNOEXT, '.mat']; % Output file
 printBegEndMsg('Setup parameters', true);
 
 sigma = 0.5;
-maxTranslation = 10;
+maxTranslation = 5;
 sampleSize = 10^4;
 imageSize = 101;
 classNo = 100;
@@ -116,7 +116,7 @@ blen = size(b, 1);
 bispectra = zeros(blen, sampleSize);
 
 printBegEndMsg('Calculating bispectrum', true);
-for J=1:size(noisyDataset, 3)
+parfor J=1:size(noisyDataset, 3)
     shc = image2shc(noisyDataset(:, :, J), bandlimit, tDesign, interval, ...
         scalingParam, sh);
     bispectra(:, J) = bispectrum(shc, bandlimit, CGs) - sigma^2*K*cSHC2rSHC(shc);
