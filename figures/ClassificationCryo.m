@@ -115,7 +115,7 @@ printBegEndMsg('Calculating bispectrum', false);
 printBegEndMsg('Calculating distance matrix', true);
 distanceMatrix = zeros(sampleSize, sampleSize);
 parfor J=1:sampleSize
-    distanceMatrix(:, J) = vecnorm(noisyDataset - noisyDataset(:, J));
+    distanceMatrix(:, J) = vecnorm(bispectra - bispectra(:, J));
 end
 save(fn, 'distanceMatrix', '-append');
 printBegEndMsg('Calculating distance matrix', false);
