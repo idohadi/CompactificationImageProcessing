@@ -38,7 +38,7 @@ clear buildK;
 clear buildK_mex;
 
 save(fn, 'sigma', 'maxTranslation', 'sampleSize', 'imageSize', ...
-    'bandlimit', 'interval', 'scalingParam', 'fnNOEXT');
+    'bandlimit', 'interval', 'scalingParam', 'fnNOEXT', '-v7.3');
 
 % Computing denoising matrix
 K = buildBispectrumDebiasingMatrix(imageSize, bandlimit, tDesign, ...
@@ -113,10 +113,8 @@ printBegEndMsg('Calculating bispectrum', false);
 
 
 printBegEndMsg('Calculating distance matrix', true);
-distanceMatrix = zeros(sampleSize, sampleSize);
-parfor J=1:sampleSize
-    distanceMatrix(:, J) = vecnorm(bispectra - bispectra(:, J));
-end
+distanceMatrix = pdist(bispectra);
+distanceMatrix = squareform(distanceMatrix);
 save(fn, 'distanceMatrix', '-append');
 printBegEndMsg('Calculating distance matrix', false);
 
