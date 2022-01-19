@@ -5,6 +5,14 @@
 % Year      2022
 % ***********************************************************
 
+%% Pool setting
+poolSize = 24;
+try
+    parpool(poolSize);
+catch
+    
+end
+
 %% RNG seed
 rng(0, 'twister');
 
@@ -20,7 +28,7 @@ printBegEndMsg('Setup parameters', true);
 
 snr = 1;
 maxTranslation = 5;
-sampleSize = 10;
+sampleSize = 10^4;
 imageSize = 101;
 
 bandlimit = 50;
@@ -135,6 +143,12 @@ save(fn, 'imager', 'x0', 'initialRelError', 'initialAbsError', '-append');
 printBegEndMsg(num2str(initialRelError, ...
     'Computing initial guess.\n\tInit guess rel err = %.3e.'), ...
     false);
+
+try
+    parpool(poolSize);
+catch
+    
+end
 
 printBegEndMsg('Invert the bispectrum.', true);
 [shcEstimator, rootedResidual, inversionOutput] = ibispectrum(bispEstimator, bandlimit, x0);
