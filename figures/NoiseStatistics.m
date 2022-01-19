@@ -110,6 +110,3 @@ for J=dims
     Y = fft(X, [], J)/size(X, J);
 end
 end
-
-%% Shut down the diary
-diary off;
