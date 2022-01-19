@@ -86,14 +86,15 @@ printBegEndMsg('Calculating the mean over all images', false);
 
 %% Produce figure
 fig = figure;
-t = tiledlayout(1, 1, ...
+t = tiledlayout(3, 5, ...
     'TileSpacing', 'compact', 'Padding', 'compact');
-title(t, 'Relationship of Scaling Parameter and Bandlimit');
+title(t, 'Relationship of Smoothing and Bandlimit');
 
-nexttile;
+nexttile([1, 4]);
 imagesc(cryoBackProjRelErrMean);
 colormap('hot');
-colorbar;
+c = colorbar;
+c.Ticks = [10^-2, 10^-1, 10^-0];
 
 xt = 5:5:length(bandlimit);
 xticks(xt);
@@ -105,9 +106,46 @@ yticklabels(sigma(yt));
 
 title('Cryo-EM images');
 xlabel('Bandlimit');
-ylabel('Sigma');
+ylabel('\sigma');
 
 set(gca,'ColorScale','log')
+
+
+N = 1;
+imCryoFiltered = zeros(size(imCryo, 1), size(imCryo, 2), length(sigma)+1);
+imCryoFiltered(:, :, 1) = imCryo(:, :, N);
+
+for s=1:length(sigma)
+    imCryoFiltered(:, :, s+1) = imgaussfilt(imCryoFiltered(:, :, 1), ...
+        sigma(s));
+end
+
+caxismin = min(imCryoFiltered, [], 'all');
+caxismax = max(imCryoFiltered, [], 'all');
+caxislims = [caxismin, caxismax];
+
+nexttile;
+imagesc(imCryoFiltered(:, :, 1));
+colormap('hot');
+colorbar;
+caxis(caxislims);
+
+title('Original');
+xticks([]);
+yticks([]);
+
+for J=2:size(imCryoFiltered, 3)
+    nexttile;
+    
+    imagesc(imCryoFiltered(:, :, J));
+    colormap('hot');
+    colorbar;
+    caxis(caxislims);
+
+    title(num2str(sigma(J-1), '\\sigma = %.1f'));
+    xticks([]);
+    yticks([]);
+end
 
 savefig(fig, [fnNOEXT, '.fig']);
 
