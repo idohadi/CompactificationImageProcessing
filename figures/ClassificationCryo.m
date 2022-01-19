@@ -88,7 +88,8 @@ parfor J=1:sampleSize
 end
 printBegEndMsg('Generate image dataset', false);
 
-save(fn, 'translationAngle', 'translationSize', '-append');
+save(fn, 'rotations', 'classMembership', 'translationAngle', ...
+    'translationSize', '-append');
 
 
 % Generate noise
@@ -115,7 +116,7 @@ blen = size(b, 1);
 bispectra = zeros(blen, sampleSize);
 
 printBegEndMsg('Calculating bispectrum', true);
-parfor J=1:size(noisyDataset, 3)
+for J=1:size(noisyDataset, 3)
     shc = image2shc(noisyDataset(:, :, J), bandlimit, tDesign, interval, ...
         scalingParam, sh);
     bispectra(:, J) = bispectrum(shc, bandlimit, CGs) - sigma^2*K*cSHC2rSHC(shc);
@@ -135,13 +136,33 @@ printBegEndMsg('Finding k nearest neighrbors', true);
 save(fn, 'B', 'I', '-append');
 printBegEndMsg('Finding k nearest neighrbors', false);
 
-printBegEndMsg('Running test', true);
+printBegEndMsg('Running test', false);
+
+%% Calcualting node specificity
+printBegEndMsg('Calculating node specificity', true);
+classSpecificity = zeros(sampleSize, 1);
+for J=1:sampleSize
+    sameClassNo = classMembership(I(:, J))==classMembership(J);
+    classSpecificity(J) = (sum(sameClassNo)-1)/k;
+end
+printBegEndMsg('Calculating node specificity', false);
 
 %% Produce figure
 fig = figure;
 
+bins = 0:0.025:1;
+fa = 0.5;
+ea = 0.6;
 
-% savefig(fig, [fnNOEXT, '.fig']);
+histogram(classSpecificity, bins, 'FaceAlpha', fa, 'EdgeAlpha', ea);
+set(gca, 'yscale', 'log');
+
+ylim([10^0, 10^4]);
+xlim([0, 1]);
+xticks(0:0.2:1);
+xlabel('Mean node score');
+
+savefig(fig, [fnNOEXT, '.fig']);
 
 %% Shut down the diary
 diary off;
