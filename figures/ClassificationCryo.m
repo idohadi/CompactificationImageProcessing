@@ -2,7 +2,7 @@
 % ***********************************************************
 % Author    Ido Hadi
 % Email     idohadi@mail.tau.ac.il
-% Year      2021
+% Year      2022
 % ***********************************************************
 
 %% RNG seed
@@ -22,6 +22,8 @@ sigma = 0.5;
 maxTranslation = 10;
 sampleSize = 10^4;
 imageSize = 101;
+classNo = 100;
+k = 100;
 
 bandlimit = 50;
 loadCGTable(bandlimit);
@@ -38,7 +40,8 @@ clear buildK;
 clear buildK_mex;
 
 save(fn, 'sigma', 'maxTranslation', 'sampleSize', 'imageSize', ...
-    'bandlimit', 'interval', 'scalingParam', 'fnNOEXT', '-v7.3');
+    'classNo', 'k', 'bandlimit', 'interval', 'scalingParam', 'fnNOEXT', ...
+    '-v7.3');
 
 % Computing denoising matrix
 K = buildBispectrumDebiasingMatrix(imageSize, bandlimit, tDesign, ...
@@ -54,37 +57,50 @@ printBegEndMsg('Setup parameters', false);
 printBegEndMsg('Dataset generation', true);
 
 % Image by cryo-EM simulation
+printBegEndMsg('Generate representatives', true);
 root = aspire_root();
 file_name = fullfile(root, 'projections', 'simulation', 'maps', 'cleanrib.mat');
 f = load(file_name);
 vol_true = cryo_downsample(f.volref, imageSize*ones(1, 3));
 
-rotations = rand_rots(sampleSize);
-dataset = cryo_project(vol_true, rotations, imageSize, 'double');
+rotationsRepresentatives = rand_rots(classNo);
+classRepresenatives = cryo_project(vol_true, rotationsRepresentatives, imageSize, 'double');
 
-save(fn, 'rotations', 'dataset', '-append');
+save(fn, 'rotationsRepresentatives', 'classRepresenatives', '-append');
+printBegEndMsg('Generate representatives', false);
 
-
-% Generate image paramters
+% Generate images
+printBegEndMsg('Generate image dataset', true);
+classMembership = randsample(1:classesNo, sampleSize, true, classProb);
+rotations = 360*rand(1, sampleSize);
 translationAngle = 2*pi*rand(1, sampleSize);
 translationSize = rand(1, sampleSize);
 
+dataset = zeros(imageSize, imageSize, sampleSize);
 parfor J=1:sampleSize
+    dataset(:, :, J) = imrotate( ...
+        classRepresenatives(:, :, classMembership(J)), ...
+        rotations(J), ...
+        'bicubic', 'crop');
     translation = maxTranslation*translationSize(J)...
         *[cos(translationAngle(J)), sin(translationAngle(J))];
     dataset(:, :, J) = imtranslate(dataset(:, :, J), translation, ...
         'cubic', 'OutputView', 'same');
 end
+printBegEndMsg('Generate image dataset', false);
 
 save(fn, 'translationAngle', 'translationSize', '-append');
-printBegEndMsg('Genearting image paramters.', false);
 
+
+% Generate noise
+printBegEndMsg('Add noise to dataset', true);
 noise = sigma*randn(size(dataset));
 noisyDataset = dataset + noise;
 
 save(fn, 'noise', '-append');
 clear noise;
 clear dataset;
+printBegEndMsg('Add noise to dataset', false);
 
 printBegEndMsg('Dataset generation', false);
 
@@ -117,6 +133,11 @@ distanceMatrix = pdist(bispectra');
 distanceMatrix = squareform(distanceMatrix);
 save(fn, 'distanceMatrix', '-append');
 printBegEndMsg('Calculating distance matrix', false);
+
+printBegEndMsg('Finding k nearest neighrbors', true);
+[B, I] = mink(distanceMatrix, k+1);
+save(fn, 'B', 'I', '-append');
+printBegEndMsg('Finding k nearest neighrbors', false);
 
 printBegEndMsg('Running test', true);
 
