@@ -113,7 +113,7 @@ printBegEndMsg('Calculating bispectrum', false);
 
 
 printBegEndMsg('Calculating distance matrix', true);
-distanceMatrix = pdist(bispectra);
+distanceMatrix = pdist(bispectra');
 distanceMatrix = squareform(distanceMatrix);
 save(fn, 'distanceMatrix', '-append');
 printBegEndMsg('Calculating distance matrix', false);
