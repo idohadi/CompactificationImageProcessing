@@ -50,8 +50,6 @@ K = buildBispectrumDebiasingMatrix(imageSize, bandlimit, tDesign, ...
 
 save(fn, 'K', '-append');
 
-printBegEndMsg('Rotation and translation algorithm setup', false);
-
 printBegEndMsg('Setup parameters', false);
 
 %% Generate the dataset
@@ -106,9 +104,6 @@ printBegEndMsg('Add noise to dataset', false);
 printBegEndMsg('Dataset generation', false);
 
 %% Run test
-% Result structure
-results = struct();
-
 printBegEndMsg('Running test', true);
 
 % Compute the length of the bispectrum vector
