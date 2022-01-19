@@ -19,7 +19,7 @@ fn = [fnNOEXT, '.mat']; % Output file
 printBegEndMsg('Setup parameters', true);
 
 snr = 1;
-maxTranslation = 10;
+maxTranslation = 5;
 sampleSize = 10;
 imageSize = 101;
 
@@ -143,7 +143,7 @@ printBegEndMsg('Invert the bispectrum.', false);
 
 printBegEndMsg('Align inverted bispectrum and estimate SHC.', true);
 [shcRelError, alignedSHCEst, optimalRotation, alignmentOutput] ...
-    = alignSHC(shc, invertedSHC, bandlimit, tDesign);
+    = alignSHC(shc, shcEstimator, bandlimit, tDesign);
 save(fn, 'shcRelError', 'alignedSHCEst', 'optimalRotation', ...
     'alignmentOutput', '-append');
 printBegEndMsg(num2str(shcRelError, ...
@@ -171,7 +171,8 @@ printBegEndMsg('Running test', true);
 fig = figure;
 
 
-% savefig(fig, [fnNOEXT, '.fig']);
+
+savefig(fig, [fnNOEXT, '.fig']);
 
 %% Shut down the diary
 diary off;
