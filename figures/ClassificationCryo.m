@@ -23,6 +23,7 @@ maxTranslation = 10;
 sampleSize = 10^4;
 imageSize = 101;
 classNo = 100;
+classProb = ones(classNo, 1)/classNo;
 k = 100;
 
 bandlimit = 50;
@@ -41,7 +42,7 @@ clear buildK_mex;
 
 save(fn, 'sigma', 'maxTranslation', 'sampleSize', 'imageSize', ...
     'classNo', 'k', 'bandlimit', 'interval', 'scalingParam', 'fnNOEXT', ...
-    '-v7.3');
+    'classProb', '-v7.3');
 
 % Computing denoising matrix
 K = buildBispectrumDebiasingMatrix(imageSize, bandlimit, tDesign, ...
@@ -71,7 +72,7 @@ printBegEndMsg('Generate representatives', false);
 
 % Generate images
 printBegEndMsg('Generate image dataset', true);
-classMembership = randsample(1:classesNo, sampleSize, true, classProb);
+classMembership = randsample(1:classNo, sampleSize, true, classProb);
 rotations = 360*rand(1, sampleSize);
 translationAngle = 2*pi*rand(1, sampleSize);
 translationSize = rand(1, sampleSize);
