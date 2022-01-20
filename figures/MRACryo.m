@@ -6,7 +6,7 @@
 % ***********************************************************
 
 %% Pool setting
-poolSize = 24;
+poolSize = 32;
 try
     parpool(poolSize);
 catch
@@ -116,7 +116,7 @@ blen = size(b, 1);
 bispectra = zeros(blen, sampleSize);
 
 printBegEndMsg('Calculating bispectrum', true);
-parfor J=1:size(noisyDataset, 3)
+for J=1:size(noisyDataset, 3)
     shc = image2shc(noisyDataset(:, :, J), bandlimit, tDesign, interval, ...
         scalingParam, sh);
     bispectra(:, J) = bispectrum(shc, bandlimit, CGs) - sigma^2*K*cSHC2rSHC(shc);
