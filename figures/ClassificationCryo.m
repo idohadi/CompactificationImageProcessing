@@ -110,7 +110,7 @@ printBegEndMsg('Running test', true);
 results = struct();
 
 % Compute the length of the bispectrum vector
-[shc, sh] = image2shc(noisyDataset(:, :, 1), bandlimit, tDesign, interval, ...
+[shc, sh] = image2shc(dataset(:, :, 1), bandlimit, tDesign, interval, ...
     scalingParam);
 b = bispectrum(shc, bandlimit, CGs);
 blen = size(b, 1);
