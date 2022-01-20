@@ -125,7 +125,7 @@ for mt=1:length(maxTranslation)
     printBegEndMsg('Translating image', true);
     noisyDataset = zeros(size(dataset));
     parfor J=1:size(dataset, 3)
-        translation = maxTranslation*translationSize(J)...
+        translation = maxT*translationSize(J)...
             *[cos(translationAngle(J)), sin(translationAngle(J))];
         noisyDataset(:, :, J) = imtranslate(dataset(:, :, J), translation, ...
             'cubic', 'OutputView', 'same');
@@ -137,8 +137,10 @@ for mt=1:length(maxTranslation)
     noisyDataset = noisyDataset + sigma*randn(size(noisyDataset));
     printBegEndMsg('Adding noise', false);
     
-    t = tic;
+    
+    
     printBegEndMsg('Rotation and translation invariant algorithm', true);
+    t = tic;
     
     printBegEndMsg('Calculating bispectrum', true);
     parfor J=1:size(noisyDataset, 3)
@@ -176,6 +178,7 @@ for mt=1:length(maxTranslation)
     results(mt).bispRuntime = bispRuntime;
     
     printBegEndMsg('Rotation and translation invariant algorithm', false);
+    
     
     
     printBegEndMsg('Rotation invariant algorithm', true);
