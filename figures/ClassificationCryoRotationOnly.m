@@ -104,7 +104,8 @@ printBegEndMsg('Running test', true);
 
 % nv is "noise variance"
 printBegEndMsg('Perform sPCA', true);
-[sPCA_data, denoised_images] = sPCA_PSWF(noisyDataset, sigma^2);
+sPCA_data =  data_sPCA(noisyDataset, sigma^2);
+%sPCA_data = sPCA_PSWF(noisyDataset, sigma^2);
 save(fn, 'sPCA_data', '-append');
 printBegEndMsg('Perform sPCA', false);
 
