@@ -118,9 +118,11 @@ printBegEndMsg('Initial classification', false);
 
 printBegEndMsg('VDM classification', true);
 flag = 0;
+num_eig = 24;
 [class_VDM, class_VDM_refl, angle] = ...
-    VDM(class, corr, rot, class_refl, k, flag, k);
-save(fn, 'flag', 'class_VDM', 'class_VDM_refl', 'angle', '-append');
+    VDM(class, corr, rot, class_refl, k, flag, num_eig, k);
+save(fn, 'flag', 'num_eig', 'class_VDM', 'class_VDM_refl', 'angle', ...
+    '-append');
 printBegEndMsg('VDM classification', false);
 
 % %% Calcualting node specificity
