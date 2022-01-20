@@ -6,7 +6,7 @@
 % ***********************************************************
 
 %% Pool setting
-poolSize = 32;
+poolSize = 48;
 try
     parpool(poolSize);
 catch
@@ -27,7 +27,7 @@ fn = [fnNOEXT, '.mat']; % Output file
 printBegEndMsg('Setup parameters', true);
 
 snr = 1;
-maxTranslation = 5;
+maxTranslation = [0, 2.5, 5, 7.5, 10];
 sampleSize = 5*10^3;
 imageSize = 101;
 classNo = 7;
@@ -96,31 +96,18 @@ parfor J=1:sampleSize
         classRepresentatives(:, :, classMembership(J)), ...
         rotations(J), ...
         'bicubic', 'crop');
-    translation = maxTranslation*translationSize(J)...
-        *[cos(translationAngle(J)), sin(translationAngle(J))];
-    dataset(:, :, J) = imtranslate(dataset(:, :, J), translation, ...
-        'cubic', 'OutputView', 'same');
 end
 printBegEndMsg('Generate image dataset', false);
 
 save(fn, 'rotations', 'classMembership', 'translationAngle', ...
     'translationSize', '-append');
 
-
-% Generate noise
-printBegEndMsg('Add noise to dataset', true);
-noise = sigma*randn(size(dataset));
-noisyDataset = dataset + noise;
-
-save(fn, 'noise', '-append');
-clear noise;
-clear dataset;
-printBegEndMsg('Add noise to dataset', false);
-
 printBegEndMsg('Dataset generation', false);
 
 %% Run test
 printBegEndMsg('Running test', true);
+
+results = struct();
 
 % Compute the length of the bispectrum vector
 [shc, sh] = image2shc(noisyDataset(:, :, 1), bandlimit, tDesign, interval, ...
@@ -130,52 +117,152 @@ blen = size(b, 1);
 
 bispectra = zeros(blen, sampleSize);
 
-printBegEndMsg('Calculating bispectrum', true);
-parfor J=1:size(noisyDataset, 3)
-    shc = image2shc(noisyDataset(:, :, J), bandlimit, tDesign, interval, ...
-        scalingParam, sh);
-    bispectra(:, J) = bispectrum(shc, bandlimit, CGs) - sigma^2*K*cSHC2rSHC(shc);
+for mt=1:length(maxTranslation)
+    maxT = maxTranslation(mt);
+    printBegEndMsg(num2str([mt, length(maxTranslation), maxT], ...
+        'Translation %d of %d (max trans = %.3f)'), true);
+    
+    printBegEndMsg('Translating image', true);
+    noisyDataset = zeros(size(dataset));
+    parfor J=1:size(dataset, 3)
+        translation = maxTranslation*translationSize(J)...
+            *[cos(translationAngle(J)), sin(translationAngle(J))];
+        noisyDataset(:, :, J) = imtranslate(dataset(:, :, J), translation, ...
+            'cubic', 'OutputView', 'same');
+    end
+    printBegEndMsg('Translating image', false);
+    
+    
+    printBegEndMsg('Adding noise', true);
+    noisyDataset = noisyDataset + sigma*randn(size(noisyDataset));
+    printBegEndMsg('Adding noise', false);
+    
+    t = tic;
+    printBegEndMsg('Rotation and translation invariant algorithm', true);
+    
+    printBegEndMsg('Calculating bispectrum', true);
+    parfor J=1:size(noisyDataset, 3)
+        shc = image2shc(noisyDataset(:, :, J), bandlimit, tDesign, interval, ...
+            scalingParam, sh);
+        bispectra(:, J) = bispectrum(shc, bandlimit, CGs) - sigma^2*K*cSHC2rSHC(shc);
+    end
+    printBegEndMsg('Calculating bispectrum', false);
+
+
+    printBegEndMsg('Calculating distance matrix', true);
+    distanceMatrix = pdist(bispectra');
+    distanceMatrix = squareform(distanceMatrix);
+    printBegEndMsg('Calculating distance matrix', false);
+    
+    printBegEndMsg('Finding k nearest neighrbors', true);
+    [B, I] = mink(distanceMatrix, k+1);
+    printBegEndMsg('Finding k nearest neighrbors', false);
+    
+    printBegEndMsg('Calculating node specificity', true);
+    classSpecificityRotAndTrans = zeros(sampleSize, 1);
+    for J=1:sampleSize
+        sameClassNo = classMembership(I(:, J))==classMembership(J);
+        classSpecificityRotAndTrans(J) = (sum(sameClassNo)-1)/k;
+    end
+    printBegEndMsg('Calculating node specificity', false);
+
+    
+    bispRuntime = toc(t);
+    results(mt).maxT = maxT;
+    results(mt).distanceMatrix = distanceMatrix;
+    results(mt).B = B;
+    results(mt).I = I;
+    results(mt).classSpecificityRotAndTrans = classSpecificityRotAndTrans;
+    results(mt).bispRuntime = bispRuntime;
+    
+    printBegEndMsg('Rotation and translation invariant algorithm', false);
+    
+    
+    printBegEndMsg('Rotation invariant algorithm', true);
+    t = tic;
+    
+    printBegEndMsg('Perform sPCA', true);
+    %sPCA_data =  data_sPCA(noisyDataset, sigma^2);
+    sPCA_data = sPCA_PSWF(noisyDataset, sigma^2);
+    printBegEndMsg('Perform sPCA', false);
+
+    printBegEndMsg('Initial classification', true);
+    [class, class_refl, rot, corr] ...
+        = Initial_classification_FD_update(sPCA_data, k);
+    printBegEndMsg('Initial classification', false);
+
+    printBegEndMsg('VDM classification', true);
+    flag = 0;
+    num_eig = 24;
+    [class_VDM, class_VDM_refl, angle] = ...
+        VDM(class, corr, rot, class_refl, k, flag, num_eig, k);
+
+    rotRuntime = toc(t);
+    
+    I = class_VDM.';
+    
+    printBegEndMsg('Calculating node specificity', true);
+    classSpecificityRotOnly = zeros(sampleSize, 1);
+    for J=1:sampleSize
+        sameClassNo = classMembership(I(:, J))==classMembership(J);
+        classSpecificityRotOnly(J) = (sum(sameClassNo))/k;
+    end
+    printBegEndMsg('Calculating node specificity', false);
+
+    
+    results(mt).sPCA_data = sPCA_data;
+    results(mt).class = class;
+    results(mt).class_refl = class_refl;
+    results(mt).rot = rot;
+    results(mt).corr = corr;
+    results(mt).flag = flag;
+    results(mt).num_eig = num_eig;
+    results(mt).class_VDM = class_VDM;
+    results(mt).class_VDM_refl = class_VDM_refl;
+    results(mt).angle = angle;
+
+    printBegEndMsg('Rotation invariant algorithm', false);
+    
+    
+    printBegEndMsg(num2str([mt, length(maxTranslation), maxT], ...
+        'Translation %d of %d (max trans = %.3f)'), false);
 end
-save(fn, 'bispectra', '-append');
-printBegEndMsg('Calculating bispectrum', false);
-
-
-printBegEndMsg('Calculating distance matrix', true);
-distanceMatrix = pdist(bispectra');
-distanceMatrix = squareform(distanceMatrix);
-save(fn, 'distanceMatrix', '-append');
-printBegEndMsg('Calculating distance matrix', false);
-
-printBegEndMsg('Finding k nearest neighrbors', true);
-[B, I] = mink(distanceMatrix, k+1);
-save(fn, 'B', 'I', '-append');
-printBegEndMsg('Finding k nearest neighrbors', false);
 
 printBegEndMsg('Running test', false);
 
-%% Calcualting node specificity
-printBegEndMsg('Calculating node specificity', true);
-classSpecificity = zeros(sampleSize, 1);
-for J=1:sampleSize
-    sameClassNo = classMembership(I(:, J))==classMembership(J);
-    classSpecificity(J) = (sum(sameClassNo)-1)/k;
-end
-printBegEndMsg('Calculating node specificity', false);
 
 %% Produce figure
 fig = figure;
 
-bins = 0:0.025:1;
+t = tiledlayout(2, 3, 'TileSpacing', 'compact', 'Padding', 'compact');
+title(t, 'Distribution of Node Score');
+
 fa = 0.5;
 ea = 0.6;
-
-histogram(classSpecificity, bins, 'FaceAlpha', fa, 'EdgeAlpha', ea);
-set(gca, 'yscale', 'log');
-
-ylim([10^0, 10^4]);
-xlim([0, 1]);
-xticks(0:0.2:1);
-xlabel('Node score');
+for mt=1:length(maxTranslation)
+    nexttile;
+    hold;
+    histogram(results(mt).classSpecificityRotOnly, bins, ...
+        'FaceAlpha', fa, 'EdgeAlpha', ea);
+    histogram(results(mt).classSpecificityRotAndTrans, bins, ...
+        'FaceAlpha', fa, 'EdgeAlpha', ea);
+    set(gca, 'yscale', 'log');
+    
+    title(num2str(maxTranslation(mt), 'Max translation size = %.1f'));
+    xlabel('Mean node score');
+    
+    ylim([10^0, sampleSize]);
+    xlim([0, 1]);
+    xticks(0:0.2:1);
+    
+    if mt==length(maxTranslation)
+    legend({'Rotation only', 'Rotation and translation'}, ...
+            'Orientation', 'vertical', ...
+            'Location', 'northwest');
+    end
+    hold off;
+    
+end
 
 savefig(fig, [fnNOEXT, '.fig']);
 
