@@ -18,7 +18,7 @@ fn = [fnNOEXT, '.mat']; % Output file
 %% Setup parameters
 printBegEndMsg('Setup parameters', true);
 
-sigma = 0.5;
+snr = 1;
 maxTranslation = 5;
 sampleSize = 10^4;
 imageSize = 101;
@@ -40,7 +40,7 @@ clear buildU;
 clear buildK;
 clear buildK_mex;
 
-save(fn, 'sigma', 'maxTranslation', 'sampleSize', 'imageSize', ...
+save(fn, 'snr', 'maxTranslation', 'sampleSize', 'imageSize', ...
     'classNo', 'k', 'bandlimit', 'interval', 'scalingParam', 'fnNOEXT', ...
     'classProb', '-v7.3');
 
@@ -63,9 +63,16 @@ f = load(file_name);
 vol_true = cryo_downsample(f.volref, imageSize*ones(1, 3));
 
 rotationsRepresentatives = rand_rots(classNo);
-classRepresenatives = cryo_project(vol_true, rotationsRepresentatives, imageSize, 'double');
+classRepresentatives = cryo_project(vol_true, rotationsRepresentatives, imageSize, 'double');
+classRepresentativesMeans = zeros(classNo, 1);
+for J=1:classesNo
+    classRepresentativesMeans(J) = norm(classRepresentatives(:, :, J), 'fro')^2/imageSize^2;
+end
+signal = mean(classRepresentativesMeans);
+sigma = sqrt(signal/snr);
 
-save(fn, 'rotationsRepresentatives', 'classRepresenatives', '-append');
+save(fn, 'rotationsRepresentatives', 'classRepresentatives', ...
+    'classRepresentativesMeans', 'signal', 'sigma', '-append');
 printBegEndMsg('Generate representatives', false);
 
 % Generate images
@@ -78,7 +85,7 @@ translationSize = rand(1, sampleSize);
 dataset = zeros(imageSize, imageSize, sampleSize);
 parfor J=1:sampleSize
     dataset(:, :, J) = imrotate( ...
-        classRepresenatives(:, :, classMembership(J)), ...
+        classRepresentatives(:, :, classMembership(J)), ...
         rotations(J), ...
         'bicubic', 'crop');
     translation = maxTranslation*translationSize(J)...
