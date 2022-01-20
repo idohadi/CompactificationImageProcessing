@@ -22,9 +22,9 @@ snr = 1;
 maxTranslation = 5;
 sampleSize = 10^4;
 imageSize = 101;
-classNo = 100;
+classNo = 7;
 classProb = ones(classNo, 1)/classNo;
-k = 100;
+k = 50;
 
 bandlimit = 50;
 loadCGTable(bandlimit);
@@ -167,7 +167,7 @@ set(gca, 'yscale', 'log');
 ylim([10^0, 10^4]);
 xlim([0, 1]);
 xticks(0:0.2:1);
-xlabel('Mean node score');
+xlabel('Node score');
 
 savefig(fig, [fnNOEXT, '.fig']);
 
