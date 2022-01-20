@@ -65,7 +65,7 @@ vol_true = cryo_downsample(f.volref, imageSize*ones(1, 3));
 rotationsRepresentatives = rand_rots(classNo);
 classRepresentatives = cryo_project(vol_true, rotationsRepresentatives, imageSize, 'double');
 classRepresentativesMeans = zeros(classNo, 1);
-for J=1:classesNo
+for J=1:classNo
     classRepresentativesMeans(J) = norm(classRepresentatives(:, :, J), 'fro')^2/imageSize^2;
 end
 signal = mean(classRepresentativesMeans);
