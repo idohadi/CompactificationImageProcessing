@@ -5,14 +5,6 @@
 % Year      2022
 % ***********************************************************
 
-%% Pool setting
-poolSize = 48;
-try
-    parpool(poolSize);
-catch
-    
-end
-
 %% RNG seed
 rng(0, 'twister');
 
