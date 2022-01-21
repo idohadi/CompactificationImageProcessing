@@ -29,7 +29,7 @@ scalingParam = 1:0.1:5;
 sampleSize = 100;
 
 save(fn, 'imageNo', 'imageSize', 'bandlimit', 'interval', ...
-    'scalingParam', 'sampleSize');
+    'scalingParam', 'sampleSize', 'fnNOEXT');
 
 printBegEndMsg('Setup parameters', false);
 
@@ -107,11 +107,23 @@ prctl95 = [prctile(LHS, 97.5, 2), ...
 c = [17, 17, 17]/255;
 fill(polX(:), prctl95(:), c, 'FaceAlpha', 0.3, 'LineStyle', 'none');
 
+% Draw polynomial
+P = polyfit(log(scalingParam), log(mean(LHS, 2)), 1);
+x = log(scalingParam);
+y = polyval(P, x);
+y = exp(y);
+
+plot(scalingParam, y, '--', 'Color', 'red');
+
 hold off;
 
 xlabel('$\widetilde{\lambda}$', 'Interpreter', 'latex');
 ylabel('2-norm approx.');
 title('Eq. (2.11) test');
+
+legend({'2-norm error (2.11 LHS)', ...
+    '95% conf. intvl.', ...
+    num2str(P(1), 'best fit line (slope = %.2f)')});
 
 set(gca, 'xscale', 'log');
 set(gca, 'yscale', 'log');
@@ -120,11 +132,3 @@ savefig(fig, [fnNOEXT, '.fig']);
 
 %% Shut down the diary
 diary off;
-
-%% Utility function
-function out = logbound(b, lambda, lambdatilde)
-out = 0.5*log(1 - cos(lambda*pi/lambdatilde));
-out = out + log(4*pi);
-out = out + norm(b) + lambda*pi;
-out = out - 2*log(lambdatilde);
-end
