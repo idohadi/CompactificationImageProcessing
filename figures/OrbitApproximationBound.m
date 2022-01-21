@@ -67,7 +67,6 @@ printBegEndMsg('Generate rotation and translation', false);
 printBegEndMsg('Run test', true);
 
 LHS = zeros(length(scalingParam), sampleSize);
-RHS = zeros(length(scalingParam), sampleSize);
 
 for n=1:sampleSize
     for J=1:length(scalingParam)
@@ -90,7 +89,7 @@ for n=1:sampleSize
     end
 end
 
-save(fn, 'LHS', 'RHS', '-append');
+save(fn, 'LHS', '-append');
 
 printBegEndMsg('Run test', false);
 
@@ -114,6 +113,7 @@ xlabel('$\widetilde{\lambda}$', 'Interpreter', 'latex');
 ylabel('2-norm approx.');
 title('Eq. (2.11) test');
 
+set(gca, 'xscale', 'log');
 set(gca, 'yscale', 'log');
 
 savefig(fig, [fnNOEXT, '.fig']);
