@@ -72,13 +72,13 @@ RHS = zeros(length(scalingParam), sampleSize);
 for n=1:sampleSize
     for J=1:length(scalingParam)
         shc = image2shc(im, bandlimit, tDesign, interval, scalingParam(J));
-        P = contractionMap(translation(n), rotation(n), scalingParam(J));
+        P = contractionMap(translation(n, :), rotation(n), scalingParam(J));
 
         rotatedSHC = rotateSHC(shc, bandlimit, P.', tDesign);
 
         R = [cos(rotation(n)), sin(rotation(n)); ...
             -sin(rotation(n)), cos(rotation(n))];
-        bb = - (R.' * translation(n).').';
+        bb = - (R.' * translation(n, :).').';
         rr = -360*rotation(n)/(2*pi);
         imTmp = imrotate(im, rr, 'bicubic', 'crop');
         imTmp = imtranslate(imTmp, bb, 'cubic', 'OutputView', 'same');
