@@ -90,8 +90,24 @@ for J=1:length(scalingParam)
     RHS(J) = logbound(translation, 1, scalingParam(J));
 end
 
+save(fn, 'LHS', 'RHS', '-append');
 
 printBegEndMsg('Run test', false);
+
+
+%% Plot the results
+fig = figure;
+
+scatter(LHS, RHS);
+
+xlabel('log 2-norm approximation');
+ylabel('log bound');
+title('Eq. (2.11) test');
+
+savefig(fig, [fnNOEXT, '.fig']);
+
+%% Shut down the diary
+diary off;
 
 %% Utility function
 function out = logbound(b, lambda, lambdatilde)
