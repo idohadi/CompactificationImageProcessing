@@ -11,7 +11,7 @@ rng(0, 'twister');
 %% File setup
 dt = datetime;
 dt = datestr(dt, 'yyyy-mm-dd-HHMM');
-fnNOEXT = ['ClassificationCryo-', dt]; 
+fnNOEXT = ['OrbitApproximationBound-', dt]; 
 diary([fnNOEXT, '.log']); % Log file
 fn = [fnNOEXT, '.mat']; % Output file
 
