@@ -70,10 +70,14 @@ for J=1:length(scalingParam)
     shc = image2shc(im, bandlimit, tDesign, interval, scalingParam(J));
     P = contractionMap(translation, rotation, scalingParam(J));
     
-    rotatedSHC = rotateSHC(shc, bandlimit, P, tDesign);
+    rotatedSHC = rotateSHC(shc, bandlimit, P.', tDesign);
     
-    imTmp = imrotate(im, 360*rotation/(2*pi), 'bicubic', 'crop');
-    imTmp = imtranslate(imTmp, translation, 'cubic', 'OutputView', 'same');
+    R = [cos(rotation), sin(rotation); ...
+        -sin(rotation), cos(rotation)];
+    bb = - (R.' * translation.').';
+    rr = -360*rotation/(2*pi);
+    imTmp = imrotate(im, rr, 'bicubic', 'crop');
+    imTmp = imtranslate(imTmp, bb, 'cubic', 'OutputView', 'same');
     
     rotatedImSHC = image2shc(imTmp, bandlimit, tDesign, interval, ...
         scalingParam(J));
