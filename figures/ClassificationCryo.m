@@ -91,7 +91,7 @@ translationAngle = 2*pi*rand(1, sampleSize);
 translationSize = rand(1, sampleSize);
 
 dataset = zeros(imageSize, imageSize, sampleSize);
-parfor J=1:sampleSize
+for J=1:sampleSize
     dataset(:, :, J) = imrotate( ...
         classRepresentatives(:, :, classMembership(J)), ...
         rotations(J), ...
@@ -124,7 +124,7 @@ for mt=1:length(maxTranslation)
     
     printBegEndMsg('Translating image', true);
     noisyDataset = zeros(size(dataset));
-    parfor J=1:size(dataset, 3)
+    for J=1:size(dataset, 3)
         translation = maxT*translationSize(J)...
             *[cos(translationAngle(J)), sin(translationAngle(J))];
         noisyDataset(:, :, J) = imtranslate(dataset(:, :, J), translation, ...
@@ -143,7 +143,7 @@ for mt=1:length(maxTranslation)
     t = tic;
     
     printBegEndMsg('Calculating bispectrum', true);
-    parfor J=1:size(noisyDataset, 3)
+    for J=1:size(noisyDataset, 3)
         shc = image2shc(noisyDataset(:, :, J), bandlimit, tDesign, interval, ...
             scalingParam, sh);
         bispectra(:, J) = bispectrum(shc, bandlimit, CGs) - sigma^2*K*cSHC2rSHC(shc);
@@ -223,6 +223,7 @@ for mt=1:length(maxTranslation)
     results(mt).class_VDM = class_VDM;
     results(mt).class_VDM_refl = class_VDM_refl;
     results(mt).angle = angle;
+    results(mt).classSpecificityRotOnly = classSpecificityRotOnly;
 
     printBegEndMsg('Rotation invariant algorithm', false);
     
@@ -231,11 +232,15 @@ for mt=1:length(maxTranslation)
         'Translation %d of %d (max trans = %.3f)'), false);
 end
 
+save(fn, 'results', '-append');
+
 printBegEndMsg('Running test', false);
 
 
 %% Produce figure
 fig = figure;
+
+bins = 0:0.025:1;
 
 t = tiledlayout(2, 3, 'TileSpacing', 'compact', 'Padding', 'compact');
 title(t, 'Distribution of Node Score');
