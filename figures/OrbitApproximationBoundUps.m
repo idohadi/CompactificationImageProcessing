@@ -46,7 +46,7 @@ printBegEndMsg('Dataset generation', true);
 
 im = imageByUpsampling(14, 16, imageSize, round(0.2*imageSize));
 
-save(fn, 'rotation', 'im', '-append');
+save(fn, 'im', '-append');
 
 printBegEndMsg('Dataset generation', false);
 
