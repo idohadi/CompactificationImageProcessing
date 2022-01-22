@@ -31,7 +31,7 @@ maxTranslation = 5;
 sampleSize = 10^4;
 imageSize = 101;
 
-bandlimit = 50;
+bandlimit = 70;
 loadCGTable(bandlimit);
 global CGs;
 tDesign = loadtd(2*bandlimit);
@@ -46,7 +46,7 @@ clear buildK;
 clear buildK_mex;
 
 save(fn, 'snr', 'maxTranslation', 'sampleSize', 'imageSize', ...
-    'bandlimit', 'interval', 'scalingParam', '-v7.3');
+    'bandlimit', 'interval', 'scalingParam', 'fnNOEXT', '-v7.3');
 
 % Computing denoising matrix
 K = buildBispectrumDebiasingMatrix(imageSize, bandlimit, tDesign, ...
@@ -79,7 +79,7 @@ translationAngle = 2*pi*rand(1, sampleSize);
 translationSize = rand(1, sampleSize);
 
 dataset = zeros(imageSize, imageSize, sampleSize);
-parfor J=1:sampleSize
+for J=1:sampleSize
     dataset(:, :, J) = imrotate(im, rotations(J), 'bicubic', 'crop');
     translation = maxTranslation*translationSize(J)...
         *[cos(translationAngle(J)), sin(translationAngle(J))];
@@ -135,7 +135,7 @@ printBegEndMsg('Inversion', true);
 printBegEndMsg('Computing initial guess.', true);
 [FBsPCA_data, z,zcost,info, Timing, imager, image0, ZA] ...
     = hMRA_uniform(noisyDataset, im, sigma);
-x0 = image2shc(imager, bandlimit, tDesign, interval, scalingParam, sh);
+x0 = image2shc(im, bandlimit, tDesign, interval, scalingParam, sh);
 initialRelError = norm(im - imager, 'fro')/norm(im, 'fro');
 initialAbsError = norm(im - imager, 'fro');
 save(fn, 'imager', 'x0', 'initialRelError', 'initialAbsError', '-append');
