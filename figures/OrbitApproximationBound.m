@@ -34,7 +34,7 @@ tDesign = loadtd(2*bandlimit);
 interval = cos(pi/4)*[-1, 1];
 scalingParam = 1:0.1:5;
 
-sampleSize = 5;
+sampleSize = 100;
 
 save(fn, 'imageNo', 'imageSize', 'bandlimit', 'interval', ...
     'scalingParam', 'sampleSize', 'fnNOEXT');
@@ -77,6 +77,8 @@ printBegEndMsg('Run test', true);
 LHS = zeros(length(scalingParam), sampleSize);
 
 for n=1:sampleSize
+    printBegEndMsg(num2str([n, sampleSize], 'Iteration %d of %d'), true);
+    
     tt1 = translation(n, :);
     rr1 = rotation(n);
     parfor J=1:length(scalingParam)
@@ -99,12 +101,13 @@ for n=1:sampleSize
 
         LHS(J, n) = norm(rotatedImSHC - rotatedSHC, 2);
     end
+    
+    printBegEndMsg(num2str([n, sampleSize], 'Iteration %d of %d'), false);
 end
 
 save(fn, 'LHS', '-append');
 
 printBegEndMsg('Run test', false);
-
 
 %% Plot the results
 fig = figure;

@@ -5,6 +5,14 @@
 % Year      2022
 % ***********************************************************
 
+%% Pool setting
+poolSize = 32;
+try
+    parpool(poolSize);
+catch
+    
+end
+
 %% RNG seed
 rng(0, 'twister');
 
@@ -61,30 +69,37 @@ printBegEndMsg('Run test', true);
 LHS = zeros(length(scalingParam), sampleSize);
 
 for n=1:sampleSize
-    for J=1:length(scalingParam)
+    printBegEndMsg(num2str([n, sampleSize], 'Iteration %d of %d'), true);
+    
+    tt1 = translation(n, :);
+    rr1 = rotation(n);
+    parfor J=1:length(scalingParam)
         shc = image2shc(im, bandlimit, tDesign, interval, scalingParam(J));
-        P = contractionMap(translation(n, :)/imageSize, rotation(n), scalingParam(J));
+        P = contractionMap(cos(pi/4)*tt1/(0.5*imageSize), ...
+            rr1, scalingParam(J));
+        
+        rotatedSHC = rotateSHC(shc, bandlimit, P, tDesign);
 
-        rotatedSHC = rotateSHC(shc, bandlimit, P.', tDesign);
-
-        R = [cos(rotation(n)), sin(rotation(n)); ...
-            -sin(rotation(n)), cos(rotation(n))];
-        bb = - (R.' * translation(n, :).').';
-        rr = 360*rotation(n)/(2*pi);
-        imTmp = imrotate(im, rr, 'bicubic', 'crop');
+        R = [cos(rr1), sin(rr1); ...
+            -sin(rr1), cos(rr1)];
+        bb = -tt1;
+        rr = - 360*rr1/(2*pi);
+        imTmp = im;
         imTmp = imtranslate(imTmp, bb, 'cubic', 'OutputView', 'same');
+        imTmp = imrotate(imTmp, rr, 'bicubic', 'crop');
 
         rotatedImSHC = image2shc(imTmp, bandlimit, tDesign, interval, ...
             scalingParam(J));
 
         LHS(J, n) = norm(rotatedImSHC - rotatedSHC, 2);
     end
+    
+    printBegEndMsg(num2str([n, sampleSize], 'Iteration %d of %d'), false);
 end
 
 save(fn, 'LHS', '-append');
 
 printBegEndMsg('Run test', false);
-
 
 %% Plot the results
 fig = figure;
