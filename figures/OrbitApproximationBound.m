@@ -29,7 +29,7 @@ printBegEndMsg('Setup parameters', true);
 imageNo = 1;
 imageSize = 101;
 
-bandlimit = 80;
+bandlimit = 70;
 tDesign = loadtd(2*bandlimit);
 interval = cos(pi/4)*[-1, 1];
 scalingParam = 1:0.1:5;
