@@ -18,7 +18,7 @@ fn = [fnNOEXT, '.mat']; % Output file
 save(fn, 'fnNOEXT');
 
 %% Image parameters
-bandlimit = 50;
+bandlimit = 70;
 tDesign = loadtd(2*bandlimit);
 interval = cos(pi/4)*[-1, 1];
 imageSize = 101;
