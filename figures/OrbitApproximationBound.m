@@ -61,7 +61,7 @@ printBegEndMsg('Dataset generation', false);
 %% Rotation and translation
 printBegEndMsg('Generate rotation and translation', true);
 
-rotation = 2*pi*rand(sampleSize, 1);
+rotation = 2*pi*zeros(sampleSize, 1);
 transRot = 2*pi*rand();
 maxTrans = 10;
 translation = maxTrans*rand(sampleSize, 1)*[cos(transRot), sin(transRot)];
