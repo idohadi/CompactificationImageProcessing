@@ -137,7 +137,7 @@ printBegEndMsg('Calculating the mean over all images', false);
 fig = figure;
 t = tiledlayout(1, 2, ...
     'TileSpacing', 'compact', 'Padding', 'compact');
-title(t, 'Relationship of Scaling Parameter and Bandlimit');
+%title(t, 'Relationship of Scaling Parameter and Bandlimit');
 
 caxismin = min([min(cryoBackProjRelErrMean), ...
     min(upsBackProjRelErrMean)]);
