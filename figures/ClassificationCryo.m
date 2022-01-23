@@ -28,13 +28,13 @@ printBegEndMsg('Setup parameters', true);
 
 snr = 1;
 maxTranslation = [0, 2.5, 5, 7.5, 10];
-sampleSize = 5*10^3;
+sampleSize = 10^4;
 imageSize = 101;
-classNo = 7;
+classNo = 100;
 classProb = ones(classNo, 1)/classNo;
 k = 50;
 
-bandlimit = 50;
+bandlimit = 70;
 loadCGTable(bandlimit);
 global CGs;
 tDesign = loadtd(2*bandlimit);
