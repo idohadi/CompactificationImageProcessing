@@ -27,7 +27,7 @@ fn = [fnNOEXT, '.mat']; % Output file
 printBegEndMsg('Setup parameters', true);
 
 snr = 1;
-maxTranslation = [0, 2.5, 5, 7.5, 10];
+maxTranslation = [10];
 sampleSize = 10^4;
 imageSize = 101;
 classNo = 100;
