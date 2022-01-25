@@ -17,19 +17,23 @@ fn = [fnNOEXT, '.mat']; % Output file
 
 save(fn, 'fnNOEXT');
 
-%% Image parameters
+%% Parameters
 bandlimit = 70;
 tDesign = loadtd(2*bandlimit);
 interval = cos(pi/4)*[-1, 1];
 imageSize = 101;
-
-%% Scaling paramter choice
 scalingParam = 1;
-save(fn, 'scalingParam', '-append');
+
+save(fn, 'bandlimit', 'interval', 'imageNo', 'scalingParam', '-append');
 
 %% Image generation
 printBegEndMsg('Image generation.', true);
-rotation = rand_rots(imageNo);
+root = aspire_root();
+file_name = fullfile(root, 'projections', 'simulation', 'maps', 'cleanrib.mat');
+f = load(file_name);
+vol_true = cryo_downsample(f.volref, imageSize*ones(1, 3));
+
+rotation = rand_rots(1);
 im = cryo_project(vol_true, rotation, imageSize, 'double');
 [shc, sh] = image2shc(im, bandlimit, tDesign, interval, scalingParam);
 loadCGTable(bandlimit);
@@ -64,7 +68,7 @@ printBegEndMsg('Translation only test.', true);
 
 % Translation sampling paramters
 maxTranslationSize = 15;
-translationSizeGrid = 0:0.5:maxTranslationSize;
+translationSizeGrid = 0:0.2:maxTranslationSize;
 transAnglesNo = 10;
 
 % Measure outcome

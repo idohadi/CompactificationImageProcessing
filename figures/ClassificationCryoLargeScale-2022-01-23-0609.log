@@ -1,0 +1,46 @@
+23-Jan-2022 06:09:24 ::: Beginning: Setup parameters
+Completed column 1 of 101.Completed column 2 of 101.Completed column 3 of 101.Completed column 4 of 101.Completed column 5 of 101.Completed column 6 of 101.Completed column 7 of 101.Completed column 8 of 101.Completed column 9 of 101.Completed column 10 of 101.Completed column 11 of 101.Completed column 12 of 101.Completed column 13 of 101.Completed column 14 of 101.Completed column 15 of 101.Completed column 16 of 101.Completed column 17 of 101.Completed column 18 of 101.Completed column 19 of 101.Completed column 20 of 101.Completed column 21 of 101.Completed column 22 of 101.Completed column 23 of 101.Completed column 24 of 101.Completed column 25 of 101.Completed column 26 of 101.Completed column 27 of 101.Completed column 28 of 101.Completed column 29 of 101.Completed column 30 of 101.Completed column 31 of 101.Completed column 32 of 101.Completed column 33 of 101.Completed column 34 of 101.Completed column 35 of 101.Completed column 36 of 101.Completed column 37 of 101.Completed column 38 of 101.Completed column 39 of 101.Completed column 40 of 101.Completed column 41 of 101.Completed column 42 of 101.Completed column 43 of 101.Completed column 44 of 101.Completed column 45 of 101.Completed column 46 of 101.Completed column 47 of 101.Completed column 48 of 101.Completed column 49 of 101.Completed column 50 of 101.Completed column 51 of 101.Completed column 52 of 101.Completed column 53 of 101.Completed column 54 of 101.Completed column 55 of 101.Completed column 56 of 101.Completed column 57 of 101.Completed column 58 of 101.Completed column 59 of 101.Completed column 60 of 101.Completed column 61 of 101.Completed column 62 of 101.Completed column 63 of 101.Completed column 64 of 101.Completed column 65 of 101.Completed column 66 of 101.Completed column 67 of 101.Completed column 68 of 101.Completed column 69 of 101.Completed column 70 of 101.Completed column 71 of 101.Completed column 72 of 101.Completed column 73 of 101.Completed column 74 of 101.Completed column 75 of 101.Completed column 76 of 101.Completed column 77 of 101.Completed column 78 of 101.Completed column 79 of 101.Completed column 80 of 101.Completed column 81 of 101.Completed column 82 of 101.Completed column 83 of 101.Completed column 84 of 101.Completed column 85 of 101.Completed column 86 of 101.Completed column 87 of 101.Completed column 88 of 101.Completed column 89 of 101.Completed column 90 of 101.Completed column 91 of 101.Completed column 92 of 101.Completed column 93 of 101.Completed column 94 of 101.Completed column 95 of 101.Completed column 96 of 101.Completed column 97 of 101.Completed column 98 of 101.Completed column 99 of 101.Completed column 100 of 101.Completed column 101 of 101.23-Jan-2022 06:19:48 ::: Completed: Setup parameters
+23-Jan-2022 06:19:48 ::: Beginning: Dataset generation
+23-Jan-2022 06:19:48 ::: Beginning: Generate representatives
+23-Jan-2022 06:19:59 ::: Completed: Generate representatives
+23-Jan-2022 06:19:59 ::: Beginning: Generate image dataset
+23-Jan-2022 06:20:03 ::: Completed: Generate image dataset
+23-Jan-2022 06:20:03 ::: Completed: Dataset generation
+23-Jan-2022 06:20:03 ::: Beginning: Running test
+23-Jan-2022 06:20:17 ::: Beginning: Translation 1 of 1 (max trans = 10.000)
+23-Jan-2022 06:20:17 ::: Beginning: Translating image
+23-Jan-2022 06:20:42 ::: Completed: Translating image
+23-Jan-2022 06:20:42 ::: Beginning: Adding noise
+23-Jan-2022 06:20:43 ::: Completed: Adding noise
+23-Jan-2022 06:20:43 ::: Beginning: Rotation and translation invariant algorithm
+23-Jan-2022 06:20:43 ::: Beginning: Calculating bispectrum
+24-Jan-2022 22:42:42 ::: Completed: Calculating bispectrum
+24-Jan-2022 22:42:42 ::: Beginning: Calculating distance matrix
+24-Jan-2022 23:02:15 ::: Completed: Calculating distance matrix
+24-Jan-2022 23:02:15 ::: Beginning: Finding k nearest neighrbors
+24-Jan-2022 23:02:15 ::: Completed: Finding k nearest neighrbors
+24-Jan-2022 23:02:15 ::: Beginning: Calculating node specificity
+24-Jan-2022 23:02:15 ::: Completed: Calculating node specificity
+24-Jan-2022 23:02:15 ::: Completed: Rotation and translation invariant algorithm
+24-Jan-2022 23:02:15 ::: Beginning: Rotation invariant algorithm
+24-Jan-2022 23:02:15 ::: Beginning: Perform sPCA
+Starting parallel pool (parpool) using the 'local' profile ...
+Connected to the parallel pool (number of workers: 12).
+IdleTimeout has been reached.
+Parallel pool using the 'local' profile is shutting down.
+24-Jan-2022 23:04:01 ::: Completed: Perform sPCA
+24-Jan-2022 23:04:01 ::: Beginning: Initial classification
+24-Jan-2022 23:04:01 Normalizing sPCA coefficients
+24-Jan-2022 23:04:01 Start computing bispectrum
+24-Jan-2022 23:04:01 Number of bispectrum components is 45383
+24-Jan-2022 23:05:05 Finished computing bispectrum
+24-Jan-2022 23:05:05 Number of images less than 10000. Computing nearest neighbors directly.
+24-Jan-2022 23:05:16 Computing initial in-plane rotational alignment within nearest neighbors.
+24-Jan-2022 23:06:05 ::: Completed: Initial classification
+24-Jan-2022 23:06:05 ::: Beginning: VDM classification
+24-Jan-2022 23:06:32 ::: Beginning: Calculating node specificity
+24-Jan-2022 23:06:32 ::: Completed: Calculating node specificity
+24-Jan-2022 23:06:32 ::: Completed: Rotation invariant algorithm
+24-Jan-2022 23:06:32 ::: Completed: Translation 1 of 1 (max trans = 10.000)
+24-Jan-2022 23:07:19 ::: Completed: Running test
+Current plot held
