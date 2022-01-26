@@ -34,7 +34,7 @@ classNo = 100;
 classProb = ones(classNo, 1)/classNo;
 k = 50;
 
-bandlimit = 70;
+bandlimit = 50;
 loadCGTable(bandlimit);
 global CGs;
 tDesign = loadtd(2*bandlimit);
