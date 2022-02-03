@@ -1,0 +1,138 @@
+22-Jan-2022 04:32:30 ::: Beginning: Image generation.
+Starting parallel pool (parpool) using the 'local' profile ...
+Connected to the parallel pool (number of workers: 12).
+22-Jan-2022 04:33:39 ::: Completed: Image generation.
+22-Jan-2022 04:33:39 ::: Beginning: Rotations only test.
+22-Jan-2022 04:52:35 ::: Completed: Rotations only test.
+22-Jan-2022 04:52:35 ::: Beginning: Translation only test.
+22-Jan-2022 04:52:35 ::: Beginning: Translation size 1 of 31 (size = 0.000).
+22-Jan-2022 04:53:04 ::: Completed: Translation size 1 of 31 (size = 0.000).
+22-Jan-2022 04:53:04 ::: Beginning: Translation size 2 of 31 (size = 0.500).
+22-Jan-2022 04:53:34 ::: Completed: Translation size 2 of 31 (size = 0.500).
+22-Jan-2022 04:53:34 ::: Beginning: Translation size 3 of 31 (size = 1.000).
+22-Jan-2022 04:54:03 ::: Completed: Translation size 3 of 31 (size = 1.000).
+22-Jan-2022 04:54:03 ::: Beginning: Translation size 4 of 31 (size = 1.500).
+22-Jan-2022 04:54:32 ::: Completed: Translation size 4 of 31 (size = 1.500).
+22-Jan-2022 04:54:32 ::: Beginning: Translation size 5 of 31 (size = 2.000).
+22-Jan-2022 04:55:02 ::: Completed: Translation size 5 of 31 (size = 2.000).
+22-Jan-2022 04:55:02 ::: Beginning: Translation size 6 of 31 (size = 2.500).
+22-Jan-2022 04:55:31 ::: Completed: Translation size 6 of 31 (size = 2.500).
+22-Jan-2022 04:55:31 ::: Beginning: Translation size 7 of 31 (size = 3.000).
+22-Jan-2022 04:56:01 ::: Completed: Translation size 7 of 31 (size = 3.000).
+22-Jan-2022 04:56:01 ::: Beginning: Translation size 8 of 31 (size = 3.500).
+22-Jan-2022 04:56:31 ::: Completed: Translation size 8 of 31 (size = 3.500).
+22-Jan-2022 04:56:31 ::: Beginning: Translation size 9 of 31 (size = 4.000).
+22-Jan-2022 04:57:01 ::: Completed: Translation size 9 of 31 (size = 4.000).
+22-Jan-2022 04:57:01 ::: Beginning: Translation size 10 of 31 (size = 4.500).
+22-Jan-2022 04:57:31 ::: Completed: Translation size 10 of 31 (size = 4.500).
+22-Jan-2022 04:57:31 ::: Beginning: Translation size 11 of 31 (size = 5.000).
+22-Jan-2022 04:58:05 ::: Completed: Translation size 11 of 31 (size = 5.000).
+22-Jan-2022 04:58:05 ::: Beginning: Translation size 12 of 31 (size = 5.500).
+22-Jan-2022 04:58:44 ::: Completed: Translation size 12 of 31 (size = 5.500).
+22-Jan-2022 04:58:44 ::: Beginning: Translation size 13 of 31 (size = 6.000).
+22-Jan-2022 04:59:24 ::: Completed: Translation size 13 of 31 (size = 6.000).
+22-Jan-2022 04:59:24 ::: Beginning: Translation size 14 of 31 (size = 6.500).
+22-Jan-2022 05:00:10 ::: Completed: Translation size 14 of 31 (size = 6.500).
+22-Jan-2022 05:00:10 ::: Beginning: Translation size 15 of 31 (size = 7.000).
+22-Jan-2022 05:00:53 ::: Completed: Translation size 15 of 31 (size = 7.000).
+22-Jan-2022 05:00:53 ::: Beginning: Translation size 16 of 31 (size = 7.500).
+22-Jan-2022 05:01:33 ::: Completed: Translation size 16 of 31 (size = 7.500).
+22-Jan-2022 05:01:33 ::: Beginning: Translation size 17 of 31 (size = 8.000).
+22-Jan-2022 05:02:16 ::: Completed: Translation size 17 of 31 (size = 8.000).
+22-Jan-2022 05:02:16 ::: Beginning: Translation size 18 of 31 (size = 8.500).
+22-Jan-2022 05:02:55 ::: Completed: Translation size 18 of 31 (size = 8.500).
+22-Jan-2022 05:02:55 ::: Beginning: Translation size 19 of 31 (size = 9.000).
+22-Jan-2022 05:03:37 ::: Completed: Translation size 19 of 31 (size = 9.000).
+22-Jan-2022 05:03:37 ::: Beginning: Translation size 20 of 31 (size = 9.500).
+22-Jan-2022 05:04:15 ::: Completed: Translation size 20 of 31 (size = 9.500).
+22-Jan-2022 05:04:15 ::: Beginning: Translation size 21 of 31 (size = 10.000).
+22-Jan-2022 05:04:53 ::: Completed: Translation size 21 of 31 (size = 10.000).
+22-Jan-2022 05:04:53 ::: Beginning: Translation size 22 of 31 (size = 10.500).
+22-Jan-2022 05:05:35 ::: Completed: Translation size 22 of 31 (size = 10.500).
+22-Jan-2022 05:05:35 ::: Beginning: Translation size 23 of 31 (size = 11.000).
+22-Jan-2022 05:06:19 ::: Completed: Translation size 23 of 31 (size = 11.000).
+22-Jan-2022 05:06:19 ::: Beginning: Translation size 24 of 31 (size = 11.500).
+22-Jan-2022 05:06:55 ::: Completed: Translation size 24 of 31 (size = 11.500).
+22-Jan-2022 05:06:55 ::: Beginning: Translation size 25 of 31 (size = 12.000).
+22-Jan-2022 05:07:38 ::: Completed: Translation size 25 of 31 (size = 12.000).
+22-Jan-2022 05:07:38 ::: Beginning: Translation size 26 of 31 (size = 12.500).
+22-Jan-2022 05:08:19 ::: Completed: Translation size 26 of 31 (size = 12.500).
+22-Jan-2022 05:08:19 ::: Beginning: Translation size 27 of 31 (size = 13.000).
+22-Jan-2022 05:08:57 ::: Completed: Translation size 27 of 31 (size = 13.000).
+22-Jan-2022 05:08:57 ::: Beginning: Translation size 28 of 31 (size = 13.500).
+22-Jan-2022 05:09:44 ::: Completed: Translation size 28 of 31 (size = 13.500).
+22-Jan-2022 05:09:44 ::: Beginning: Translation size 29 of 31 (size = 14.000).
+22-Jan-2022 05:10:24 ::: Completed: Translation size 29 of 31 (size = 14.000).
+22-Jan-2022 05:10:24 ::: Beginning: Translation size 30 of 31 (size = 14.500).
+22-Jan-2022 05:11:05 ::: Completed: Translation size 30 of 31 (size = 14.500).
+22-Jan-2022 05:11:05 ::: Beginning: Translation size 31 of 31 (size = 15.000).
+22-Jan-2022 05:11:53 ::: Completed: Translation size 31 of 31 (size = 15.000).
+22-Jan-2022 05:11:53 ::: Completed: Translation only test.
+22-Jan-2022 05:11:53 ::: Beginning: Rotation and translation test.
+22-Jan-2022 05:11:53 ::: Beginning: Translation size 1 of 31 (size = 0.000).
+22-Jan-2022 05:12:57 ::: Completed: Translation size 1 of 31 (size = 0.000).
+22-Jan-2022 05:12:57 ::: Beginning: Translation size 2 of 31 (size = 0.500).
+22-Jan-2022 05:14:03 ::: Completed: Translation size 2 of 31 (size = 0.500).
+22-Jan-2022 05:14:03 ::: Beginning: Translation size 3 of 31 (size = 1.000).
+22-Jan-2022 05:15:02 ::: Completed: Translation size 3 of 31 (size = 1.000).
+22-Jan-2022 05:15:02 ::: Beginning: Translation size 4 of 31 (size = 1.500).
+22-Jan-2022 05:16:02 ::: Completed: Translation size 4 of 31 (size = 1.500).
+22-Jan-2022 05:16:02 ::: Beginning: Translation size 5 of 31 (size = 2.000).
+22-Jan-2022 05:16:56 ::: Completed: Translation size 5 of 31 (size = 2.000).
+22-Jan-2022 05:16:56 ::: Beginning: Translation size 6 of 31 (size = 2.500).
+22-Jan-2022 05:18:01 ::: Completed: Translation size 6 of 31 (size = 2.500).
+22-Jan-2022 05:18:01 ::: Beginning: Translation size 7 of 31 (size = 3.000).
+22-Jan-2022 05:19:01 ::: Completed: Translation size 7 of 31 (size = 3.000).
+22-Jan-2022 05:19:01 ::: Beginning: Translation size 8 of 31 (size = 3.500).
+22-Jan-2022 05:20:08 ::: Completed: Translation size 8 of 31 (size = 3.500).
+22-Jan-2022 05:20:08 ::: Beginning: Translation size 9 of 31 (size = 4.000).
+22-Jan-2022 05:21:10 ::: Completed: Translation size 9 of 31 (size = 4.000).
+22-Jan-2022 05:21:10 ::: Beginning: Translation size 10 of 31 (size = 4.500).
+22-Jan-2022 05:22:20 ::: Completed: Translation size 10 of 31 (size = 4.500).
+22-Jan-2022 05:22:20 ::: Beginning: Translation size 11 of 31 (size = 5.000).
+22-Jan-2022 05:23:24 ::: Completed: Translation size 11 of 31 (size = 5.000).
+22-Jan-2022 05:23:24 ::: Beginning: Translation size 12 of 31 (size = 5.500).
+22-Jan-2022 05:24:27 ::: Completed: Translation size 12 of 31 (size = 5.500).
+22-Jan-2022 05:24:27 ::: Beginning: Translation size 13 of 31 (size = 6.000).
+22-Jan-2022 05:25:27 ::: Completed: Translation size 13 of 31 (size = 6.000).
+22-Jan-2022 05:25:27 ::: Beginning: Translation size 14 of 31 (size = 6.500).
+22-Jan-2022 05:26:33 ::: Completed: Translation size 14 of 31 (size = 6.500).
+22-Jan-2022 05:26:33 ::: Beginning: Translation size 15 of 31 (size = 7.000).
+22-Jan-2022 05:27:37 ::: Completed: Translation size 15 of 31 (size = 7.000).
+22-Jan-2022 05:27:37 ::: Beginning: Translation size 16 of 31 (size = 7.500).
+22-Jan-2022 05:28:43 ::: Completed: Translation size 16 of 31 (size = 7.500).
+22-Jan-2022 05:28:43 ::: Beginning: Translation size 17 of 31 (size = 8.000).
+22-Jan-2022 05:29:47 ::: Completed: Translation size 17 of 31 (size = 8.000).
+22-Jan-2022 05:29:47 ::: Beginning: Translation size 18 of 31 (size = 8.500).
+22-Jan-2022 05:30:48 ::: Completed: Translation size 18 of 31 (size = 8.500).
+22-Jan-2022 05:30:48 ::: Beginning: Translation size 19 of 31 (size = 9.000).
+22-Jan-2022 05:31:56 ::: Completed: Translation size 19 of 31 (size = 9.000).
+22-Jan-2022 05:31:56 ::: Beginning: Translation size 20 of 31 (size = 9.500).
+22-Jan-2022 05:32:53 ::: Completed: Translation size 20 of 31 (size = 9.500).
+22-Jan-2022 05:32:53 ::: Beginning: Translation size 21 of 31 (size = 10.000).
+22-Jan-2022 05:33:59 ::: Completed: Translation size 21 of 31 (size = 10.000).
+22-Jan-2022 05:33:59 ::: Beginning: Translation size 22 of 31 (size = 10.500).
+22-Jan-2022 05:34:49 ::: Completed: Translation size 22 of 31 (size = 10.500).
+22-Jan-2022 05:34:49 ::: Beginning: Translation size 23 of 31 (size = 11.000).
+22-Jan-2022 05:35:51 ::: Completed: Translation size 23 of 31 (size = 11.000).
+22-Jan-2022 05:35:51 ::: Beginning: Translation size 24 of 31 (size = 11.500).
+22-Jan-2022 05:36:45 ::: Completed: Translation size 24 of 31 (size = 11.500).
+22-Jan-2022 05:36:45 ::: Beginning: Translation size 25 of 31 (size = 12.000).
+22-Jan-2022 05:37:38 ::: Completed: Translation size 25 of 31 (size = 12.000).
+22-Jan-2022 05:37:38 ::: Beginning: Translation size 26 of 31 (size = 12.500).
+22-Jan-2022 05:38:33 ::: Completed: Translation size 26 of 31 (size = 12.500).
+22-Jan-2022 05:38:33 ::: Beginning: Translation size 27 of 31 (size = 13.000).
+22-Jan-2022 05:39:31 ::: Completed: Translation size 27 of 31 (size = 13.000).
+22-Jan-2022 05:39:31 ::: Beginning: Translation size 28 of 31 (size = 13.500).
+22-Jan-2022 05:40:25 ::: Completed: Translation size 28 of 31 (size = 13.500).
+22-Jan-2022 05:40:25 ::: Beginning: Translation size 29 of 31 (size = 14.000).
+22-Jan-2022 05:41:18 ::: Completed: Translation size 29 of 31 (size = 14.000).
+22-Jan-2022 05:41:18 ::: Beginning: Translation size 30 of 31 (size = 14.500).
+22-Jan-2022 05:42:12 ::: Completed: Translation size 30 of 31 (size = 14.500).
+22-Jan-2022 05:42:12 ::: Beginning: Translation size 31 of 31 (size = 15.000).
+22-Jan-2022 05:43:19 ::: Completed: Translation size 31 of 31 (size = 15.000).
+22-Jan-2022 05:43:19 ::: Completed: Rotation and translation test.
+Current plot held
+Current plot held
+IdleTimeout has been reached.
+Parallel pool using the 'local' profile is shutting down.
