@@ -35,5 +35,5 @@ alp = legendre(l, x);
 % Compute for negative degress, using [1] (p. 140), eq. (7) and the fact
 % Gamma(s+1)=s! for non-negative integer s
 ms = (1:l)';
-factors = (-1).^ms .* factorial(l-ms)./ factorial(l+ms);
+factors = (-1).^ms .* exp(gammaln(l-ms+1) - gammaln(l+ms+1));
 alp = [flip(factors .* alp(2:end, :), 1); alp];

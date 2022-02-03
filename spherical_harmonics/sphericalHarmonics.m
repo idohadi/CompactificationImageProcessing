@@ -56,7 +56,7 @@ theta = theta.';
 phi = phi(:);
 phi = phi.';
 
-fun = @(l, m) sqrt( (2*l+1)/(4*pi) * factorial(l-m)./factorial(l+m));
+fun = @(l, m) sqrt( (2*l+1)/(4*pi) * exp(gammaln(l-m+1) - gammaln(l+m+1)));
 
 sh = zeros((bandlimit+1)^2, length(theta));
 sh(1, :) = 0.5/sqrt(pi) * ones(1, length(theta));
